@@ -1,0 +1,243 @@
+2025-12-17 04:02:09 EST -- START TIME
+--------------------------------------
+
+# 2025_Advent_of_Cyber (Day07)
+## Network Discovery - Scan-ta Clause
+
+|================================================================
+- Name: tbfc-devqa01 
+- IP Address: 10.66.167.227
+
+//Keys:
+#KEY1:3aster_
+#KEY2:15_th3_
+#KEY3:n3w_xm45
+
+#MasterKey: 3aster_15_th3_n3w_xm45
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-17 04:23:09 EST -- 
+ping -4 10.66.167.227
+PING 10.66.167.227 (10.66.167.227) 56(84) bytes of data.
+64 bytes from 10.66.167.227: icmp_seq=1 ttl=62 time=29.4 ms
+64 bytes from 10.66.167.227: icmp_seq=2 ttl=62 time=28.8 ms
+64 bytes from 10.66.167.227: icmp_seq=3 ttl=62 time=30.9 ms
+64 bytes from 10.66.167.227: icmp_seq=4 ttl=62 time=31.4 ms
+
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-17 04:24:49 EST -- 
+// SCAN
+ip=10.66.167.227
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
+
+echo $ports
+//22,80,21212,25251
+
+2025-12-17 04:26:39 EST -- 
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+NSE Timing: About 99.82% done; ETC: 04:30 (0:00:00 remaining)
+Nmap scan report for 10.66.167.227
+Host is up (0.028s latency).
+
+PORT      STATE SERVICE VERSION
+22/tcp    open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.14 (Ubuntu Linux; protocol 2.0)
+80/tcp    open  http    nginx
+|_http-title: TBFC QA \xE2\x80\x94 EAST-mas
+21212/tcp open  ftp     vsftpd 3.0.5
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+|_Can't get directory listing: TIMEOUT
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to 192.168.190.148
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 1
+|      vsFTPd 3.0.5 - secure, fast, stable
+|_End of status
+25251/tcp open  unknown
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, LDAPBindReq, NULL, RPCCheck, SMBProgNeg, X11Probe: 
+|     TBFC maintd v0.2
+|     Type HELP for commands.
+|   FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, LDAPSearchReq, RTSPRequest: 
+|     TBFC maintd v0.2
+|     Type HELP for commands.
+|     unknown command
+|     unknown command
+|   Help: 
+|     TBFC maintd v0.2
+|     Type HELP for commands.
+|     Commands: HELP, STATUS, GET KEY, QUIT
+
+
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-12-17 04:32 EST
+Nmap scan report for 10.66.167.227
+Host is up (0.026s latency).
+Not shown: 99 open|filtered udp ports (no-response)
+PORT   STATE SERVICE
+53/udp open  domain
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// The 3 Keys
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-17 04:36:34 EST -- 
+# KEY1
+
+ftp 10.66.167.227 21212
+Connected to 10.66.167.227.
+220 (vsFTPd 3.0.5)
+Name (10.66.167.227:kali): anonymous
+230 Login successful.
+
+ftp> ls
+-rw-r--r--    1 ftp      ftp            13 Oct 22 16:27 tbfc_qa_key1
+
+ftp> get tbfc_qa_key1
+150 Opening BINARY mode data connection for tbfc_qa_key1 (13 bytes).
+100% |***********************************************|    13       18.18 KiB/s    00:00 ETA
+226 Transfer complete.
+
+cat tbfc_qa_key1
+
+
+# KEY1:3aster_
+
+---
+
+2025-12-17 04:48:45 EST -- 
+#KEY2
+
+nc -nv 10.66.167.227 25251
+
+TBFC maintd v0.2
+Type HELP for commands.
+help
+Commands: HELP, STATUS, GET KEY, QUIT
+status
+status: armed_for=35s, port=25251
+get key
+KEY2:15_th3_
+ 
+echo 'KEY2:15_th3_' > tbfc_qa_key2
+
+
+# KEY2:15_th3_
+
+---
+
+2025-12-17 05:25:22 EST -- 
+#KEY3
+
+dig @10.66.167.227 AXFR
+
+; <<>> DiG 9.20.15-2-Debian <<>> @10.66.167.227 AXFR
+; (1 server found)
+;; global options: +cmd
+;; Query time: 16 msec
+;; SERVER: 10.66.167.227#53(10.66.167.227) (UDP)
+;; WHEN: Wed Dec 17 05:29:37 EST 2025
+;; MSG SIZE  rcvd: 34
+
+
+dig @10.66.167.227 TXT key3.tbfc.local +short
+"KEY3:n3w_xm45"
+
+#KEY3:n3w_xm45
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Visit server: http://10.66.167.227 and access the secret admin console by submitting the combined keys:
+
+#MasterKey: 3aster_15_th3_n3w_xm45
+
+
+// Secret Admin Console
+# http://10.66.167.227/terminal
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+tbfcapp@tbfc-devqa01:~$ whoami                                                                                                                                                                 
+tbfcapp                                                                                                                                                                                        
+tbfcapp@tbfc-devqa01:~$ ss -tunlp                                                                                                                                                              
+Netid     State      Recv-Q     Send-Q              Local Address:Port          Peer Address:Port    Process                                                                                   
+udp       UNCONN     0          0                         0.0.0.0:53                 0.0.0.0:*                                                                                                 
+udp       UNCONN     0          0              10.66.167.227%ens5:68                 0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          4096                      0.0.0.0:22                 0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          32                        0.0.0.0:53                 0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          511                       0.0.0.0:80                 0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          2048                    127.0.0.1:8000               0.0.0.0:*        users:(("gunicorn",pid=972,fd=5),("gunicorn",pid=958,fd=5),("gunicorn",pid=687,fd=5))    
+tcp       LISTEN     0          50                        0.0.0.0:25251              0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          32                        0.0.0.0:21212              0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          4096                    127.0.0.1:7681               0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          151                     127.0.0.1:3306               0.0.0.0:*                                                                                                 
+tcp       LISTEN     0          4096                         [::]:22                    [::]:*                                                                                                 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// mysql
+#tcp  LISTEN   127.0.0.1:3306
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+mysql> SELECT USER(), CURRENT_USER(), VERSION();
++-------------------+----------------+-------------------------+
+| USER()            | CURRENT_USER() | VERSION()               |
++-------------------+----------------+-------------------------+
+| tbfcapp@localhost | @localhost     | 8.0.43-0ubuntu0.24.04.2 |
++-------------------+----------------+-------------------------+
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| performance_schema |
+| tbfcqa01           |
++--------------------+
+
+mysql> use tbfcqa01
+
+
+mysql> show TABLES;
++--------------------+
+| Tables_in_tbfcqa01 |
++--------------------+
+| flags              |
++--------------------+
+
+
+mysql> DESCRIBE flags;
++-------+--------------+------+-----+---------+----------------+
+| Field | Type         | Null | Key | Default | Extra          |
++-------+--------------+------+-----+---------+----------------+
+| id    | int          | NO   | PRI | NULL    | auto_increment |
+| flag  | varchar(255) | NO   |     | NULL    |                |
++-------+--------------+------+-----+---------+----------------+
+
+
+mysql> SELECT * FROM flags;
++----+------------------------------+
+| id | flag                         |
++----+------------------------------+
+|  1 | THM{4ll_s3rvice5_d1sc0vered} |
++----+------------------------------+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+2025-12-17 07:03:13 EST -- COMPLETE
