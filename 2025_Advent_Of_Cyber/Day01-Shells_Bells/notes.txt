@@ -1,0 +1,425 @@
+# Linux CLI - Shells Bells (Day 01)
+
+# Passwords:
+ //mcskidy:AoC2025!
+ //eddi_knapp: S0mething1Sc0ming
+
+# Flags:
+ // THM{learning-linux-cli}
+ // THM{sir-carrotbane-attacks}
+ // THM{until-we-meet-again}
+ // THM{w3lcome_2_A0c_2025}
+
+# Side Quest Fragments:
+ // PASSFRAG1: 3ast3r
+ // PASSFRAG2: -1s-
+ // PASSFRAG3: c0M1nG
+
+// Combined Fragments: 3ast3r-1s-c0M1nG
+
+# Side Quest 1 egg:
+ //now_you_see_me
+
+## Quest (mcskidy)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ssh mcskidy@10.67.188.34
+//PWD: AoC2025!
+
+cat README.txt
+
+// README.txt
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+For all TBFC members,
+Yesterday I spotted yet another Eggsploit on our servers.
+Not sure what it means yet, but Wareville is in danger.
+To be prepared, I'll write the security guide by tomorrow.
+As a precaution, I'll also hide the guide from plain view.
+~ McSkidy
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+ls -lah ~/Guides
+-rw-rw-r--  1 mcskidy mcskidy  506 Oct 29 20:46 .guide.txt
+
+cat ~/Guides/.guide.txt
+
+// .guide.txt
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+I think King Malhare from HopSec Island is preparing for an attack.
+Not sure what his goal is, but Eggsploits on our servers are not good.
+Be ready to protect Christmas by following this Linux guide:
+
+Check /var/log/ and grep inside, let the logs become your guide.
+Look for eggs that want to hide, check their shells for what's inside!
+
+P.S. Great job finding the guide. Your flag is:
+-----------------------------------------------
+THM{learning-linux-cli}
+-----------------------------------------------
+
+//THM{learning-linux-cli}
+
+egrep -Ri 'egg' /var/log 2>/dev/null
+egrep -Ri 'egg' /var/log 2>/dev/null | egrep -i 'failed'
+
+/var/log/auth.log:2025-10-13T01:43:48.000724+00:00 tbfc-web01 sshd[1037]: Failed password for socmas from eggbox-196.hopsec.thm port 16212 ssh2
+/var/log/auth.log:2025-10-13T01:43:52.044888+00:00 tbfc-web01 sshd[1037]: Failed password for socmas from eggbox-196.hopsec.thm port 16212 ssh2
+/var/log/auth.log:2025-10-13T01:43:55.543374+00:00 tbfc-web01 sshd[1037]: Failed password for socmas from eggbox-196.hopsec.thm port 16212 ssh2
+/var/log/auth.log:2025-10-13T01:45:08.123120+00:00 tbfc-web01 sshd[2392]: Failed password for socmas from eggbox-196.hopsec.thm port 20393 ssh2
+/var/log/auth.log:2025-10-13T01:45:11.440030+00:00 tbfc-web01 sshd[2392]: Failed password for socmas from eggbox-196.hopsec.thm port 20393 ssh2
+/var/log/auth.log:2025-10-13T01:46:01.816094+00:00 tbfc-web01 sshd[2392]: Failed password for socmas from eggbox-196.hopsec.thm port 20393 ssh2
+/var/log/auth.log:2025-10-13T01:46:07.558636+00:00 tbfc-web01 sshd[2453]: Failed password for socmas from eggbox-196.hopsec.thm port 14040 ssh2
+/var/log/auth.log:2025-10-13T01:46:15.878653+00:00 tbfc-web01 sshd[2453]: message repeated 2 times: [ Failed password for socmas from eggbox-196.hopsec.thm port 14040 ssh2]
+
+ls /home
+eddi_knapp  mcskidy  socmas  ubuntu
+
+sudo find /home/socmas -name *egg* 2>/dev/null
+
+/home/socmas/2025/eggstrike.sh
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// eggstrike.sh
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# Eggstrike v0.3
+# © 2025, Sir Carrotbane, HopSec
+cat wishlist.txt | sort | uniq > /tmp/dump.txt
+rm wishlist.txt && echo "Chistmas is fading..."
+mv eastmas.txt wishlist.txt && echo "EASTMAS is invading!"
+
+# Your flag is:
+# THM{sir-carrotbane-attacks}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# Find root bash history flag
+sudo su -
+history
+7  curl --data "THM{until-we-meet-again}" http://flag.hopsec.thm
+
+// THM{until-we-meet-again}
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+----------------------------------------------
+
+// Side Quest 1 (Hopper's Origin)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ls ~/Documents/
+read-me-please.txt
+
+cat Documents/read-me-please.txt
+
+## 0. McSkidy’s Original Message (Starting Point)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+From: mcskidy
+To: whoever finds this
+
+I had a short second when no one was watching. I used it.
+
+I've managed to plant a few clues around the account.
+If you can get into the user below and look carefully,
+those three little "easter eggs" will combine into a passcode
+that unlocks a further message that I encrypted in the
+/home/eddi_knapp/Documents/ directory.
+I didn't want the wrong eyes to see it.
+
+Access the user account:
+username: eddi_knapp
+password: S0mething1Sc0ming
+
+There are three hidden easter eggs.
+They combine to form the passcode to open my encrypted vault.
+
+Clues (one for each egg):
+
+1) I ride with your session, not with your chest of files.
+Open the little bag your shell carries when you arrive.
+    // PASSFRAG1= 3ast3r
+
+2) The tree shows today; the rings remember yesterday.
+Read the ledger’s older pages.
+    // PASSFRAG2: -1s-
+
+3) When pixels sleep, their tails sometimes whisper plain words.
+Listen to the tail.
+    // PASSFRAG3: c0M1nG
+
+Find the fragments, join them in order, and use the resulting passcode
+to decrypt the message I left. Be careful — I had to be quick,
+and I left only enough to get help.
+
+~ McSkidy
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## 1. Log In
+
+//For root *best choice*
+sudo su -
+
+//For eddi_knapp
+sudo su eddi_knapp -
+
+OR
+
+ssh eddi_knapp@10.67.188.34
+(password: S0mething1Sc0ming)
+
+
+## 2. Solve the Three Easter Egg Clues
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Each clue is solved by examining the correct file, not by grepping.
+
+### Clue 1 - PASSFRAG1 (“bag your shell carries”)
+#### Interpretation:
+This clue refers to shell startup files that load with your login session:
+`~/.bashrc`
+
+#### How it was found:
+less ~/.bashrc
+Scroll through its contents
+
+Inside `~/.bashrc` you will find somthing like:
+`export PASSFRAG1="3ast3r"`
+
+//PASSFRAG1 = 3ast3r
+
+
+### Clue 2 - PASSFRAG2 (“rings remember yesterday”)
+#### Interpretation:
+This clue describes a git repository.
+"tree" = working files
+"rings" = commit history
+"ledger" = git log
+
+There is a hidden repository at `~/.secret_git`
+
+#### How it was found:
+```
+cd ~/.secret_git
+git log -p
+```
+
+Scrolling through commit diffs reveals:
+`PASSFRAG2: -1s-`
+
+//PASSFRAG2 = -1s-
+
+
+### Clue 3 - PASSFRAG3 (“pixels… tail whisper words”)
+#### Interpretation:
+This hints at the Pictures directory. Something related to images and a “tail” (hidden file).
+
+#### How it was found:
+```
+cd ~/Pictures
+find . -exec egrep "PASSFRAG+" {} + 2>/dev/null
+```
+
+A hidden file appears: `.easter_egg`
+
+Opening it shows an ASCII Rabbit and the phrase:
+`PASSFRAG3: c0M1nG`
+
+```
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@#+==+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@%+=+*++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@*++**+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@%%#*====+#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@#*===-===#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@%*++:-+====*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@%*===++++===-+*#######%%@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@%*+===+++==::-=========+*#%@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@%%#**+======-:-==--==-==+*%@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@%*+======---=+===------=#%@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@%**+=-=====-==+==-====--=*%@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@%***+++==--=====+=----=-=#@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@%#**++=--=====++====----*@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@%*+=-:=++**++**+=-::--*@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@#+=:.+#***=*#=--::-=-=%@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@%%*+-:+%#+++=++=:::==--*%@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@%*+=--*@#++===::::::::=#%@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@%%%##*#%%%####***#*#####%%@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@%%###%%%%%%%%%%##%%##%%@@@@@@@@@@@@
+
+~~ HAPPY EASTER ~~~
+PASSFRAG3: c0M1nG
+```
+
+//PASSFRAG3 = c0M1nG
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## 3. Build the Vault Passphrase
+
+Join the three fragments exactly as given:
+
+// 3ast3r-1s-c0M1nG
+
+
+## 4. Decrypt McSkidy’s Vault Message
+
+Encrypted file:
+`~/Documents/mcskidy_note.txt.gpg`
+
+Decrypt with:
+gpg --batch --yes --pinentry-mode=loopback --passphrase "3ast3r-1s-c0M1nG" -d ~/Documents/mcskidy_note.txt.gpg
+
+
+// Decoded GPG mcskidy_note.txt.gpg
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Congrats — you found all fragments and reached this file.
+
+Below is the list that should be live on the site. If you replace the contents of
+/home/socmas/2025/wishlist.txt with this exact list (one item per line, no numbering),
+the site will recognise it and the takeover glitching will stop. Do it — it will save the site.
+
+Hardware security keys (YubiKey or similar)
+Commercial password manager subscriptions (team seats)
+Endpoint detection & response (EDR) licenses
+Secure remote access appliances (jump boxes)
+Cloud workload scanning credits (container/image scanning)
+Threat intelligence feed subscription
+
+Secure code review / SAST tool access
+Dedicated secure test lab VM pool
+Incident response runbook templates and playbooks
+Electronic safe drive with encrypted backups
+
+A final note — I don't know exactly where they have me, but there are *lots* of eggs
+and I can smell chocolate in the air. Something big is coming.  — McSkidy
+
+---
+
+When the wishlist is corrected, the site will show a block of ciphertext. This ciphertext can be decrypted with the following unlock key:
+
+UNLOCK_KEY: 91J6X7R4FQ9TQPM9JX2Q9X2Z
+
+To decode the ciphertext, use OpenSSL. For instance, if you copied the ciphertext into a file /tmp/website_output.txt you could decode using the following command:
+
+cat > /tmp/website_output.txt
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -salt -base64 -in /tmp/website_output.txt -out /tmp/decoded_message.txt -pass pass:'91J6X7R4FQ9TQPM9JX2Q9X2Z'
+cat /tmp/decoded_message.txt
+
+Sorry to be so convoluted, I couldn't risk making this easy while King Malhare watches. — McSkidy
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//The decrypted message contains:
+- A corrected wishlist that must be placed into `/home/socmas/2025/wishlist.txt`
+- A note saying the website will show ciphertext afterward
+- An unlock key:
+
+// UNLOCK_KEY: 91J6X7R4FQ9TQPM9JX2Q9X2Z
+
+
+## 5. Fix /home/socmas/2025/wishlist.txt
+
+//Replace `wishlist.txt` with the exact list provided in McSkidy’s message.
+
+cd /home/socmas/2025
+
+# Make a backup
+cp wishlist.txt wishlist.txt.bak
+
+cat << 'EOF' > wishlist.txt
+Hardware security keys (YubiKey or similar)
+Commercial password manager subscriptions (team seats)
+Endpoint detection & response (EDR) licenses
+Secure remote access appliances (jump boxes)
+Cloud workload scanning credits (container/image scanning)
+Threat intelligence feed subscription
+
+Secure code review / SAST tool access
+Dedicated secure test lab VM pool
+Incident response runbook templates and playbooks
+Electronic safe drive with encrypted backups
+EOF
+
+## 6. Decrypt Website Ciphertext
+
+After fixing `wishlist.txt`, the website(http://10.67.129.18:8080/) displays a large Base64 ciphertext in the Gibberish message box (copy and decode with the UNLOCK_KEY)
+
+Save ciphertext to local box
+
+```
+echo "U2FsdGVkX1/7xkS74RBSFMhpR9Pv0PZrzOVsIzd38sUGzGsDJOB9FbybAWod5HMsa+WIr5HDprvK6aFNYuOGoZ60qI7axX5Qnn1E6D+BPknRgktrZTbMqfJ7wnwCExyU8ek1RxohYBehaDyUWxSNAkARJtjVJEAOA1kEOUOah11iaPGKxrKRV0kVQKpEVnuZMbf0gv1ih421QvmGucErFhnuX+xv63drOTkYy15s9BVCUfKmjMLniusI0tqs236zv4LGbgrcOfgir+P+gWHc2TVW4CYszVXlAZUg07JlLLx1jkF85TIMjQ3B91MQS+btaH2WGWFyakmqYltz6jB5DOSCA6AMQYsqLlx53ORLxy3FfJhZTl9iwlrgEZjJZjDoXBBMdlMCOjKUZfTbt3pnlHWEaGJD7NoTgywFsIw5cz7hkmAMxAIkNn/5hGd/S7mwVp9h6GmBUYDsgHWpRxvnjh0s5kVD8TYjLzVnvaNFS4FXrQCiVIcp1ETqicXRjE4T0MYdnFD8h7og3ZlAFixM3nYpUYgKnqi2o2zJg7fEZ8c=" > website_output.txt
+```
+
+Then decrypt using OpenSSL and the unlock key:
+```
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -salt -base64 -in website_output.txt -out decoded_message.txt -pass pass:'91J6X7R4FQ9TQPM9JX2Q9X2Z'
+
+cat /tmp/decoded_message.txt
+```
+
+// Decoded openSSL Message
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Well done — the glitch is fixed. Amazing job going the extra mile and saving the site. Take this flag THM{w3lcome_2_A0c_2025}
+
+NEXT STEP:
+If you fancy something a little...spicier....use the FLAG you just obtained as the passphrase to unlock:
+/home/eddi_knapp/.secret/dir
+
+That hidden directory has been archived and encrypted with the FLAG.
+Inside it you'll find the sidequest key.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Decoded output flag shows:
+// THM{w3lcome_2_A0c_2025}
+
+## 7. Decrypt SideQuest Archive
+
+The encrypted located:
+`/home/eddi_knapp/.secret/dir.tar.gz.gpg`
+
+### Decrypt with the FLAG:
+
+cd /home/eddi_knapp/.secret
+
+ls -lah
+-rw-------  1 eddi_knapp eddi_knapp 410K Dec  1 08:32 dir.tar.gz.gpg
+
+// Copy to local box
+scp dir.tar.gz.gpg kali@192.168.190.148:/home/kali/THM/2025_Advent_Of_Cyber/Day01-Shells_Bells
+
+// Decode
+gpg --batch --yes --pinentry-mode=loopback --passphrase 'THM{w3lcome_2_A0c_2025}' -o dir.tar.gz -d dir.tar.gz.gpg
+
+// Extract:
+tar -xzf dir.tar.gz
+
+ls -lah dir
+-rw-r--r-- 1 kali kali 411K Nov 30 13:18 sq1.png
+
+// Display
+display dir/sq1.png
+
+
+// The image shows:
+A Jester Rabbit egg with the number 1 and the `now_you_see_me` text
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## SideQuest EggKey #1:
+### now_you_see_me
