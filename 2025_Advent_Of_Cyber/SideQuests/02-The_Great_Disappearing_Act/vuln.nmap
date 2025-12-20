@@ -1,0 +1,423 @@
+# Nmap 7.95 scan initiated Sat Dec 20 15:56:06 2025 as: /usr/lib/nmap/nmap -Pn -sV --script=default,vuln -p22,80,8000,8080,9001,13400,13401,13402,13403,13404,21337 -oN vuln.nmap 10.67.181.104
+Nmap scan report for 10.67.181.104
+Host is up (0.034s latency).
+
+PORT      STATE    SERVICE            VERSION
+22/tcp    open     ssh                OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 a4:68:a1:c2:67:ba:fd:25:d3:5c:2a:0c:91:73:7c:5c (ECDSA)
+|_  256 f1:13:74:dc:e6:7b:9c:30:94:57:48:40:d6:28:27:bb (ED25519)
+| vulners: 
+|   cpe:/a:openbsd:openssh:9.6p1: 
+|     	PACKETSTORM:179290	10.0	https://vulners.com/packetstorm/PACKETSTORM:179290	*EXPLOIT*
+|     	1EEC8894-D2F7-547C-827C-915BE866875C	10.0	https://vulners.com/githubexploit/1EEC8894-D2F7-547C-827C-915BE866875C	*EXPLOIT*
+|     	33D623F7-98E0-5F75-80FA-81AA666D1340	9.8	https://vulners.com/githubexploit/33D623F7-98E0-5F75-80FA-81AA666D1340	*EXPLOIT*
+|     	F8981437-1287-5B69-93F1-657DFB1DCE59	9.3	https://vulners.com/githubexploit/F8981437-1287-5B69-93F1-657DFB1DCE59	*EXPLOIT*
+|     	CB2926E1-2355-5C82-A42A-D4F72F114F9B	9.3	https://vulners.com/githubexploit/CB2926E1-2355-5C82-A42A-D4F72F114F9B	*EXPLOIT*
+|     	8DEE261C-33D4-5057-BA46-E4293B705BAE	9.3	https://vulners.com/githubexploit/8DEE261C-33D4-5057-BA46-E4293B705BAE	*EXPLOIT*
+|     	6FD8F914-B663-533D-8866-23313FD37804	9.3	https://vulners.com/githubexploit/6FD8F914-B663-533D-8866-23313FD37804	*EXPLOIT*
+|     	PACKETSTORM:190587	8.1	https://vulners.com/packetstorm/PACKETSTORM:190587	*EXPLOIT*
+|     	OSV:BELL-CVE-2024-6387	8.1	https://vulners.com/osv/OSV:BELL-CVE-2024-6387
+|     	FB2E9ED1-43D7-585C-A197-0D6628B20134	8.1	https://vulners.com/githubexploit/FB2E9ED1-43D7-585C-A197-0D6628B20134	*EXPLOIT*
+|     	FA3992CE-9C4C-5350-8134-177126E0BD3F	8.1	https://vulners.com/githubexploit/FA3992CE-9C4C-5350-8134-177126E0BD3F	*EXPLOIT*
+|     	EFD615F0-8F17-5471-AA83-0F491FD497AF	8.1	https://vulners.com/githubexploit/EFD615F0-8F17-5471-AA83-0F491FD497AF	*EXPLOIT*
+|     	EC20B9C2-6857-5848-848A-A9F430D13EEB	8.1	https://vulners.com/githubexploit/EC20B9C2-6857-5848-848A-A9F430D13EEB	*EXPLOIT*
+|     	EB13CBD6-BC93-5F14-A210-AC0B5A1D8572	8.1	https://vulners.com/githubexploit/EB13CBD6-BC93-5F14-A210-AC0B5A1D8572	*EXPLOIT*
+|     	E543E274-C20A-582A-8F8E-F8E3F381C345	8.1	https://vulners.com/githubexploit/E543E274-C20A-582A-8F8E-F8E3F381C345	*EXPLOIT*
+|     	E34FCCEC-226E-5A46-9B1C-BCD6EF7D3257	8.1	https://vulners.com/githubexploit/E34FCCEC-226E-5A46-9B1C-BCD6EF7D3257	*EXPLOIT*
+|     	E24EEC0A-40F7-5BBC-9E4D-7B13522FF915	8.1	https://vulners.com/githubexploit/E24EEC0A-40F7-5BBC-9E4D-7B13522FF915	*EXPLOIT*
+|     	DC1BB99A-8B57-5EE5-9AC4-3D9D59BFC346	8.1	https://vulners.com/githubexploit/DC1BB99A-8B57-5EE5-9AC4-3D9D59BFC346	*EXPLOIT*
+|     	DA18D761-BB81-54B6-85CB-CFD73CE33621	8.1	https://vulners.com/githubexploit/DA18D761-BB81-54B6-85CB-CFD73CE33621	*EXPLOIT*
+|     	D8974199-6B08-5895-9610-919F71468F23	8.1	https://vulners.com/githubexploit/D8974199-6B08-5895-9610-919F71468F23	*EXPLOIT*
+|     	D52370EF-02EE-507D-9212-2D8EA86CBA94	8.1	https://vulners.com/githubexploit/D52370EF-02EE-507D-9212-2D8EA86CBA94	*EXPLOIT*
+|     	CVE-2024-6387	8.1	https://vulners.com/cve/CVE-2024-6387
+|     	CFEBF7AF-651A-5302-80B8-F8146D5B33A6	8.1	https://vulners.com/githubexploit/CFEBF7AF-651A-5302-80B8-F8146D5B33A6	*EXPLOIT*
+|     	C6FB6D50-F71D-5870-B671-D6A09A95627F	8.1	https://vulners.com/githubexploit/C6FB6D50-F71D-5870-B671-D6A09A95627F	*EXPLOIT*
+|     	C623D558-C162-5D17-88A5-4799A2BEC001	8.1	https://vulners.com/githubexploit/C623D558-C162-5D17-88A5-4799A2BEC001	*EXPLOIT*
+|     	C5B2D4A1-8C3B-5FF7-B620-EDE207B027A0	8.1	https://vulners.com/githubexploit/C5B2D4A1-8C3B-5FF7-B620-EDE207B027A0	*EXPLOIT*
+|     	C185263E-3E67-5550-B9C0-AB9C15351960	8.1	https://vulners.com/githubexploit/C185263E-3E67-5550-B9C0-AB9C15351960	*EXPLOIT*
+|     	BDA609DA-6936-50DC-A325-19FE2CC68562	8.1	https://vulners.com/githubexploit/BDA609DA-6936-50DC-A325-19FE2CC68562	*EXPLOIT*
+|     	BA3887BD-F579-53B1-A4A4-FF49E953E1C0	8.1	https://vulners.com/githubexploit/BA3887BD-F579-53B1-A4A4-FF49E953E1C0	*EXPLOIT*
+|     	B1F444E0-F217-5FC0-B266-EBD48589940F	8.1	https://vulners.com/githubexploit/B1F444E0-F217-5FC0-B266-EBD48589940F	*EXPLOIT*
+|     	92254168-3B26-54C9-B9BE-B4B7563586B5	8.1	https://vulners.com/githubexploit/92254168-3B26-54C9-B9BE-B4B7563586B5	*EXPLOIT*
+|     	91752937-D1C1-5913-A96F-72F8B8AB4280	8.1	https://vulners.com/githubexploit/91752937-D1C1-5913-A96F-72F8B8AB4280	*EXPLOIT*
+|     	90104C60-A887-5437-8521-545277685F55	8.1	https://vulners.com/githubexploit/90104C60-A887-5437-8521-545277685F55	*EXPLOIT*
+|     	89F96BAB-1624-51B5-B09E-E771D918D1E6	8.1	https://vulners.com/githubexploit/89F96BAB-1624-51B5-B09E-E771D918D1E6	*EXPLOIT*
+|     	81F0C05A-8650-5DE8-97E9-0D89F1807E5D	8.1	https://vulners.com/githubexploit/81F0C05A-8650-5DE8-97E9-0D89F1807E5D	*EXPLOIT*
+|     	7C7167AF-E780-5506-BEFA-02E5362E8E48	8.1	https://vulners.com/githubexploit/7C7167AF-E780-5506-BEFA-02E5362E8E48	*EXPLOIT*
+|     	79FE1ED7-EB3D-5978-A12E-AAB1FFECCCAC	8.1	https://vulners.com/githubexploit/79FE1ED7-EB3D-5978-A12E-AAB1FFECCCAC	*EXPLOIT*
+|     	795762E3-BAB4-54C6-B677-83B0ACC2B163	8.1	https://vulners.com/githubexploit/795762E3-BAB4-54C6-B677-83B0ACC2B163	*EXPLOIT*
+|     	774022BB-71DA-57C4-9B8F-E21D667DE4BC	8.1	https://vulners.com/githubexploit/774022BB-71DA-57C4-9B8F-E21D667DE4BC	*EXPLOIT*
+|     	743E5025-3BB8-5EC4-AC44-2AA679730661	8.1	https://vulners.com/githubexploit/743E5025-3BB8-5EC4-AC44-2AA679730661	*EXPLOIT*
+|     	73A19EF9-346D-5B2B-9792-05D9FE3414E2	8.1	https://vulners.com/githubexploit/73A19EF9-346D-5B2B-9792-05D9FE3414E2	*EXPLOIT*
+|     	6E81EAE5-2156-5ACB-9046-D792C7FAF698	8.1	https://vulners.com/githubexploit/6E81EAE5-2156-5ACB-9046-D792C7FAF698	*EXPLOIT*
+|     	6B78D204-22B0-5D11-8A0C-6313958B473F	8.1	https://vulners.com/githubexploit/6B78D204-22B0-5D11-8A0C-6313958B473F	*EXPLOIT*
+|     	65650BAD-813A-565D-953D-2E7932B26094	8.1	https://vulners.com/githubexploit/65650BAD-813A-565D-953D-2E7932B26094	*EXPLOIT*
+|     	649197A2-0224-5B5C-9C4E-B5791D42A9FB	8.1	https://vulners.com/githubexploit/649197A2-0224-5B5C-9C4E-B5791D42A9FB	*EXPLOIT*
+|     	61DDEEE4-2146-5E84-9804-B780AA73E33C	8.1	https://vulners.com/githubexploit/61DDEEE4-2146-5E84-9804-B780AA73E33C	*EXPLOIT*
+|     	608FA50C-AEA1-5A83-8297-A15FC7D32A7C	8.1	https://vulners.com/githubexploit/608FA50C-AEA1-5A83-8297-A15FC7D32A7C	*EXPLOIT*
+|     	5D2CB1F8-DC04-5545-8BC7-29EE3DA8890E	8.1	https://vulners.com/githubexploit/5D2CB1F8-DC04-5545-8BC7-29EE3DA8890E	*EXPLOIT*
+|     	5C81C5C1-22D4-55B3-B843-5A9A60AAB6FD	8.1	https://vulners.com/githubexploit/5C81C5C1-22D4-55B3-B843-5A9A60AAB6FD	*EXPLOIT*
+|     	53BCD84F-BD22-5C9D-95B6-4B83627AB37F	8.1	https://vulners.com/githubexploit/53BCD84F-BD22-5C9D-95B6-4B83627AB37F	*EXPLOIT*
+|     	4FB01B00-F993-5CAF-BD57-D7E290D10C1F	8.1	https://vulners.com/githubexploit/4FB01B00-F993-5CAF-BD57-D7E290D10C1F	*EXPLOIT*
+|     	48603E8F-B170-57EE-85B9-67A7D9504891	8.1	https://vulners.com/githubexploit/48603E8F-B170-57EE-85B9-67A7D9504891	*EXPLOIT*
+|     	4748B283-C2F6-5924-8241-342F98EEC2EE	8.1	https://vulners.com/githubexploit/4748B283-C2F6-5924-8241-342F98EEC2EE	*EXPLOIT*
+|     	452ADB71-199C-561E-B949-FCDE6288B925	8.1	https://vulners.com/githubexploit/452ADB71-199C-561E-B949-FCDE6288B925	*EXPLOIT*
+|     	331B2B7F-FB25-55DB-B7A4-602E42448DB7	8.1	https://vulners.com/githubexploit/331B2B7F-FB25-55DB-B7A4-602E42448DB7	*EXPLOIT*
+|     	1FFDA397-F480-5C74-90F3-060E1FE11B2E	8.1	https://vulners.com/githubexploit/1FFDA397-F480-5C74-90F3-060E1FE11B2E	*EXPLOIT*
+|     	1FA2B3DD-FC8F-5602-A1C9-2CF3F9536563	8.1	https://vulners.com/githubexploit/1FA2B3DD-FC8F-5602-A1C9-2CF3F9536563	*EXPLOIT*
+|     	1F7A6000-9E6D-511C-B0F6-7CADB7200761	8.1	https://vulners.com/githubexploit/1F7A6000-9E6D-511C-B0F6-7CADB7200761	*EXPLOIT*
+|     	1CF00BB8-B891-5347-A2DC-2C6A6BFF7C99	8.1	https://vulners.com/githubexploit/1CF00BB8-B891-5347-A2DC-2C6A6BFF7C99	*EXPLOIT*
+|     	1AB9F1F4-9798-59A0-9213-1D907E81E7F6	8.1	https://vulners.com/githubexploit/1AB9F1F4-9798-59A0-9213-1D907E81E7F6	*EXPLOIT*
+|     	179F72B6-5619-52B5-A040-72F1ECE6CDD8	8.1	https://vulners.com/githubexploit/179F72B6-5619-52B5-A040-72F1ECE6CDD8	*EXPLOIT*
+|     	15C36683-070A-5CC1-B21F-5F0BF974D9D3	8.1	https://vulners.com/githubexploit/15C36683-070A-5CC1-B21F-5F0BF974D9D3	*EXPLOIT*
+|     	1337DAY-ID-39674	8.1	https://vulners.com/zdt/1337DAY-ID-39674	*EXPLOIT*
+|     	11F020AC-F907-5606-8805-0516E06160EE	8.1	https://vulners.com/githubexploit/11F020AC-F907-5606-8805-0516E06160EE	*EXPLOIT*
+|     	0FC4BE81-312B-51F4-9D9B-66D8B5C093CD	8.1	https://vulners.com/githubexploit/0FC4BE81-312B-51F4-9D9B-66D8B5C093CD	*EXPLOIT*
+|     	0B165049-2374-5E2A-A27C-008BEA3D13F7	8.1	https://vulners.com/githubexploit/0B165049-2374-5E2A-A27C-008BEA3D13F7	*EXPLOIT*
+|     	08144020-2B5F-5EB9-9286-1ABD5477278E	8.1	https://vulners.com/githubexploit/08144020-2B5F-5EB9-9286-1ABD5477278E	*EXPLOIT*
+|     	OSV:BELL-CVE-2024-39894	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-39894
+|     	CVE-2024-39894	7.5	https://vulners.com/cve/CVE-2024-39894
+|     	PACKETSTORM:189283	6.8	https://vulners.com/packetstorm/PACKETSTORM:189283	*EXPLOIT*
+|     	OSV:BELL-CVE-2025-26465	6.8	https://vulners.com/osv/OSV:BELL-CVE-2025-26465
+|     	CVE-2025-26465	6.8	https://vulners.com/cve/CVE-2025-26465
+|     	9D8432B9-49EC-5F45-BB96-329B1F2B2254	6.8	https://vulners.com/githubexploit/9D8432B9-49EC-5F45-BB96-329B1F2B2254	*EXPLOIT*
+|     	85FCDCC6-9A03-597E-AB4F-FA4DAC04F8D0	6.8	https://vulners.com/githubexploit/85FCDCC6-9A03-597E-AB4F-FA4DAC04F8D0	*EXPLOIT*
+|     	1337DAY-ID-39918	6.8	https://vulners.com/zdt/1337DAY-ID-39918	*EXPLOIT*
+|     	OSV:BELL-CVE-2025-26466	5.9	https://vulners.com/osv/OSV:BELL-CVE-2025-26466
+|     	CVE-2025-26466	5.9	https://vulners.com/cve/CVE-2025-26466
+|     	CVE-2025-32728	4.3	https://vulners.com/cve/CVE-2025-32728
+|     	OSV:BELL-CVE-2025-32728	3.8	https://vulners.com/osv/OSV:BELL-CVE-2025-32728
+|     	OSV:BELL-CVE-2025-61985	3.6	https://vulners.com/osv/OSV:BELL-CVE-2025-61985
+|     	OSV:BELL-CVE-2025-61984	3.6	https://vulners.com/osv/OSV:BELL-CVE-2025-61984
+|     	CVE-2025-61985	3.6	https://vulners.com/cve/CVE-2025-61985
+|     	CVE-2025-61984	3.6	https://vulners.com/cve/CVE-2025-61984
+|     	B7EACB4F-A5CF-5C5A-809F-E03CCE2AB150	3.6	https://vulners.com/githubexploit/B7EACB4F-A5CF-5C5A-809F-E03CCE2AB150	*EXPLOIT*
+|_    	4C6E2182-0E99-5626-83F6-1646DD648C57	3.6	https://vulners.com/githubexploit/4C6E2182-0E99-5626-83F6-1646DD648C57	*EXPLOIT*
+80/tcp    open     http               nginx 1.24.0 (Ubuntu)
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+| vulners: 
+|   nginx 1.24.0: 
+|     	NGINX:CVE-2025-53859	6.3	https://vulners.com/nginx/NGINX:CVE-2025-53859
+|     	NGINX:CVE-2024-7347	5.7	https://vulners.com/nginx/NGINX:CVE-2024-7347
+|_    	NGINX:CVE-2025-23419	5.3	https://vulners.com/nginx/NGINX:CVE-2025-23419
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+| http-vuln-cve2011-3192: 
+|   VULNERABLE:
+|   Apache byterange filter DoS
+|     State: VULNERABLE
+|     IDs:  BID:49303  CVE:CVE-2011-3192
+|       The Apache web server is vulnerable to a denial of service attack when numerous
+|       overlapping byte ranges are requested.
+|     Disclosure date: 2011-08-19
+|     References:
+|       https://www.tenable.com/plugins/nessus/55976
+|       https://www.securityfocus.com/bid/49303
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3192
+|_      https://seclists.org/fulldisclosure/2011/Aug/175
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+|_http-csrf: Couldn't find any CSRF vulnerabilities.
+|_http-title: HopSec Asylum - Security Console
+8000/tcp  open     http-alt
+| fingerprint-strings: 
+|   FourOhFourRequest: 
+|     HTTP/1.0 404 Not Found
+|     Content-Type: text/html
+|     X-Frame-Options: DENY
+|     Content-Length: 179
+|     Vary: Accept-Language
+|     Content-Language: en
+|     X-Content-Type-Options: nosniff
+|     <!doctype html>
+|     <html lang="en">
+|     <head>
+|     <title>Not Found</title>
+|     </head>
+|     <body>
+|     <h1>Not Found</h1><p>The requested resource was not found on this server.</p>
+|     </body>
+|     </html>
+|   GenericLines, Help, RTSPRequest, SIPOptions, Socks5, TerminalServerCookie: 
+|     HTTP/1.1 400 Bad Request
+|   GetRequest, HTTPOptions: 
+|     HTTP/1.0 302 Found
+|     Content-Type: text/html; charset=utf-8
+|     Location: /posts/
+|     X-Frame-Options: DENY
+|     Content-Length: 0
+|     Vary: Accept-Language
+|     Content-Language: en
+|_    X-Content-Type-Options: nosniff
+| http-title: Fakebook - Sign In
+|_Requested resource was /accounts/login/?next=/posts/
+8080/tcp  open     http               SimpleHTTPServer 0.6 (Python 3.12.3)
+|_http-server-header: SimpleHTTP/0.6 Python/3.12.3
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+| http-csrf: 
+| Spidering limited to: maxdepth=3; maxpagecount=20; withinhost=10.67.181.104
+|   Found the following possible CSRF vulnerabilities: 
+|     
+|     Path: http://10.67.181.104:8080/
+|     Form id: 
+|_    Form action: /cgi-bin/login.sh
+|_http-title: HopSec Asylum - Security Console
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+9001/tcp  filtered tor-orport
+13400/tcp open     hadoop-tasktracker Apache Hadoop 1.24.0 (Ubuntu)
+|_http-majordomo2-dir-traversal: ERROR: Script execution failed (use -d to debug)
+|_http-title: HopSec Asylum \xE2\x80\x93 Facility Video Portal
+|_http-csrf: Couldn't find any CSRF vulnerabilities.
+| http-vuln-cve2011-3192: 
+|   VULNERABLE:
+|   Apache byterange filter DoS
+|     State: VULNERABLE
+|     IDs:  BID:49303  CVE:CVE-2011-3192
+|       The Apache web server is vulnerable to a denial of service attack when numerous
+|       overlapping byte ranges are requested.
+|     Disclosure date: 2011-08-19
+|     References:
+|       https://www.tenable.com/plugins/nessus/55976
+|       https://www.securityfocus.com/bid/49303
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3192
+|_      https://seclists.org/fulldisclosure/2011/Aug/175
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+| hadoop-datanode-info: 
+|_  Logs: loginBtn
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+| hadoop-tasktracker-info: 
+|_  Logs: loginBtn
+|_http-vuln-cve2017-1001000: ERROR: Script execution failed (use -d to debug)
+| vulners: 
+|   nginx 1.24.0: 
+|     	NGINX:CVE-2025-53859	6.3	https://vulners.com/nginx/NGINX:CVE-2025-53859
+|     	NGINX:CVE-2024-7347	5.7	https://vulners.com/nginx/NGINX:CVE-2024-7347
+|_    	NGINX:CVE-2025-23419	5.3	https://vulners.com/nginx/NGINX:CVE-2025-23419
+13401/tcp open     http               Werkzeug httpd 3.1.3 (Python 3.12.3)
+|_http-csrf: Couldn't find any CSRF vulnerabilities.
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+|_http-title: 404 Not Found
+|_http-server-header: Werkzeug/3.1.3 Python/3.12.3
+| vulners: 
+|   cpe:/a:python:python:3.12.3: 
+|     	OSV:BIT-PYTHON-2025-4517	9.4	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4517
+|     	OSV:BELL-CVE-2025-4517	9.4	https://vulners.com/osv/OSV:BELL-CVE-2025-4517
+|     	OSV:BIT-PYTHON-2024-8088	8.7	https://vulners.com/osv/OSV:BIT-PYTHON-2024-8088
+|     	OSV:BIT-PYTHON-2024-12254	8.7	https://vulners.com/osv/OSV:BIT-PYTHON-2024-12254
+|     	OSV:BIT-PYTHON-2024-9287	7.8	https://vulners.com/osv/OSV:BIT-PYTHON-2024-9287
+|     	OSV:BELL-CVE-2024-9287	7.8	https://vulners.com/osv/OSV:BELL-CVE-2024-9287
+|     	CVE-2024-9287	7.8	https://vulners.com/cve/CVE-2024-9287
+|     	OSV:BIT-PYTHON-2025-8194	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-8194
+|     	OSV:BIT-PYTHON-2025-4435	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4435
+|     	OSV:BIT-PYTHON-2025-4330	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4330
+|     	OSV:BIT-PYTHON-2025-4138	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4138
+|     	OSV:BIT-PYTHON-2024-7592	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-7592
+|     	OSV:BIT-PYTHON-2024-6232	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-6232
+|     	OSV:BIT-PYTHON-2024-4032	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-4032
+|     	OSV:BELL-CVE-2025-8194	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-8194
+|     	OSV:BELL-CVE-2025-4435	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4435
+|     	OSV:BELL-CVE-2025-4330	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4330
+|     	OSV:BELL-CVE-2025-4138	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4138
+|     	OSV:BELL-CVE-2024-8088	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-8088
+|     	OSV:BELL-CVE-2024-7592	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-7592
+|     	OSV:BELL-CVE-2024-6232	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-6232
+|     	OSV:BELL-CVE-2024-4032	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-4032
+|     	OSV:BELL-CVE-2024-12254	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-12254
+|     	CVE-2024-7592	7.5	https://vulners.com/cve/CVE-2024-7592
+|     	CVE-2024-6232	7.5	https://vulners.com/cve/CVE-2024-6232
+|     	OSV:BIT-PYTHON-2024-4030	7.1	https://vulners.com/osv/OSV:BIT-PYTHON-2024-4030
+|     	OSV:BIT-PYTHON-2025-13836	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-13836
+|     	OSV:BIT-PYTHON-2025-12084	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-12084
+|     	OSV:BIT-PYTHON-2025-0938	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-0938
+|     	OSV:BELL-CVE-2025-0938	6.3	https://vulners.com/osv/OSV:BELL-CVE-2025-0938
+|     	CVE-2025-12084	6.3	https://vulners.com/cve/CVE-2025-12084
+|     	OSV:BIT-PYTHON-2025-4516	5.9	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4516
+|     	OSV:BIT-PYTHON-2024-50602	5.9	https://vulners.com/osv/OSV:BIT-PYTHON-2024-50602
+|     	OSV:BELL-CVE-2025-4516	5.9	https://vulners.com/osv/OSV:BELL-CVE-2025-4516
+|     	OSV:BIT-PYTHON-2024-6923	5.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-6923
+|     	OSV:BELL-CVE-2024-6923	5.5	https://vulners.com/osv/OSV:BELL-CVE-2024-6923
+|     	OSV:BIT-PYTHON-2024-12718	5.3	https://vulners.com/osv/OSV:BIT-PYTHON-2024-12718
+|     	OSV:BIT-PYTHON-2023-27043	5.3	https://vulners.com/osv/OSV:BIT-PYTHON-2023-27043
+|     	OSV:BELL-CVE-2024-12718	5.3	https://vulners.com/osv/OSV:BELL-CVE-2024-12718
+|     	CVE-2023-27043	5.3	https://vulners.com/cve/CVE-2023-27043
+|     	OSV:BIT-PYTHON-2025-8291	4.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-8291
+|     	OSV:BIT-PYTHON-2025-6069	4.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-6069
+|     	OSV:BIT-PYTHON-2024-3220	2.3	https://vulners.com/osv/OSV:BIT-PYTHON-2024-3220
+|     	OSV:BIT-PYTHON-2025-13837	2.1	https://vulners.com/osv/OSV:BIT-PYTHON-2025-13837
+|_    	OSV:BIT-PYTHON-2025-6075	1.8	https://vulners.com/osv/OSV:BIT-PYTHON-2025-6075
+13402/tcp open     http               nginx 1.24.0 (Ubuntu)
+|_http-title: Welcome to nginx!
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+| http-vuln-cve2011-3192: 
+|   VULNERABLE:
+|   Apache byterange filter DoS
+|     State: VULNERABLE
+|     IDs:  BID:49303  CVE:CVE-2011-3192
+|       The Apache web server is vulnerable to a denial of service attack when numerous
+|       overlapping byte ranges are requested.
+|     Disclosure date: 2011-08-19
+|     References:
+|       https://www.tenable.com/plugins/nessus/55976
+|       https://www.securityfocus.com/bid/49303
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3192
+|_      https://seclists.org/fulldisclosure/2011/Aug/175
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+|_http-cors: HEAD GET OPTIONS
+| vulners: 
+|   nginx 1.24.0: 
+|     	NGINX:CVE-2025-53859	6.3	https://vulners.com/nginx/NGINX:CVE-2025-53859
+|     	NGINX:CVE-2024-7347	5.7	https://vulners.com/nginx/NGINX:CVE-2024-7347
+|_    	NGINX:CVE-2025-23419	5.3	https://vulners.com/nginx/NGINX:CVE-2025-23419
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+|_http-csrf: Couldn't find any CSRF vulnerabilities.
+13403/tcp open     unknown
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, Help, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, RPCCheck, SIPOptions, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, TerminalServerCookie, X11Probe: 
+|     HTTP/1.1 400 Bad Request
+|     Connection: close
+|   FourOhFourRequest: 
+|     HTTP/1.1 404 Not Found
+|     Date: Sat, 20 Dec 2025 20:57:39 GMT
+|     Connection: close
+|   GetRequest, HTTPOptions, RTSPRequest: 
+|     HTTP/1.1 404 Not Found
+|     Date: Sat, 20 Dec 2025 20:57:38 GMT
+|_    Connection: close
+13404/tcp open     unknown
+| fingerprint-strings: 
+|   FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, Kerberos, LDAPSearchReq, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, TLSSessionReq, TerminalServerCookie: 
+|_    unauthorized
+21337/tcp open     http               Werkzeug httpd 3.0.1 (Python 3.12.3)
+|_http-title: Unlock Hopper's Memories
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+| vulners: 
+|   cpe:/a:python:python:3.12.3: 
+|     	OSV:BIT-PYTHON-2025-4517	9.4	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4517
+|     	OSV:BELL-CVE-2025-4517	9.4	https://vulners.com/osv/OSV:BELL-CVE-2025-4517
+|     	OSV:BIT-PYTHON-2024-8088	8.7	https://vulners.com/osv/OSV:BIT-PYTHON-2024-8088
+|     	OSV:BIT-PYTHON-2024-12254	8.7	https://vulners.com/osv/OSV:BIT-PYTHON-2024-12254
+|     	OSV:BIT-PYTHON-2024-9287	7.8	https://vulners.com/osv/OSV:BIT-PYTHON-2024-9287
+|     	OSV:BELL-CVE-2024-9287	7.8	https://vulners.com/osv/OSV:BELL-CVE-2024-9287
+|     	CVE-2024-9287	7.8	https://vulners.com/cve/CVE-2024-9287
+|     	OSV:BIT-PYTHON-2025-8194	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-8194
+|     	OSV:BIT-PYTHON-2025-4435	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4435
+|     	OSV:BIT-PYTHON-2025-4330	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4330
+|     	OSV:BIT-PYTHON-2025-4138	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4138
+|     	OSV:BIT-PYTHON-2024-7592	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-7592
+|     	OSV:BIT-PYTHON-2024-6232	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-6232
+|     	OSV:BIT-PYTHON-2024-4032	7.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-4032
+|     	OSV:BELL-CVE-2025-8194	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-8194
+|     	OSV:BELL-CVE-2025-4435	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4435
+|     	OSV:BELL-CVE-2025-4330	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4330
+|     	OSV:BELL-CVE-2025-4138	7.5	https://vulners.com/osv/OSV:BELL-CVE-2025-4138
+|     	OSV:BELL-CVE-2024-8088	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-8088
+|     	OSV:BELL-CVE-2024-7592	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-7592
+|     	OSV:BELL-CVE-2024-6232	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-6232
+|     	OSV:BELL-CVE-2024-4032	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-4032
+|     	OSV:BELL-CVE-2024-12254	7.5	https://vulners.com/osv/OSV:BELL-CVE-2024-12254
+|     	CVE-2024-7592	7.5	https://vulners.com/cve/CVE-2024-7592
+|     	CVE-2024-6232	7.5	https://vulners.com/cve/CVE-2024-6232
+|     	OSV:BIT-PYTHON-2024-4030	7.1	https://vulners.com/osv/OSV:BIT-PYTHON-2024-4030
+|     	OSV:BIT-PYTHON-2025-13836	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-13836
+|     	OSV:BIT-PYTHON-2025-12084	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-12084
+|     	OSV:BIT-PYTHON-2025-0938	6.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-0938
+|     	OSV:BELL-CVE-2025-0938	6.3	https://vulners.com/osv/OSV:BELL-CVE-2025-0938
+|     	CVE-2025-12084	6.3	https://vulners.com/cve/CVE-2025-12084
+|     	OSV:BIT-PYTHON-2025-4516	5.9	https://vulners.com/osv/OSV:BIT-PYTHON-2025-4516
+|     	OSV:BIT-PYTHON-2024-50602	5.9	https://vulners.com/osv/OSV:BIT-PYTHON-2024-50602
+|     	OSV:BELL-CVE-2025-4516	5.9	https://vulners.com/osv/OSV:BELL-CVE-2025-4516
+|     	OSV:BIT-PYTHON-2024-6923	5.5	https://vulners.com/osv/OSV:BIT-PYTHON-2024-6923
+|     	OSV:BELL-CVE-2024-6923	5.5	https://vulners.com/osv/OSV:BELL-CVE-2024-6923
+|     	OSV:BIT-PYTHON-2024-12718	5.3	https://vulners.com/osv/OSV:BIT-PYTHON-2024-12718
+|     	OSV:BIT-PYTHON-2023-27043	5.3	https://vulners.com/osv/OSV:BIT-PYTHON-2023-27043
+|     	OSV:BELL-CVE-2024-12718	5.3	https://vulners.com/osv/OSV:BELL-CVE-2024-12718
+|     	CVE-2023-27043	5.3	https://vulners.com/cve/CVE-2023-27043
+|     	OSV:BIT-PYTHON-2025-8291	4.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-8291
+|     	OSV:BIT-PYTHON-2025-6069	4.3	https://vulners.com/osv/OSV:BIT-PYTHON-2025-6069
+|     	OSV:BIT-PYTHON-2024-3220	2.3	https://vulners.com/osv/OSV:BIT-PYTHON-2024-3220
+|     	OSV:BIT-PYTHON-2025-13837	2.1	https://vulners.com/osv/OSV:BIT-PYTHON-2025-13837
+|_    	OSV:BIT-PYTHON-2025-6075	1.8	https://vulners.com/osv/OSV:BIT-PYTHON-2025-6075
+|_http-csrf: Couldn't find any CSRF vulnerabilities.
+| http-slowloris-check: 
+|   VULNERABLE:
+|   Slowloris DOS attack
+|     State: LIKELY VULNERABLE
+|     IDs:  CVE:CVE-2007-6750
+|       Slowloris tries to keep many connections to the target web server open and hold
+|       them open as long as possible.  It accomplishes this by opening connections to
+|       the target web server and sending a partial request. By doing so, it starves
+|       the http server's resources causing Denial Of Service.
+|       
+|     Disclosure date: 2009-09-17
+|     References:
+|       http://ha.ckers.org/slowloris/
+|_      https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2007-6750
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+3 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port8000-TCP:V=7.95%I=7%D=12/20%Time=69470D88%P=x86_64-pc-linux-gnu%r(G
+SF:enericLines,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(GetReque
+SF:st,C9,"HTTP/1\.0\x20302\x20Found\r\nContent-Type:\x20text/html;\x20char
+SF:set=utf-8\r\nLocation:\x20/posts/\r\nX-Frame-Options:\x20DENY\r\nConten
+SF:t-Length:\x200\r\nVary:\x20Accept-Language\r\nContent-Language:\x20en\r
+SF:\nX-Content-Type-Options:\x20nosniff\r\n\r\n")%r(FourOhFourRequest,160,
+SF:"HTTP/1\.0\x20404\x20Not\x20Found\r\nContent-Type:\x20text/html\r\nX-Fr
+SF:ame-Options:\x20DENY\r\nContent-Length:\x20179\r\nVary:\x20Accept-Langu
+SF:age\r\nContent-Language:\x20en\r\nX-Content-Type-Options:\x20nosniff\r\
+SF:n\r\n\n<!doctype\x20html>\n<html\x20lang=\"en\">\n<head>\n\x20\x20<titl
+SF:e>Not\x20Found</title>\n</head>\n<body>\n\x20\x20<h1>Not\x20Found</h1><
+SF:p>The\x20requested\x20resource\x20was\x20not\x20found\x20on\x20this\x20
+SF:server\.</p>\n</body>\n</html>\n")%r(Socks5,1C,"HTTP/1\.1\x20400\x20Bad
+SF:\x20Request\r\n\r\n")%r(HTTPOptions,C9,"HTTP/1\.0\x20302\x20Found\r\nCo
+SF:ntent-Type:\x20text/html;\x20charset=utf-8\r\nLocation:\x20/posts/\r\nX
+SF:-Frame-Options:\x20DENY\r\nContent-Length:\x200\r\nVary:\x20Accept-Lang
+SF:uage\r\nContent-Language:\x20en\r\nX-Content-Type-Options:\x20nosniff\r
+SF:\n\r\n")%r(RTSPRequest,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")
+SF:%r(Help,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(TerminalServ
+SF:erCookie,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(SIPOptions,
+SF:1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port13403-TCP:V=7.95%I=7%D=12/20%Time=69470D8D%P=x86_64-pc-linux-gnu%r(
+SF:GetRequest,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2020\
+SF:x20Dec\x202025\x2020:57:38\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(H
+SF:TTPOptions,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2020\
+SF:x20Dec\x202025\x2020:57:38\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(R
+SF:TSPRequest,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2020\
+SF:x20Dec\x202025\x2020:57:38\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(R
+SF:PCCheck,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\
+SF:r\n\r\n")%r(DNSVersionBindReqTCP,2F,"HTTP/1\.1\x20400\x20Bad\x20Request
+SF:\r\nConnection:\x20close\r\n\r\n")%r(DNSStatusRequestTCP,2F,"HTTP/1\.1\
+SF:x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(Help,2F,"H
+SF:TTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(S
+SF:SLSessionReq,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20c
+SF:lose\r\n\r\n")%r(TerminalServerCookie,2F,"HTTP/1\.1\x20400\x20Bad\x20Re
+SF:quest\r\nConnection:\x20close\r\n\r\n")%r(TLSSessionReq,2F,"HTTP/1\.1\x
+SF:20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(Kerberos,2F
+SF:,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%
+SF:r(SMBProgNeg,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20c
+SF:lose\r\n\r\n")%r(X11Probe,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nCon
+SF:nection:\x20close\r\n\r\n")%r(FourOhFourRequest,52,"HTTP/1\.1\x20404\x2
+SF:0Not\x20Found\r\nDate:\x20Sat,\x2020\x20Dec\x202025\x2020:57:39\x20GMT\
+SF:r\nConnection:\x20close\r\n\r\n")%r(LPDString,2F,"HTTP/1\.1\x20400\x20B
+SF:ad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(LDAPSearchReq,2F,"HTT
+SF:P/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(LDA
+SF:PBindReq,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close
+SF:\r\n\r\n")%r(SIPOptions,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConne
+SF:ction:\x20close\r\n\r\n")%r(LANDesk-RC,2F,"HTTP/1\.1\x20400\x20Bad\x20R
+SF:equest\r\nConnection:\x20close\r\n\r\n")%r(TerminalServer,2F,"HTTP/1\.1
+SF:\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(NCP,2F,"H
+SF:TTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port13404-TCP:V=7.95%I=7%D=12/20%Time=69470D88%P=x86_64-pc-linux-gnu%r(
+SF:GenericLines,D,"unauthorized\n")%r(GetRequest,D,"unauthorized\n")%r(HTT
+SF:POptions,D,"unauthorized\n")%r(RTSPRequest,D,"unauthorized\n")%r(Help,D
+SF:,"unauthorized\n")%r(SSLSessionReq,D,"unauthorized\n")%r(TerminalServer
+SF:Cookie,D,"unauthorized\n")%r(TLSSessionReq,D,"unauthorized\n")%r(Kerber
+SF:os,D,"unauthorized\n")%r(FourOhFourRequest,D,"unauthorized\n")%r(LPDStr
+SF:ing,D,"unauthorized\n")%r(LDAPSearchReq,D,"unauthorized\n")%r(SIPOption
+SF:s,D,"unauthorized\n");
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat Dec 20 16:07:22 2025 -- 1 IP address (1 host up) scanned in 676.83 seconds
