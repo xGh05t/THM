@@ -1,38 +1,71 @@
 2025-12-19 04:05:47 EST -- START TIME
+# Day09 (A Cracking Christmas)
 --------------------------------------
 
+
+|================================================================
+- Name: tryhackme 
+- IP Address: 10.67.139.72
+- OS: Ubuntu 24.04.1 LTS/x86_64
+- Notes: 
+
+//CREDS:
+# ubuntu:AOC2025Ubuntu!
+
+//Flags:
+#flag.pdf:naughtylist
+## THM{Cr4ck1ng_PDFs_1s_34$y}
+
+#flag.zip:winter4ever
+## THM{Cr4ck1n6_z1p$_1s_34$yyyy}
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 2025-12-19 04:12:20 EST -- 
-ping -c4 10.66.134.253
+ping -c1 10.67.139.72
+PING 10.67.139.72 (10.67.139.72) 56(84) bytes of data.
+64 bytes from 10.67.139.72: icmp_seq=1 ttl=62 time=32.9 ms
 
-PING 10.66.134.253 (10.66.134.253) 56(84) bytes of data.
-64 bytes from 10.66.134.253: icmp_seq=1 ttl=62 time=21.6 ms
-64 bytes from 10.66.134.253: icmp_seq=2 ttl=62 time=22.5 ms
-64 bytes from 10.66.134.253: icmp_seq=3 ttl=62 time=19.1 ms
-64 bytes from 10.66.134.253: icmp_seq=4 ttl=62 time=21.4 ms
-
---- 10.66.134.253 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3245ms
+--- 10.67.139.72 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 32.881/32.881/32.881/0.000 ms
 
 2025-12-19 04:19:27 EST -- 
 # SSH Connect:
-ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" ubuntu@10.66.134.253
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" ubuntu@10.67.139.72
 
 PWD: AOC2025Ubuntu!
 
 //Success
 
-$ ls ~/Desktop
-flag.pdf  flag.zip  john  mate-terminal.desktop
+ls -lah ~/Desktop/
+total 64K
+drwxr-xr-x  3 ubuntu ubuntu 4.0K Oct 16 16:23 .
+drwxr-xr-x 21 ubuntu ubuntu 4.0K Dec 20 15:12 ..
+-rw-r--r--  1 ubuntu ubuntu  42K Oct  6 11:46 flag.pdf
+-rw-r--r--  1 ubuntu ubuntu  245 Oct  6 11:46 flag.zip
+drwxrwxr-x 10 ubuntu ubuntu 4.0K Oct 16 15:25 john
+-rwxrwxr-x  1 ubuntu ubuntu  166 Feb 27  2022 mate-terminal.desktop
 
-$ file *
+file *
 flag.pdf:              PDF document, version 1.7, 1 page(s)
 flag.zip:              Zip archive data, at least v2.0 to extract, compression method=AES Encrypted
 john:                  directory
 
----
+#Copy files back to local box
+scp flag* kali@192.168.190.148:~/haxterm/data/Day09
+flag.pdf                                                  100%   41KB 301.1KB/s   00:00    
+flag.zip                                                  100%  245     6.5KB/s   00:00
 
-2025-12-19 04:35:54 EST -- 
-$ pdfcrack -f flag.pdf -w /usr/share/wordlists/rockyou.txt
+// Local Box (Cracking)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+2025-12-20 10:39:40 EST -- 
+sudo gunzip -d /usr/share/wordlists/rockyou.txt.gz
+
+2025-12-20 10:40:03 EST -- 
+pdfcrack -f flag.pdf -w /usr/share/wordlists/rockyou.txt
+
 PDF version 1.7
 Security Handler: Standard
 V: 2
@@ -43,28 +76,73 @@ Encrypted Metadata: True
 FileID: 3792b9a3671ef54bbfef57c6fe61ce5d
 U: c46529c06b0ee2bab7338e9448d37c3200000000000000000000000000000000
 O: 95d0ad7c11b1e7b3804b18a082dda96b4670584d0044ded849950243a8a367ff
+Average Speed: 78816.6 w/s. Current Word: 'joyco3s'
+Average Speed: 80753.1 w/s. Current Word: 'thais654'
+Average Speed: 79690.9 w/s. Current Word: 'over rated'
 found user-password: 'naughtylist'
 
 # PDF_Password: naughtylist
+## Open flag.pdf file with PDF_Password
 
-## THM{Cr4ck1ng_PDFs_1s_34$y}
+//THM{Cr4ck1ng_PDFs_1s_34$y}
 
-2025-12-19 04:44:35 EST -- 
-$ zip2john flag.zip > ziphash.txt
-$ cat ziphash.txt
+2025-12-20 10:51:35 EST -- 
+zip2john flag.zip > ziphash.txt
+cat ziphash.txt
 
 flag.zip/flag.txt:$zip2$*0*3*0*db58d2418c954f6d78aefc894faebf54*d89c*1d*b8370111f4d9eba3ca5ff6924f8c4ff8636055dce00daec2679f57bde1*57445596ac0bc2a29297*$/zip2$:flag.txt:flag.zip:flag.zip
 
-$ john --wordlist=/usr/share/wordlists/rockyou.txt ziphash.txt
+2025-12-20 10:52:36 EST -- 
+john --wordlist=/usr/share/wordlists/rockyou.txt ziphash.txt 
 Using default input encoding: UTF-8
 Loaded 1 password hash (ZIP, WinZip [PBKDF2-SHA1 256/256 AVX2 8x])
-Cost 1 (HMAC size [KiB]) is 1 for all loaded hashes
+Cost 1 (HMAC size) is 29 for all loaded hashes
 Will run 2 OpenMP threads
-Press 'q' or Ctrl-C to abort, 'h' for help, almost any other key for status
+Press 'q' or Ctrl-C to abort, almost any other key for status
 winter4ever      (flag.zip/flag.txt)     
-1g 0:00:00:00 DONE (2025-12-19 09:48) 2.128g/s 8714p/s 8714c/s 8714C/s friend..sahara
+1g 0:00:00:47 DONE (2025-12-20 10:52) 0.02123g/s 58191p/s 58191c/s 58191C/s winternights..wine23
 Use the "--show" option to display all of the cracked passwords reliably
-Session completed
+Session completed. 
 
-## winter4ever
+# ZIP_Password: winter4ever
+## Open flag.zip file with ZIP_Password
+
+2025-12-20 11:01:07 EST -- 
+unzip flag.zip 
+Archive:  flag.zip
+   skipping: flag.txt                unsupported compression method 99
+
+//"unsupported compression method 99" This means the ZIP uses AES encryption (WinZip). This is not supported in the unzip binary
+
+sudo apt install p7zip-full
+
+2025-12-20 11:05:37 EST -- 
+7z x flag.zip
+
+cat flag.txt   
+//THM{Cr4ck1n6_z1p$_1s_34$yyyy}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Remote Box (Side Quest 2)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+2025-12-20 11:41:42 EST -- 
+sudo su -
+
+//Found a swapfile under /
+
+file /swapfile
+swapfile: Linux swap file, 4k page size, little endian, version 1, size 262143 pages, 0 bad pages, no label, UUID=0d9ef519-3337-4859-b573-61e0ea49aae4
+
+scp /swapfile kali@192.168.190.148:~/haxterm/data/Day09
+
+NEED MORE WORK FOR THIS
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
