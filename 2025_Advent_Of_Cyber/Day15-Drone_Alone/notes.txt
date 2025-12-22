@@ -1,0 +1,138 @@
+2025-12-22 10:13:40 EST -- START TIME
+# Day15 (Web-Attack Forensics: Drone Alone)
+--------------------------------------
+
+2025-12-22 10:17:45 EST -- 
+ping -c1 10.66.133.65
+PING 10.66.133.65 (10.66.133.65) 56(84) bytes of data.
+64 bytes from 10.66.133.65: icmp_seq=1 ttl=62 time=30.9 ms
+
+## Logging into Splunk
+http://10.66.133.65:8000
+
+//Creds: Blue:Pass1234
+
+---
+
+//NOTE: Adjust Splunk time range upon log-in
+// Had to change mine to 'All time' to get any results
+
+## Detect Suspicious Web Commands
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// In the first step, let’s search for HTTP requests that might show malicious activity. The query below searches the web access logs for any HTTP requests that include signs of command execution attempts, such as `cmd.exe`, `PowerShell`, or `Invoke-Expression`. 
+
+// Search
+# index=windows_apache_access (cmd.exe OR powershell OR "powershell.exe" OR "Invoke-Expression") | table _time host clientip uri_path uri_query status
+
+cat sus_web_commands.csv 
+"_time",host,clientip,"uri_path","uri_query",status
+"2025-10-27T04:37:36.000+0000",WebAppServer,"10.9.0.217","/cgi-bin/hello.bat","cmd=powershell.exe+-enc+VABoAGkAcwAgAGkAcwAgAG4AbwB3ACAATQBpAG4AZQAhACAATQBVAEEASABBAEEASABBAEEA",200
+"2025-10-26T21:47:59.000+0000",WebAppServer,"10.9.0.217","/cgi-bin/hello.bat","cmd=cmd.exe",200
+"2025-10-26T21:48:33.000+0000",WebAppServer,"10.9.0.217","/cgi-bin/hello.bat","cmd=powershell.exe+-enc+VABoAGkAcwAgAGkAcwAgAG4AbwB3ACAATQBpAG4AZQAhACAATQBVAEEASABBAEEASABBAEEA",200
+"2025-10-27T04:39:10.000+0000",WebAppServer,"10.9.0.217","/cgi-bin/hello.bat","cmd=powershell.exe+-enc+VABoAGkAcwAgAGkAcwAgAG4AbwB3ACAATQBpAG4AZQAhACAATQBVAEEASABBAEEASABBAEEA",200
+
+// This query helps identify possible Command Injection attacks, where the evil attacker tries to execute system commands through a vulnerable CGI script (hello.bat).
+
+2025-12-22 10:41:38 EST -- 
+echo 'VABoAGkAcwAgAGkAcwAgAG4AbwB3ACAATQBpAG4AZQAhACAATQBVAEEASABBAEEASABBAEEA' | base64 -d
+This is now Mine! MUAHAAHAA
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Looking for Server-Side Errors or Command Execution in Apache Error Logs
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//In this stage, we will focus on inspecting web server error logs, as this would help us uncover any malicious activity. We will use the following query:
+
+# index=windows_apache_error ("cmd.exe" OR "powershell" OR "Internal Server Error")
+
+cat server-side_errors.csv 
+"_raw","_time","date_hour","date_mday","date_minute","date_month","date_second","date_wday","date_year","date_zone",eventtype,host,index,linecount,punct,source,sourcetype,"splunk_server","splunk_server_group",tag,"tag::eventtype","tag::sourcetype",timeendpos,timestartpos
+"[Mon Oct 27 04:39:10.498076 2025] [cgi:error] [pid 3716:tid 1088] [client 10.9.0.217:52192] AH01215: 'powershell.exe+-enc+VABoAGkAcwAgAGkAcwAgAG4AbwB3ACAATQBpAG4AZQAhACAATQBVAEEASABBAEEASABBAEEA' is not recognized as an internal or external command,\r: C:/Apache24/cgi-bin/hello.bat","2025-10-27T04:39:10.498+0000",4,27,39,october,10,monday,2025,local,,WebAppServer,"windows_apache_error",1,"[___::._]_[:]_[_:_]_[_...:]_:_'.+-+'_________,\:_:","C:\Apache24\logs\error.log","apache_error","splunk-server",,,,,32,5
+
+//This query inspects the Apache error logs for signs of execution attempts or internal failures caused by malicious requests. As you can tell, we are searching for error messages with particular terms such as cmd.exe and powershell.
+
+//If a request like /cgi-bin/hello.bat?cmd=powershell triggers a 500 “Internal Server Error,” it often means the attacker’s input was processed by the server but failed during execution, a key sign of exploitation attempts.
+
+//Checking these results helps confirm whether the attack reached the backend or remained blocked at the web layer.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Trace Suspicious Process Creation From Apache
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Let’s explore Sysmon for other malicious executable files that the web server might have spawned. We will do that using the following Splunk query:
+
+index=windows_sysmon ParentImage="*httpd.exe"
+
+//This query focuses on process relationships from Sysmon logs, specifically when the parent process is Apache (httpd.exe).
+
+
+//Typically, Apache should only spawn worker threads, not system processes like cmd.exe or powershell.exe.
+
+//If results show child processes such as:
+
+ParentImage = C:\Apache24\bin\httpd.exe
+Image        = C:\Windows\System32\cmd.exe
+
+//It indicates a successful command injection where Apache executed a system command.
+
+//The finding above is one of the strongest indicators that the web attack penetrated the operating system.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Confirm Attacker Enumeration Activity
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//In this step, we aim to discover what specific programs we found from previous queries do. Let’s use the following query.
+
+index=windows_sysmon *cmd.exe* *whoami*
+
+//This query looks for command execution logs where cmd.exe ran the command whoami.
+
+//Attackers often use the whoami command immediately after gaining code execution to determine which user account their malicious process is running as.
+
+//Finding these events confirms the attacker’s post-exploitation reconnaissance, showing that the injected command was executed on the host.
+
+<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='Microsoft-Windows-Sysmon' Guid='{5770385f-c22a-43e0-bf4c-06f5698ffbd9}'/><EventID>1</EventID><Version>5</Version><Level>4</Level><Task>1</Task><Opcode>0</Opcode><Keywords>0x8000000000000000</Keywords><TimeCreated SystemTime='2025-10-26T21:47:36.024985800Z'/><EventRecordID>35897</EventRecordID><Correlation/><Execution ProcessID='2244' ThreadID='2952'/><Channel>Microsoft-Windows-Sysmon/Operational</Channel><Computer>WebAppServer</Computer><Security UserID='S-1-5-18'/></System><EventData><Data Name='RuleName'>-</Data><Data Name='UtcTime'>2025-10-26 21:47:35.922</Data><Data Name='ProcessGuid'>{c5d2b969-96f7-68fe-f661-000000001901}</Data><Data Name='ProcessId'>5228</Data><Data Name='Image'>C:\Apache24\cgi-bin\whoami.exe</Data><Data Name='FileVersion'>10.0.17763.1 (WinBuild.160101.0800)</Data><Data Name='Description'>whoami - displays logged on user information</Data><Data Name='Product'>Microsoft® Windows® Operating System</Data><Data Name='Company'>Microsoft Corporation</Data><Data Name='OriginalFileName'>whoami.exe</Data><Data Name='CommandLine'>whoami</Data><Data Name='CurrentDirectory'>C:\Apache24\cgi-bin\</Data><Data Name='User'>WEBAPPSERVER\apache_svc</Data><Data Name='LogonGuid'>{c5d2b969-965a-68fe-a5fe-7c0700000000}</Data><Data Name='LogonId'>0x77cfea5</Data><Data Name='TerminalSessionId'>0</Data><Data Name='IntegrityLevel'>High</Data><Data Name='Hashes'>MD5=43C2D3293AD939241DF61B3630A9D3B6,SHA256=1D5491E3C468EE4B4EF6EDFF4BBC7D06EE83180F6F0B1576763EA2EFE049493A,IMPHASH=7FF0758B766F747CE57DFAC70743FB88</Data><Data Name='ParentProcessGuid'>{c5d2b969-96f7-68fe-f561-000000001901}</Data><Data Name='ParentProcessId'>4440</Data><Data Name='ParentImage'>C:\Windows\System32\cmd.exe</Data><Data Name='ParentCommandLine'>C:\Windows\system32\cmd.exe /C ""C:\Apache24\cgi-bin\hello.bat""</Data><Data Name='ParentUser'>WEBAPPSERVER\apache_svc</Data></EventData></Event>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Identify Base64-Encoded PowerShell Payloads
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//In this final step, we will work to find all successfully encoded commands. To search for encoded strings, we can use the following Splunk query:
+
+index=windows_sysmon Image="*powershell.exe" (CommandLine="*enc*" OR CommandLine="*-EncodedCommand*" OR CommandLine="*Base64*")
+
+//This query detects PowerShell commands containing -EncodedCommand or Base64 text, a common technique attackers use to hide their real commands.
+
+//Nothing was found for this Splunk Query
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+---------------------------------------------
+
+// *QUESTIONS* //
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+1. What is the reconnaissance executable file name?
+	whoami.exe
+
+2. What executable did the attacker attempt to run through the command injection?
+	powershell.exe
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2025-12-22 11:17:17 EST -- COMPLETE
+
+
