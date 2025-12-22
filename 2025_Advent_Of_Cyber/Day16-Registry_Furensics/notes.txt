@@ -1,0 +1,98 @@
+2025-12-22 11:26:43 EST -- START TIME
+# Day16 (Forensics: Registry Furensics)
+--------------------------------------
+
+## RDP Creds:
+//	Administrator:Aoc_RegistryForensics456
+
+2025-12-22 11:38:16 EST -- 
+nmap -Pn 10.67.191.248
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-12-22 11:35 EST
+Nmap scan report for 10.67.191.248
+Host is up (0.039s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT     STATE SERVICE
+3389/tcp open  ms-wbt-server
+
+
+2025-12-22 12:35:49 EST -- 
+xfreerdp3 /sec:nla /cert:ignore /v:10.67.169.63:3389 /u:Administrator /p:Aoc_RegistryForensics456 /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+
+
+## Windows Registry Basics
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Your brain stores all the information that you need to function effectively. This includes:
+
+How should you behave?
+What would be the first thing you would do after waking up?
+How would you dress yourself?
+What are your habits?
+What happened in the recent past?
+
+//These are just a few things. Your brain knows pretty much everything about you. It's just like a database storing the human configuration.
+
+//Windows OS is not a human, but it also needs a brain to store all its configurations. This brain is known as the Windows Registry. The registry contains all the information that the Windows OS needs for its functioning. 
+
+//Now, this Windows brain (Registry) is not stored in one single place, unlike a human brain, which is situated in one single place inside the head. It is made up of several separate files, each storing information on different configuration settings. These files are known as Hives.
+
+//The Windows OS has a built-in tool known as the Registry Editor, which allows you to view all the registry data available in these hives.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Example 1: View Connected USB Devices
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// The registry stores information on the USB devices that have been connected to the system. This information is present in the SYSTEM hive.
+
+//STEPS:
+1. Open the Registry Editor.
+2. Navigate to the following path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR.
+3. Here you will see the USB devices' information (make, model, and device ID).
+4. Each device will have the following:
+	- A main subkey that is the identification of the type and manufacturer of the USB device.
+	- A subkey under the above (for example) that represents the unique devices under this model.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Example 2: View Programs Run by the User
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//The registry stores information on the programs that the user ran using the Run dialog Win + R. This information is present in the NTUSER.DAT hive.
+
+//STEPS:
+1. Open the Registry Editor.
+2. Navigate to the following path: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU.
+3. Here you will see the list of commands typed by the user in the Run dialog to run applications.
+
+//Numerous other registry keys can be used for extracting important evidence from a Windows system during an incident investigation. The investigation of these registry keys during forensics cannot be done via the built-in Registry Editor tool. It is because the Registry analysis cannot be done on the system under investigation (due to the chance of modification), so we collect the Registry Hives and open them offline into our forensic workstation. However, the Registry Editor does not allow opening offline hives. The Register editor also displays some of the key values in binary which are not readable.
+
+//To solve this problem, there are some tools built for registry forensics. In this task we will use the Registry Explorer tool which is a registry forensics tool. It is open source and can parse the binary data out of the registry, and we can analyze it without the fear of modification.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// *QUESTIONS* //
+#NOTE: The abnormal activity on the dispatch-srv01 started on 21st October, 2025.
+#NOTE2: When opening hive files with Registry Explore, hold the SHIFT key when clicking open. This ensures you get a clean, consistent hive state for analysis.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+1. What application was installed on the dispatch-srv01 before the abnormal activity started?
+	//HIVE(SOFTWARE) \Microsoft\Windows\CurrentVersion\Uninstall
+		DroneManager updater
+
+2. What is the full path where the user launched the application (found in question 1) from?
+	//HIVE(NTUSER.DAT): \Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store
+		C:\Users\dispatch.admin\Downloads\DroneManager_Setup.exe
+
+3. Which value was added by the application to maintain persistence on startup?
+	//PATH(SOFTWARE): \Microsoft\Windows\CurrentVersion\Run
+		"C:\Program Files\DroneManager\dronehelper.exe" --background
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2025-12-22 14:17:26 EST -- COMPLETE
+
+
