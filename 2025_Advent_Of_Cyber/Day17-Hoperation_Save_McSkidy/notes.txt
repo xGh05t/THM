@@ -1,0 +1,232 @@
+2025-12-22 14:35:23 EST -- START TIME
+# Day17 (CyberChef: Hoperation Save McSkidy)
+--------------------------------------
+
+## FirstLock - OuterGate
+	//Q290dG9uVGFpbA== : Iamsofluffy
+
+## SecondLock - OuterWall
+	//Q2Fycm90SGVsbQ== : Itoldyoutochangeit!
+
+## ThirdLock - GuardHouse
+	//TG9uZ0VhcnM= : BugsBunny
+
+## FourthLock - InnerCastle
+	//TGVubnk= : passw0rd1
+
+## FifthLock - PrisonTower
+	//Q2FybA== : 51rBr34chBl0ck3r
+---
+
+##FLAG:
+	THM{M3D13V4L_D3C0D3R_4D3P7
+
+
+## Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//McSkidy is imprisoned in King Malhare's Quantum Warren. Sir BreachBlocker III was put in charge of securing the fortress and implemented several access controls to prevent any escape. His defenses are worthy of his name.
+
+//However, McSkidy managed to send vital clues to his team using harmless bunny pictures. One message revealed that five locks needed to be disabled to secure an escape route. The locks can be broken by examining their logic and leveraging the system's built-in chat for the guards. They can be eluded in revealing vital details or even passwords. However, you will need to speak their language.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+2025-12-22 14:40:09 EST -- 
+ping -c1 10.67.161.32
+PING 10.67.161.32 (10.67.161.32) 56(84) bytes of data.
+64 bytes from 10.67.161.32: icmp_seq=1 ttl=62 time=44.7 ms
+
+//Access: http://10.67.161.32:8080
+//Jump into Developer Tools\Network and Refresh page
+
+## First Lock - Outer Gate
+//http://10.67.161.32:8080/level1
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//*BASH!*
+ Hint:
+	Username: This will decode to CottonTail.
+    Password: Look at the level login logic and decode the guard reply.
+//Review the Headers for level (F12-DevOps)
+
+---
+
+X-Magic-Question
+	What is the password for this level?
+
+//Base64-Encoded:Request of the question
+	V2hhdCBpcyB0aGUgcGFzc3dvcmQgZm9yIHRoaXMgbGV2ZWw/
+
+//Base64-Decoded:Response
+	SGVyZSBpcyB0aGUgcGFzc3dvcmQ6IFNXRnRjMjltYkhWbVpuaz0=
+	//Here is the password: SWFtc29mbHVmZnk=
+
+//Base64-Decoded_Password
+	Iamsofluffy
+
+---------------------------------------------
+
+//Username:
+	//CottonTail : Q290dG9uVGFpbA==
+
+//Creds:
+//Q290dG9uVGFpbA== : Iamsofluffy
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Second Lock - Outer Wall
+//http://10.67.161.32:8080/level2
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//*BASH!*
+ Hint:
+	Username: This will decode to CarrotHelm.
+    Password: Look at the level login logic and decode the guard reply.
+//Review the Headers for level (F12-DevOps)
+
+X-Magic-Question
+	Did you change the password?
+
+//Base64-Encoded:Request of the question
+	RGlkIHlvdSBjaGFuZ2UgdGhlIHBhc3N3b3JkPw==
+
+//Base64-Decoded:Response
+	SGVyZSBpcyB0aGUgcGFzc3dvcmQ6IFUxaFNkbUpIVWpWaU0xWXdZakpPYjFsWE5XNWFWMnd3U1ZFOVBRPT0=
+	//Here is the password: U1hSdmJHUjViM1YwYjJOb1lXNW5aV2wwSVE9PQ==	
+
+//Base64-Decoded
+U1hSdmJHUjViM1YwYjJOb1lXNW5aV2wwSVE9PQ==
+
+//Base64-Decoded_Password
+Itoldyoutochangeit!
+
+----------------------------------------------
+
+//Username:
+	//CarrotHelm : Q2Fycm90SGVsbQ== 
+
+//Creds:
+//Q2Fycm90SGVsbQ== : Itoldyoutochangeit!
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Third Lock - Guard House
+//http://10.67.175.30:8080/level3
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//*BASH!*
+ Hint:
+	Username: This will decode to LongEars.
+	Password: Look at the level login logic and decode the guard reply.
+//Review the Headers for level (F12-DevOps)
+
+X-Recipe-Key
+	cyberchef	 
+
+//Base64-Encoded:Request the password ("Password please?")
+	UGFzc3dvcmQgcGxlYXNlPw==
+
+//Base64-Decoded:Response
+	SGVyZSBpcyB0aGUgcGFzc3dvcmQ6IElRd0ZGakFXQmdzZg==	
+	
+	//Here is the password: IQwFFjAWBgsf
+
+//From Base64 => XOR(key=cyberchef) Password
+	BugsBunny
+
+---------------------------------------------
+
+//Username:
+	//LongEars : TG9uZ0VhcnM=
+
+//Creds:
+//TG9uZ0VhcnM= : BugsBunny
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Fourth Lock - Inner Castle
+//http://10.67.175.30:8080/level4
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//*BASH!*
+ Hint:
+	Username: This will decode to Lenny.
+	Password: Look at the level login logic and decode the guard reply.
+//Review the Headers for level (F12-DevOps)
+
+//Base64-Encoded:Request the password ("Password please?")
+	UGFzc3dvcmQgcGxlYXNlPw==
+
+//Base64-Decoded:Response
+	SGVyZSBpcyB0aGUgcGFzc3dvcmQ6IGI0YzBiZTdkN2U5N2FiNzRjMTMwOTFiNzY4MjVjZjM5
+
+	//Here is the password: b4c0be7d7e97ab74c13091b76825cf39
+
+// CrackStation: Hash lookup (MD5) (b4c0be7d7e97ab74c13091b76825cf39)
+	passw0rd1
+
+----------------------------------------------
+
+//Username:
+	//Lenny : TGVubnk=
+
+//Creds:
+//TGVubnk= : passw0rd1
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Fifth Lock - Prison Tower
+//http://10.67.175.30:8080/level5
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//*BASH!*
+ Hint:
+	Username: This will decode to Carl.
+	Password: Look at the level login logic and decode the guard reply.
+//Review the Headers for level (F12-DevOps)
+
+X-Recipe-ID
+	R1
+X-Recipe-Key
+	cyberchef
+
+//Base64-Encoded:Request the password ("Password please?")
+	UGFzc3dvcmQgcGxlYXNlPw==
+
+//Base64-Decoded:Response
+	SGVyZSBpcyB0aGUgcGFzc3dvcmQ6IFpUTjRjREI1VDNWd05ETmxUMlV4TlE9PQ==
+
+	//Here is the password: ZTN4cDB5T3VwNDNlT2UxNQ==
+
+# "R1"
+ // CyberChef: From Base64 => Reverse => ROT13
+
+//From Base64:
+e3xp0yOup43eOe15
+
+//Reverse
+51eOe34puOy0px3e
+
+//ROT13
+51rBr34chBl0ck3r
+
+---------------------------------------------
+
+//Username:
+	//Carl : Q2FybA==
+
+//Creds:
+//Q2FybA== : 51rBr34chBl0ck3r
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+You have broken every lock and cleared a path for McSkidy to escape. Here is your flag:
+//THM{M3D13V4L_D3C0D3R_4D3P7}
+
+
+2025-12-22 19:09:26 EST -- COMPLETE
+
+
