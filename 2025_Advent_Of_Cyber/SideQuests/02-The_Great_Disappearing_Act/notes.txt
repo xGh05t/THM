@@ -1,0 +1,259 @@
+2025-12-26 12:49:13 EST -- START TIME
+# The Great Dsiappearing Act
+--------------------------------------
+
+
+|================================================================
+- Name: 
+- IP Address: 10.66.191.210
+- OS: 
+- Notes: 
+
+//CREDS:
+
+//Flags:
+#User:
+#System:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+## Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+### Hopper the Court Jester 
+//Once upon a time, there was a red-teaming mastermind turned court jester… our story begins with Hopper. Once feared as the ruthless Head of the Red Team Bunny Battalion, Hopper rose to the rank of Colonel with dizzying speed. The promotion filled him with such exhilaration and such hunger for more that it consumed his every thought. His soldiers mistook his growing twitch for stress and began calling him “Colonel Panic”, but the truth was far more dangerous: the twitch came from his obsession with power, not fear.
+
+//In those days, Hopper had already played a crucial, though conveniently forgotten, role in the earliest whispers of the Wareville siege. Buried beneath secrecy and denied by the crown, those first experiments in breaching new digital frontiers were Hopper’s design. But when the King began distancing himself from the truth, Hopper’s contributions were quietly erased from history, and his fall from grace accelerated. We now find Hopper in his prison cell in HopSec Asylum.
+
+### Initial Access
+//This challenge is unlocked by finding the Side Quest key in Advent of Cyber Day 1. If you have been savvy enough to find it, you can unlock the machine by visiting 10.66.191.210:21337 and entering your key. Happy Side Questing!
+
+Visit: http://10.66.191.210:21337/
+Memory Key: now_you_see_me
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// SCAN
+ip=10.66.191.210
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
+
+echo $ports
+//22,80,8000,8080,9001,13400,13401,13402,13403,13404,21337
+
+2025-12-26 13:16:55 EST -- 
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+PORT      STATE    SERVICE         VERSION
+22/tcp    open     ssh             OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 f6:57:c8:42:d1:10:46:15:8a:ee:be:34:9f:a0:f5:a0 (ECDSA)
+|_  256 fa:ce:cc:22:5f:41:d3:ba:e9:f9:49:77:77:af:47:00 (ED25519)
+80/tcp    open     http            nginx 1.24.0 (Ubuntu)
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+|_http-title: HopSec Asylum - Security Console
+8000/tcp  filtered http-alt
+8080/tcp  open     http            SimpleHTTPServer 0.6 (Python 3.12.3)
+|_http-server-header: SimpleHTTP/0.6 Python/3.12.3
+|_http-title: HopSec Asylum - Security Console
+9001/tcp  filtered tor-orport
+13400/tcp open     hadoop-datanode Apache Hadoop 1.24.0 (Ubuntu)
+| hadoop-tasktracker-info: 
+|_  Logs: loginBtn
+| hadoop-datanode-info: 
+|_  Logs: loginBtn
+|_http-title: HopSec Asylum \xE2\x80\x93 Facility Video Portal
+13401/tcp open     http            Werkzeug httpd 3.1.3 (Python 3.12.3)
+|_http-server-header: Werkzeug/3.1.3 Python/3.12.3
+|_http-title: 404 Not Found
+13402/tcp open     http            nginx 1.24.0 (Ubuntu)
+|_http-cors: HEAD GET OPTIONS
+|_http-title: Welcome to nginx!
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+13403/tcp open     unknown
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, Help, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, RPCCheck, SIPOptions, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, TerminalServerCookie, X11Probe: 
+|     HTTP/1.1 400 Bad Request
+|     Connection: close
+|   FourOhFourRequest: 
+|     HTTP/1.1 404 Not Found
+|     Date: Fri, 26 Dec 2025 18:17:19 GMT
+|     Connection: close
+|   GetRequest, HTTPOptions, RTSPRequest: 
+|     HTTP/1.1 404 Not Found
+|     Date: Fri, 26 Dec 2025 18:17:18 GMT
+|_    Connection: close
+13404/tcp open     unknown
+| fingerprint-strings: 
+|   FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, Kerberos, LDAPSearchReq, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, TLSSessionReq, TerminalServerCookie: 
+|_    unauthorized
+21337/tcp open     http            Werkzeug httpd 3.0.1 (Python 3.12.3)
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+|_http-title: Unlock Hopper's Memories
+
+2025-12-26 13:19:54 EST -- 
+# UDP scan
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+
+PORT   STATE         SERVICE
+68/udp open|filtered dhcpc
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+-- Add /etc/hosts file entries --
+echo -e "$ip \t sq2.thm" | sudo tee -a /etc/hosts
+cat /etc/hosts
+
+10.66.191.210    sq2.thm
+
+// 21337/tcp	http	Werkzeug httpd 3.0.1 (Python 3.12.3
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-26 13:59:40 EST -- 
+feroxbuster -u http://sq2.thm:21337 -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx -o feroxbuster_21337.out
+
+200   http://sq2.thm:21337/static/hat.svg
+200   http://sq2.thm:21337/static/bg.jpg
+200   http://sq2.thm:21337/static/egg.png
+200   http://sq2.thm:21337/
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// 8080/tcp	http	SimpleHTTPServer 0.6 (Python 3.12.3)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-26 14:22:01 EST -- 
+feroxbuster -u http://sq2.thm:8080 -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx -o feroxbuster_8080.out
+
+200  http://sq2.thm:8080/key.svg
+200  http://sq2.thm:8080/cgi-bin/session_check.sh
+200  http://sq2.thm:8080/cgi-bin/key_flag.sh
+200  http://sq2.thm:8080/cgi-bin/escape_check.sh
+200  http://sq2.thm:8080/door.svg
+200  http://sq2.thm:8080/camera.svg
+200  http://sq2.thm:8080/cgi-bin/login.sh
+200  http://sq2.thm:8080/cgi-bin/exit_check.sh
+200  http://sq2.thm:8080/cgi-bin/psych_check.sh
+200  http://sq2.thm:8080/
+301  http://sq2.thm:8080/cgi-bin => http://sq2.thm:8080/cgi-bin/
+200  http://sq2.thm:8080/index.html
+200  http://sq2.thm:8080/success.html
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+curl -X POST http://sq2.thm:8080/cgi-bin/login.sh -d 'username=hopkins&password=hopkins'
+
+<!doctype html>
+<html><body>Invalid username or password</body></html>
+
+hydra -l hopkins -P /usr/share/wordlists/rockyou.txt sq2.thm http-post-form "/cgi-bin/login.sh:username=^USER^&password=^PASS^:Invalid" -t 4 -W 3 -f -V
+
+
+
+// SSH
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+// connect SSH
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -p 22 hopkins@10.66.191.210
+
+
+// connect SSH with SOCKS proxy
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -p <PORT> <USER>@<IPADDRESS> -D 9050
+
+
+Hydra v9.6 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+## Escape!
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// 1. Unlock Hopper’s Cell
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Your escape begins in the Cells and Storage area. Hopper is locked inside, and the door is secured with a digital lock. Your first task is to access the cell controls and unlock his door. Once Hopper is free, you can begin moving toward the lobby.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+
+//2. Move Through the Lobby
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+With the cell unlocked, head straight ahead into the lobby. This area connects the different blocks of the facility. Cameras are active, so stay alert. Your objective is to reach the Psych Ward entrance on the east side of the lobby.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+//3. Bypass the Psych Ward Keypad
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+The Psych Ward is protected by a keypad system. You must identify the correct code or exploit the keypad to continue. Once the keypad is bypassed, you will gain access to the Psych Ward Exit hallway.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+//4. Reach the Main Corridor
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+From the Psych Ward Exit you can move south and loop around into the Main Corridor. This is the final section of the escape route. The last challenge awaits here, and completing it will open the final exit door.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+//5. Escape the Facility
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Solve the final challenge in the Main Corridor and make your way toward the exit marked on the map. Once the door opens, Hopper is free, and the escape is complete.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
