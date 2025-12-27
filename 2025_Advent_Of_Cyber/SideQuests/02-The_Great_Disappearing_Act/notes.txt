@@ -2,7 +2,6 @@
 # The Great Dsiappearing Act
 --------------------------------------
 
-
 |================================================================
 - Name: 
 - IP Address: 10.66.191.210
@@ -164,26 +163,6 @@ hydra -l hopkins -P /usr/share/wordlists/rockyou.txt sq2.thm http-post-form "/cg
 
 
 
-// SSH
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-// connect SSH
-ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -p 22 hopkins@10.66.191.210
-
-
-// connect SSH with SOCKS proxy
-ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -p <PORT> <USER>@<IPADDRESS> -D 9050
-
-
-Hydra v9.6 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
 ## Escape!
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -250,10 +229,6 @@ Solve the final challenge in the Main Corridor and make your way toward the exit
 
 
 
-
-
-
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 
 
