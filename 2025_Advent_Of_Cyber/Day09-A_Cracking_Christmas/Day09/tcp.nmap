@@ -1,0 +1,24 @@
+# Nmap 7.98 scan initiated Mon Dec 29 16:15:34 2025 as: /usr/lib/nmap/nmap -Pn -A -p22,80,5901 -oN tcp.nmap 10.64.183.228
+Nmap scan report for 10.64.183.228
+Host is up (0.033s latency).
+
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 09:d2:3e:1d:22:31:b8:61:cb:e6:aa:23:69:20:bd:a7 (ECDSA)
+|_  256 d6:32:6e:37:53:97:b2:53:9c:45:ed:44:c2:47:27:79 (ED25519)
+80/tcp   open  http    WebSockify Python/3.12.3
+|_http-title: Error response
+|_http-server-header: WebSockify Python/3.12.3
+5901/tcp open  vnc     VNC (protocol 3.8)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+OS fingerprint not ideal because: Missing a closed TCP port so results incomplete
+No OS matches for host
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 22/tcp)
+HOP RTT    ADDRESS
+1   ... 30
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Mon Dec 29 16:16:26 2025 -- 1 IP address (1 host up) scanned in 52.20 seconds
