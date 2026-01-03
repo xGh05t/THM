@@ -1,0 +1,2 @@
+root:x:0:0:root:/root:/bin/bash
+srv:x:999:999::/home/srv:/bin/sh
