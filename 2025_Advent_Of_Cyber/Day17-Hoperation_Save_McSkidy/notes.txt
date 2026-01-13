@@ -19,7 +19,7 @@
 ---
 
 ##FLAG:
-	THM{M3D13V4L_D3C0D3R_4D3P7
+	THM{M3D13V4L_D3C0D3R_4D3P7}
 
 
 ## Introduction
@@ -225,6 +225,86 @@ e3xp0yOup43eOe15
 
 You have broken every lock and cleared a path for McSkidy to escape. Here is your flag:
 //THM{M3D13V4L_D3C0D3R_4D3P7}
+
+
+
+// SideQuest Eggkey3
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+##Puzzle:
+https://gchq.github.io/CyberChef/#recipe=To_Base64('A-Za-z0-9%2B/%3D')Label('encoder1')ROT13(true,true,false,7)Split('H0','H0%5C%5Cn')Jump('encoder1',8)Fork('%5C%5Cn','%5C%5Cn',false)Zlib_Deflate('Dynamic%20Huffman%20Coding')XOR(%7B'option':'UTF8','string':'h0pp3r'%7D,'Standard',false)To_Base32('A-Z2-7%3D')Merge(true)Generate_Image('Greyscale',1,512)&input=SG9wcGVyIG1hbmFnZWQgdG8gdXNlIEN5YmVyQ2hlZiB0byBzY3JhbWJsZSB0aGUgZWFzdGVyIGVnZyBrZXkgaW1hZ2UuIEhlIHVzZWQgdGhpcyB2ZXJ5IHJlY2lwZSB0byBkbyBpdC4gVGhlIHNjcmFtYmxlZCB2ZXJzaW9uIG9mIHRoZSBlZ2cgY2FuIGJlIGRvd25sb2FkZWQgZnJvbTogCgpodHRwczovL3RyeWhhY2ttZS1pbWFnZXMuczMuYW1hem9uYXdzLmNvbS91c2VyLXVwbG9hZHMvNWVkNTk2MWM2Mjc2ZGY1Njg4OTFjM2VhL3Jvb20tY29udGVudC81ZWQ1OTYxYzYyNzZkZjU2ODg5MWMzZWEtMTc2NTk1NTA3NTkyMC5wbmcKClJldmVyc2UgdGhlIGFsZ29yaXRobSB0byBnZXQgaXQgYmFjayE
+
+##PictureLink
+https://tryhackme-images.s3.amazonaws.com/user-uploads/5ed5961c6276df568891c3ea/room-content/5ed5961c6276df568891c3ea-1765955075920.png
+
+##DowloadPicture
+wget https://tryhackme-images.s3.amazonaws.com/user-uploads/5ed5961c6276df568891c3ea/room-content/5ed5961c6276df568891c3ea-1765955075920.png -O /home/kali/haxterm/data/Day17/scrambled.png
+
+
+##Solve (https://gchq.github.io/CyberChef/)
+
+// AI solved this.
+
+
+
+//1: Convert the scrambled PNG back into text
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+1. Upload the scrambled image: drag the PNG onto CyberChef’s input pane.
+
+2. Extract the red channel values: add the Extract RGBA operation (Multimedia). Set the delimiter to a space (' ') and turn off “include alpha”. This outputs lines like 234 234 234 255. Extract RGBA and Generate Image are listed among CyberChef’s multimedia operations.
+
+3. Discard the other channels: add a Find / Replace with Regex mode. Use the pattern (\d+) \d+ \d+ ? and the replacement $1\n. This keeps the first number (the red channel) and adds a newline.
+
+4. Convert numbers to bytes: add From Decimal (Data format) with delimiter “Line feed” (LF). This converts each decimal number to its ASCII character. The “From Decimal” operation is part of the data‑format section
+
+5. Remove null bytes: add another Find / Replace in regex mode with pattern \x00+ and replacement `` (empty). After this step, the output consists of base‑32 strings separated by line breaks.
+
+//The approach for reversing the Generate Image step (Extract RGBA → regex replacement → From Decimal → remove \x00)
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//2: Undo the Base32/XOR/Zlib compression
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+6. Process each line separately: add Fork from the Flow control category. Set both the split and join delimiters to newline (\n). CyberChef’s documentation explains that Fork splits the input line by line and runs subsequent operations on each line separately.
+
+7. From Base32: under Data format add From Base32. This decodes each base‑32 string.
+
+8. XOR: add the XOR operation (Encryption/Encoding). Set the key to h0pp3r (UTF‑8), scheme "Standard". XOR is symmetric, so applying the same key undoes the scramble’s XOR step.
+
+9. Zlib Inflate: add Zlib Inflate (Compression). This reverses the scramble’s deflate.
+
+10. Merge: add Merge from Flow control to recombine all branches into one output stream.
+
+//NOTE: The result of step 2 is a long string that has been encoded eight times using Base64 and a Caesar‑shift.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//3: Undo the eight Base64/ROT cycles
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+11. Repeat eight times:
+
+	a. Add ROT13 and set “Rotate lower case” and “Rotate upper case” to true, “Rotate digits” to false and the rotation value to 19 (−7 mod 26). This undoes the +7 Caesar shift applied during the scramble.
+ 	
+	b. Add From Base64 (Data format) to decode the Base64 text.
+
+//Perform steps a and b eight times in succession to unwind all eight encoding loops.
+
+12. Final Base64 decode: after the eight cycles, the output is a standard Base64 string. Add one more From Base64 to decode it to binary.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//4: Display the Easter‑egg image
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+13. Render the image: finally add Render Image from the Multimedia category. This will display the decoded PNG (the hidden key).
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 
 2025-12-22 19:09:26 EST -- COMPLETE
