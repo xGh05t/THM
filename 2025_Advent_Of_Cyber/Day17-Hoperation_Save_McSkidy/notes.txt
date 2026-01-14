@@ -21,14 +21,11 @@
 ##FLAG:
 	THM{M3D13V4L_D3C0D3R_4D3P7}
 
+//EggKey3: one_hopper_army
+
+---
 
 ## Introduction
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-//McSkidy is imprisoned in King Malhare's Quantum Warren. Sir BreachBlocker III was put in charge of securing the fortress and implemented several access controls to prevent any escape. His defenses are worthy of his name.
-
-//However, McSkidy managed to send vital clues to his team using harmless bunny pictures. One message revealed that five locks needed to be disabled to secure an escape route. The locks can be broken by examining their logic and leveraging the system's built-in chat for the guards. They can be eluded in revealing vital details or even passwords. However, you will need to speak their language.
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 2025-12-22 14:40:09 EST -- 
 ping -c1 10.67.161.32
@@ -226,7 +223,7 @@ e3xp0yOup43eOe15
 You have broken every lock and cleared a path for McSkidy to escape. Here is your flag:
 //THM{M3D13V4L_D3C0D3R_4D3P7}
 
-
+---
 
 // SideQuest Eggkey3
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -243,7 +240,6 @@ wget https://tryhackme-images.s3.amazonaws.com/user-uploads/5ed5961c6276df568891
 ##Solve (https://gchq.github.io/CyberChef/)
 
 // AI solved this.
-
 
 
 //1: Convert the scrambled PNG back into text
@@ -302,11 +298,10 @@ wget https://tryhackme-images.s3.amazonaws.com/user-uploads/5ed5961c6276df568891
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+// ImageFound!
+//EggKey3: one_hopper_army
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-
-2025-12-22 19:09:26 EST -- COMPLETE
-
-
+2026-01-14 17:29:18 EST -- COMPLETE
