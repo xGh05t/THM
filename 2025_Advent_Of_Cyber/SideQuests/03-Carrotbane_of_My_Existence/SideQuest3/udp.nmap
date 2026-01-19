@@ -1,9 +1,0 @@
-# Nmap 7.98 scan initiated Wed Jan 14 18:29:53 2026 as: /usr/lib/nmap/nmap -Pn -sU --top-ports 100 -oN udp.nmap 10.66.169.181
-Nmap scan report for 10.66.169.181
-Host is up (0.030s latency).
-Not shown: 98 closed udp ports (port-unreach)
-PORT   STATE         SERVICE
-53/udp open          domain
-68/udp open|filtered dhcpc
-
-# Nmap done at Wed Jan 14 18:31:39 2026 -- 1 IP address (1 host up) scanned in 106.46 seconds
