@@ -1,0 +1,96 @@
+2026-01-18 19:52:00 EST -- START TIME
+# BreachBlocker Unlocker
+--------------------------------------
+
+|================================================================
+- Name: 
+- IP Address: 10.65.162.239
+- OS: 
+- Notes: 
+
+//CREDS:
+
+//Flags:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Finding the Key
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+In the Advent of Cyber Day 21 room, we are given a ZIP file and its password.
+
+Downloading the archive and extracting it with the provided password, we find an HTA file inside.
+
+wget -q https://assets.tryhackme.com/additional/aoc2025/SQ4/NorthPole.zip
+
+//Password: CanYouREM3?
+
+//Used AI to Solve:
+throne123*
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+### Hopper the Detective
+When Sir BreachBlocker is captured, Hopper senses an opportunity: the last key to the stolen AoC charity funds is hidden somewhere on Sir BreachBlocker’s seized phone.
+The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
+
+ip=10.65.162.239
+
+Visit: firefox-esr http://$ip:21337/
+Memory Key: throne123*
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// SCAN
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
+
+echo $ports
+//22,25,8443,21337
+
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+PORT      STATE SERVICE  VERSION
+22/tcp    open  ssh      OpenSSH 9.6p1 Ubuntu 3ubuntu13.14 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 39:1f:42:56:2e:b6:16:d0:a3:a3:94:18:54:4b:39:39 (ECDSA)
+|_  256 b4:c9:9c:3b:78:e1:5a:d5:cc:00:86:8c:67:1e:d5:25 (ED25519)
+25/tcp    open  smtp     Postfix smtpd
+| smtp-commands: hostname, PIPELINING, SIZE 10240000, VRFY, ETRN, ENHANCEDSTATUSCODES, 8BITMIME, DSN, SMTPUTF8, CHUNKING
+|_ 2.0.0 Commands: AUTH BDAT DATA EHLO ETRN HELO HELP MAIL NOOP QUIT RCPT RSET STARTTLS VRFY XCLIENT XFORWARD
+8443/tcp  open  ssl/http nginx 1.29.3
+|_ssl-date: TLS randomness does not represent time
+|_http-server-header: nginx/1.29.3
+|_http-title: Mobile Portal
+| tls-alpn: 
+|   h2
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+| ssl-cert: Subject: organizationName=Internet Widgits Pty Ltd/stateOrProvinceName=Some-State/countryName=AU
+| Not valid before: 2025-12-11T05:00:31
+|_Not valid after:  2026-12-11T05:00:31
+21337/tcp open  http     Werkzeug httpd 3.0.1 (Python 3.12.3)
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+|_http-title: Unlock Hopper's Memories
+
+
+# UDP scan
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+
+PORT   STATE         SERVICE
+68/udp open|filtered dhcpc
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
