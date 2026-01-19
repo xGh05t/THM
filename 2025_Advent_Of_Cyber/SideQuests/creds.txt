@@ -1,5 +1,0 @@
-# Credentials
-
-##Day01
-mcskdiy:AoC2025!
-eddi_knapp:
