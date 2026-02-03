@@ -1,0 +1,92 @@
+2026-02-03 03:06:40 EST -- START TIME
+# Hopper's Origin
+## From HopSec Island, Eggsploits whisper through TBFC - Origins of how SOC-mas became EAST-mas.
+
+https://tryhackme.com/room/ho-aoc2025-yboMoPbnEX
+--------------------------------------
+
+|================================================================
+- Name: 
+- IP Address: 
+- OS: 
+- Notes: 
+
+//CREDS:
+
+//Flags:
+#User:
+#System:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+## Storyline
+
+//When McSkidy and Wareville’s SOC hardened The Best Festival Company to a gleam, King Malhare conceded a frontal assault would fail. He decreed a supply-chain campaign: strike a partner, twist their trust, and let EAST-mas seep in quietly. The tale you’re about to relive is the origin of the VanChatty compromise. How a “helpful” AI agent at VanChat became the Warren’s first tunnel into TBFC.
+
+//Whispers say the DMZ gave way, Warrens linked, and an internal DB server became a waystation. Malhare’s bandits got no further - but they left a small script there, sealed behind a proof of skill. Earn the Warren’s mark, and it will steady your foothold for the long burrow ahead.
+
+//Hopper, HopSec Island's Court Jester and a disgraced former Head of the Red Team Battalion, sits in his prison cell, etching chalk marks into the wall to count another day gone. Suddenly, he hears the faint sound of a note sliding under his cell door. The note reads:
+
+"EAST-mas is coming." 
+
+//Hopper couldn't quite believe it. Had the time finally come? But… but this wasn't fair! THERE WOULD BE NO EAST-mas WITHOUT HIM! Clawing at the door, he began to think back to his time participating in "The Great Wareville Breach."
+
+//Expect many hops: tunnels, Warrens, bridges, and burrows, each a pivot deeper. This is not a guided sleigh ride; it’s a map of faint tracks and pastel crumbs. Follow them.
+
+---
+
+## Challenge Stance
+
+//This is a non-guided red-team scenario. This is not an elf-guided sleigh ride; you’ll make your own map If your first instinct is to “ping it” to see if it lives, this Warren will likely eat you alive. Many bunnies tried. Few returned. Bring craft, patience, and real tradecraft.
+
+---
+
+## What You Should Already Know
+
+	- Network ingress, pivoting, and lateral movement across multiple segmented zones
+	- Active Directory realities (auth flows, delegation, tickets/tokens, trust, or the lack of it)
+	- Post-compromise staging and Living Off the Land
+
+---
+
+## The Waystation
+
+//The furthest any bunny advanced was an internal DB, a staging waystation deep in the tunnels. There, Malhare’s agents left a script bound by craft and caution. It will not help the unworthy, but if you prove yourself equal to the Warren’s elite, it will steady your foothold for the long and treacherous push that follows. Consider it a rite: earn the mark, claim the perch, and move on.
+
+#NOTE: The VPN server, 10.200.171.250, is considered out of scope for this engagement. Lastly, this should go without saying, but the room link should be treated with the utmost level of secrecy. The more bunnies that know about the link, the fiercer the competition to unlock the memories will become!
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Flag Submission Panel
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#Flag Submissions
+//Submit flags below.
+#NOTE: Flags are in alphabetical order and not the order of compromise.
+
+//On Linux boxes, you can find flags here:
+
+user.txt - In /user.txt
+root.txt - In /root/root.txt
+
+
+//On Windows machines, you can find flags here:
+
+user.txt - In C:\user.txt
+root.txt - In C:\Users\Administrator\root.txt
+
+
+//"Carrot coins later - EAST-mas first. Hop in!" - King Malhare
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
