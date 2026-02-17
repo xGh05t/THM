@@ -1,0 +1,34 @@
+2026-02-16 19:28:41 EST -- START TIME
+//Hidden Deep Into my Heart
+--------------------------------------
+
+Cupid's Vault was designed to protect secrets meant to stay hidden forever. Unfortunately, Cupid underestimated how determined attackers can be.
+
+Intelligence indicates that Cupid may have unintentionally left vulnerabilities in the system. With the holiday deadline approaching, you've been tasked with uncovering what's hidden inside the vault before it's too late.
+
+You can find the web application here: http://10.64.135.121:5000
+
+ip=10.64.135.121
+
+sudo nmap -Pn -A -p5000 $ip
+
+PORT     STATE SERVICE VERSION
+5000/tcp open  http    Werkzeug httpd 3.1.5 (Python 3.10.12)
+| http-robots.txt: 1 disallowed entry 
+|_/cupids_secret_vault/*
+|_http-server-header: Werkzeug/3.1.5 Python/3.10.12
+|_http-title: Love Letters Anonymous
+
+
+-- feroxbuster --
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# feroxbuster run
+feroxbuster -u http://10.64.135.121:5000/cupids_secret_vault/ -w /usr/share/dirb/wordlists/big.txt --scan-limit 2 -x php,py,txt,html,htm,js,aspx,conf -o feroxbuster.out
+
+
+http://10.64.135.121:5000/cupids_secret_vault/administrator
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
