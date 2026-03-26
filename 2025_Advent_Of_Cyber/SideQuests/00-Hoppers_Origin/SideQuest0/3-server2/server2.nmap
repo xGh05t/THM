@@ -1,0 +1,26 @@
+# Nmap 7.98 scan initiated Wed Mar 25 21:00:55 2026 as: /usr/lib/nmap/nmap -Pn -sV -sC -p- -oN server2.nmap 10.200.171.102
+Nmap scan report for 10.200.171.102
+Host is up (0.052s latency).
+Not shown: 65533 filtered tcp ports (no-response)
+PORT     STATE SERVICE       VERSION
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: AI
+|   NetBIOS_Domain_Name: AI
+|   NetBIOS_Computer_Name: SERVER2
+|   DNS_Domain_Name: ai.vanchat.loc
+|   DNS_Computer_Name: Server2.ai.vanchat.loc
+|   DNS_Tree_Name: vanchat.loc
+|   Product_Version: 10.0.17763
+|_  System_Time: 2026-03-26T01:06:29+00:00
+| ssl-cert: Subject: commonName=Server2.ai.vanchat.loc
+| Not valid before: 2025-10-28T17:37:39
+|_Not valid after:  2026-04-29T17:37:39
+|_ssl-date: 2026-03-26T01:06:33+00:00; 0s from scanner time.
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Mar 25 21:06:34 2026 -- 1 IP address (1 host up) scanned in 338.77 seconds
