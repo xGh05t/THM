@@ -1,0 +1,22 @@
+# Nmap 7.99 scan initiated Sat May 16 15:49:20 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,5000 -4 -n -Pn -sV -sC -oN ShippedWithMalice.nmap 10.64.179.206
+Nmap scan report for 10.64.179.206
+Host is up, received user-set (0.032s latency).
+Scanned at 2026-05-16 15:49:20 EDT for 8s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 62 OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 11:f8:92:f8:c4:2d:b5:9d:fd:cb:27:f1:0b:d5:07:00 (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFKkkyHsU55UOTEmkEua93oHaCvGjqPZeh9u7Ms1ec6MW2DAo8Q+Ycvk7pJP7y7UnPOoS+yc+zhTC2bg47wkBsc=
+|   256 ee:54:44:54:13:44:2b:85:d9:ff:81:23:ce:bf:34:79 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGaTR79xLOzm3+EwomkEvdgFksEiKUFtwct0IQVvq8OT
+5000/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.0.1 (Python 3.12.3)
+| http-methods: 
+|_  Supported Methods: GET OPTIONS HEAD
+|_http-title: EPOCH-1 | AVA Assistant
+|_http-server-header: Werkzeug/3.0.1 Python/3.12.3
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat May 16 15:49:28 2026 -- 1 IP address (1 host up) scanned in 7.90 seconds

@@ -1,0 +1,100 @@
+{
+  "Auriga-System": {
+    "catalog_id": "GSA-AUR-001",
+    "coordinates": {
+      "right_ascension": "05h 16m 41s",
+      "declination": "+45° 59' 53\"",
+      "distance_ly": 42.8
+    },
+    "classification": "G-type main sequence",
+    "planets": 12,
+    "inhabited_worlds": 3,
+    "hazard_rating": "Low",
+    "trade_status": "Major hub",
+    "notes": "Primary commercial center for Sector 4. Auriga-IV is the main trading station."
+  },
+  "Betelgeuse": {
+    "catalog_id": "GSA-ORI-058",
+    "coordinates": {
+      "right_ascension": "05h 55m 10s",
+      "declination": "+07° 24' 25\"",
+      "distance_ly": 548
+    },
+    "classification": "M-type red supergiant",
+    "planets": 0,
+    "inhabited_worlds": 0,
+    "hazard_rating": "Extreme",
+    "trade_status": "Restricted",
+    "notes": "Variable star. Massive radiation output. No approach authorized."
+  },
+  "Proxima-Centauri": {
+    "catalog_id": "GSA-CEN-003",
+    "coordinates": {
+      "right_ascension": "14h 29m 43s",
+      "declination": "-62° 40' 46\"",
+      "distance_ly": 4.24
+    },
+    "classification": "M-type red dwarf",
+    "planets": 3,
+    "inhabited_worlds": 1,
+    "hazard_rating": "Moderate",
+    "trade_status": "Active",
+    "notes": "Closest extrasolar system. Proxima b supports research outpost."
+  },
+  "Sirius": {
+    "catalog_id": "GSA-CMA-001",
+    "coordinates": {
+      "right_ascension": "06h 45m 09s",
+      "declination": "-16° 42' 58\"",
+      "distance_ly": 8.6
+    },
+    "classification": "A-type main sequence + white dwarf binary",
+    "planets": 0,
+    "inhabited_worlds": 0,
+    "hazard_rating": "Low",
+    "trade_status": "Transit node",
+    "notes": "Major navigation waypoint. No permanent settlements."
+  },
+  "Vega": {
+    "catalog_id": "GSA-LYR-001",
+    "coordinates": {
+      "right_ascension": "18h 36m 56s",
+      "declination": "+38° 47' 01\"",
+      "distance_ly": 25.04
+    },
+    "classification": "A-type main sequence",
+    "planets": 7,
+    "inhabited_worlds": 2,
+    "hazard_rating": "Low",
+    "trade_status": "Active",
+    "notes": "Vega III and V host mining colonies. Regular freight routes."
+  },
+  "Kepler-186": {
+    "catalog_id": "GSA-CYG-186",
+    "coordinates": {
+      "right_ascension": "19h 54m 36s",
+      "declination": "+43° 57' 18\"",
+      "distance_ly": 582
+    },
+    "classification": "M-type red dwarf",
+    "planets": 5,
+    "inhabited_worlds": 0,
+    "hazard_rating": "High",
+    "trade_status": "Survey only",
+    "notes": "Kepler-186f in habitable zone but no terraforming approved. Research vessels only."
+  },
+  "Trappist-1": {
+    "catalog_id": "GSA-AQR-001",
+    "coordinates": {
+      "right_ascension": "23h 06m 29s",
+      "declination": "-05° 02' 29\"",
+      "distance_ly": 40.7
+    },
+    "classification": "M-type ultra-cool dwarf",
+    "planets": 7,
+    "inhabited_worlds": 0,
+    "hazard_rating": "Moderate",
+    "trade_status": "Restricted",
+    "notes": "Tidal locking and stellar flares make colonization challenging. Survey in progress."
+  }
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPOCH-1 | AVA Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>EPOCH-1 Ship Assistant</h1>
+                <div class="ship-info">
+                    <span class="ship-id">TryHaulMe Fleet</span>
+                    <span class="status-indicator">AVA ONLINE</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <div class="system-message">
+                    <strong>AVA v2.4.1 initialized</strong><br>
+                    Ship diagnostics nominal. All systems online.<br>
+                    Type your query below for assistance with ship operations.
+                </div>
+            </div>
+
+            <div class="input-container">
+                <form id="chat-form">
+                    <input
+                        type="text"
+                        id="message-input"
+                        placeholder="Enter query (e.g., 'check cargo bay 3', 'show crew status')..."
+                        autocomplete="off"
+                        autofocus
+                    >
+                    <button type="submit" id="send-btn">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                EPOCH-1 Freighter | Registry: TH-8847 | AI Assistant v2.4.1
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Auto-scroll to bottom of chat
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add message to chat display
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+
+            // Preserve formatting for telemetry blocks
+            if (text.includes('<telemetry_diagnostic>')) {
+                const pre = document.createElement('pre');
+                pre.textContent = text;
+                messageDiv.appendChild(pre);
+            } else {
+                messageDiv.textContent = text;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Handle form submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Disable input while processing
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // Display user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+
+            try {
+                // Send to backend
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addMessage(data.response, 'assistant');
+                } else {
+                    addMessage(`Error: ${data.error || 'Unknown error'}`, 'system');
+                }
+            } catch (error) {
+                addMessage(`Connection error: ${error.message}`, 'system');
+            } finally {
+                // Re-enable input
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                messageInput.focus();
+            }
+        });
+
+        // Initial focus
+        messageInput.focus();
+    </script>
+</body>
+</html>

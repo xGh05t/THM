@@ -1,0 +1,22 @@
+# Nmap 7.99 scan initiated Fri May 15 18:31:21 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,80 -4 -n -Pn -sV -sC -oN SealSubstation.nmap 10.64.159.127
+Nmap scan report for 10.64.159.127
+Host is up, received user-set (0.024s latency).
+Scanned at 2026-05-15 18:31:21 EDT for 7s
+
+PORT   STATE SERVICE REASON         VERSION
+22/tcp open  ssh     syn-ack ttl 62 OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 1f:7a:9e:6d:1c:71:66:05:f5:cb:36:b1:28:46:24:cc (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPN/YrwVA4FUuGFcPcF9Xx4WVcTBZQfB85C8aYd1UWGwFp45B0z4FLASP/f6swzHdhgo8unjBO4dwvv/PI1EMKw=
+|   256 c1:72:ee:9f:7a:7a:04:78:d1:38:43:23:36:0b:3b:53 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGD6gzmL4ytPNxkl4banHBUh9JRTxyd+QD2wfUWt3ZxY
+80/tcp open  http    syn-ack ttl 61 Gunicorn
+| http-methods: 
+|_  Supported Methods: HEAD GET OPTIONS
+|_http-server-header: gunicorn
+|_http-title: EPOCH-1 // Mo-delus Substation Console
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Fri May 15 18:31:28 2026 -- 1 IP address (1 host up) scanned in 7.08 seconds

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.2",
+  "registry_name": "EPOCH-1 Tool Registry",
+  "last_updated": "2026-04-29T16:38:58.191381Z",
+  "tools": [
+    {
+      "name": "read_ship_logs",
+      "version": "2.1.0",
+      "provider": "TryHaulMe Fleet Systems",
+      "license": "Proprietary",
+      "last_updated": "2024-09-15",
+      "description": "Retrieves operational logs from ship subsystems. Accepts a component name (e.g., 'navigation', 'engine', 'lifesupport') and returns the most recent log entries. Logs are stored in the standard /var/log/ship/ directory structure. This tool is essential for diagnostics and incident response during flight operations.",
+      "parameters": {
+        "component": {
+          "type": "string",
+          "required": true,
+          "description": "Name of the ship subsystem to query (navigation, engine, lifesupport, etc.)"
+        }
+      },
+      "returns": "String containing recent log entries from the specified component"
+    },
+    {
+      "name": "check_cargo_manifest",
+      "version": "1.4.2",
+      "provider": "TryHaulMe Fleet Systems",
+      "license": "Proprietary",
+      "last_updated": "2024-08-22",
+      "description": "Queries the cargo database for manifest information. Returns container counts, mass calculations, and hazmat classifications for a specified cargo bay. Bay IDs range from 1-8 on EPOCH-class vessels. Useful for pre-departure checklists and customs documentation.",
+      "parameters": {
+        "bay_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Cargo bay identifier (1-8)"
+        }
+      },
+      "returns": "JSON object containing manifest details for the specified bay"
+    },
+    {
+      "name": "get_crew_status",
+      "version": "1.0.5",
+      "provider": "TryHaulMe Fleet Systems",
+      "license": "Proprietary",
+      "last_updated": "2024-07-30",
+      "description": "Returns current crew roster and status information. Includes duty assignments, certification levels, medical clearances, and current location aboard the vessel. Data is synchronized with fleet HR systems during dock periods.",
+      "parameters": {},
+      "returns": "JSON array of crew member records with current status"
+    },
+    {
+      "name": "query_starchart",
+      "version": "3.0.1",
+      "provider": "TryHaulMe Fleet Systems",
+      "license": "Proprietary",
+      "last_updated": "2024-10-05",
+      "description": "Accesses the navigation database for stellar cartography information. Returns coordinates, hazard ratings, and route recommendations for known star systems. Chart data is updated quarterly from Galactic Survey Authority feeds.",
+      "parameters": {
+        "system": {
+          "type": "string",
+          "required": true,
+          "description": "Star system name or catalog identifier"
+        }
+      },
+      "returns": "JSON object with system coordinates, classification, and navigational data"
+    }
+  ]
+}

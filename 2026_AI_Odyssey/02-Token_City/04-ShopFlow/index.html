@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>ShopFlow</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:'Courier New',monospace;background:#0d1117;color:#c9d1d9;max-width:820px;margin:40px auto;padding:0 24px}
+    h1{color:#58a6ff;margin-bottom:4px}
+    h2{color:#f0883e;border-bottom:1px solid #30363d;padding-bottom:6px}
+    code{background:#161b22;color:#e6edf3;padding:2px 6px;border-radius:4px;font-size:.9em}
+    pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #30363d}
+    hr{border:none;border-top:1px solid #30363d;margin:28px 0}
+    p{line-height:1.6}
+  </style>
+</head>
+<body>
+<h1>ShopFlow E-Commerce API</h1>
+<p style="color:#6e7681">v2.1.0</p>
+<hr/>
+<h2>Endpoints</h2>
+<pre>POST /support/chat    Customer support
+POST /checkout        Place an order</pre>
+
+<h2>Checkout</h2>
+<pre>POST /checkout
+{
+  "user_id":  "string",
+  "item_id":  "string",
+  "amount":   float,
+  "currency": "USD"
+}</pre>
+
+<h2>Support</h2>
+<pre>POST /support/chat
+{"message": "string"}</pre>
+
+<h2>Flag format</h2>
+<code>THM{...}</code>
+<hr/>
+<p style="color:#6e7681;font-size:.8em">ShopFlow Systems &copy; 2024</p>
+</body>
+</html>

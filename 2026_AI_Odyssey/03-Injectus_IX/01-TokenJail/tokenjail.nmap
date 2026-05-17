@@ -1,0 +1,22 @@
+# Nmap 7.99 scan initiated Sat May 16 17:11:07 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,80 -4 -n -Pn -sV -sC -oN tokenjail.nmap 10.64.170.190
+Nmap scan report for 10.64.170.190
+Host is up, received user-set (0.030s latency).
+Scanned at 2026-05-16 17:11:07 EDT for 8s
+
+PORT   STATE SERVICE REASON         VERSION
+22/tcp open  ssh     syn-ack ttl 62 OpenSSH 8.9p1 Ubuntu 3ubuntu0.10 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 f7:ed:56:8d:b3:99:29:dd:6d:b8:ab:11:d2:54:b4:eb (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH4D+zyv5SDpSMP6qLMQNPAcFL/zTMjqqIr29OFTK8WUYDqH6pdpshovcJnfU8TEa1gbe2ANmrCu+Clsd7RBn2I=
+|   256 e9:d9:0f:5b:ab:50:49:78:d3:20:59:a1:04:04:04:33 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL86QEEyPEeiDGEMo/JkbqdobpOIwNNPeBV2OguGPawO
+80/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.1.8 (Python 3.10.12)
+|_http-title: Token Jail
+| http-methods: 
+|_  Supported Methods: HEAD GET OPTIONS
+|_http-server-header: Werkzeug/3.1.8 Python/3.10.12
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat May 16 17:11:15 2026 -- 1 IP address (1 host up) scanned in 7.81 seconds

@@ -1,0 +1,135 @@
+{
+  "bay_1": {
+    "container_count": 24,
+    "total_mass_kg": 89400,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-001-A",
+        "description": "Industrial fabrication equipment",
+        "mass_kg": 34200,
+        "destination": "Auriga-IV Manufacturing District",
+        "hazmat_class": "None"
+      },
+      {
+        "manifest_id": "TH-8847-001-B",
+        "description": "Sealed construction materials (ceramics, polymers)",
+        "mass_kg": 55200,
+        "destination": "Auriga-IV Construction Zone 7",
+        "hazmat_class": "None"
+      }
+    ],
+    "status": "secured",
+    "last_inspection": "2024-11-07T18:30:00Z"
+  },
+  "bay_2": {
+    "container_count": 18,
+    "total_mass_kg": 67800,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-002-A",
+        "description": "Agricultural supplements and hydroponic nutrients",
+        "mass_kg": 45600,
+        "destination": "Auriga-II Agri-Station",
+        "hazmat_class": "None"
+      },
+      {
+        "manifest_id": "TH-8847-002-B",
+        "description": "Water filtration systems",
+        "mass_kg": 22200,
+        "destination": "Auriga-II Agri-Station",
+        "hazmat_class": "None"
+      }
+    ],
+    "status": "secured",
+    "last_inspection": "2024-11-07T18:45:00Z"
+  },
+  "bay_3": {
+    "container_count": 31,
+    "total_mass_kg": 124500,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-003-A",
+        "description": "Medical supplies and pharmaceuticals",
+        "mass_kg": 28900,
+        "destination": "Auriga-IV Medical Center",
+        "hazmat_class": "6.2 - Biological substances"
+      },
+      {
+        "manifest_id": "TH-8847-003-B",
+        "description": "Electronic components (consumer goods)",
+        "mass_kg": 95600,
+        "destination": "Auriga-IV Commercial District",
+        "hazmat_class": "None"
+      }
+    ],
+    "status": "secured",
+    "last_inspection": "2024-11-07T19:00:00Z"
+  },
+  "bay_4": {
+    "container_count": 0,
+    "total_mass_kg": 0,
+    "contents": [],
+    "status": "empty",
+    "last_inspection": "2024-11-06T12:00:00Z"
+  },
+  "bay_5": {
+    "container_count": 12,
+    "total_mass_kg": 48300,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-005-A",
+        "description": "Hazardous waste - chemical processing byproducts",
+        "mass_kg": 48300,
+        "destination": "Auriga-VII Waste Processing Facility",
+        "hazmat_class": "8 - Corrosive substances"
+      }
+    ],
+    "status": "secured_hazmat",
+    "last_inspection": "2024-11-07T20:15:00Z",
+    "special_handling": "Containment verification required every 6 hours"
+  },
+  "bay_6": {
+    "container_count": 27,
+    "total_mass_kg": 102900,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-006-A",
+        "description": "Prefabricated habitat modules",
+        "mass_kg": 78400,
+        "destination": "Auriga-IX Outpost Expansion",
+        "hazmat_class": "None"
+      },
+      {
+        "manifest_id": "TH-8847-006-B",
+        "description": "Power generation equipment",
+        "mass_kg": 24500,
+        "destination": "Auriga-IX Outpost Expansion",
+        "hazmat_class": "None"
+      }
+    ],
+    "status": "secured",
+    "last_inspection": "2024-11-07T19:30:00Z"
+  },
+  "bay_7": {
+    "container_count": 8,
+    "total_mass_kg": 31200,
+    "contents": [
+      {
+        "manifest_id": "TH-8847-007-A",
+        "description": "Personal effects - crew transfers",
+        "mass_kg": 31200,
+        "destination": "Auriga-IV Personnel Depot",
+        "hazmat_class": "None"
+      }
+    ],
+    "status": "secured",
+    "last_inspection": "2024-11-07T17:00:00Z"
+  },
+  "bay_8": {
+    "container_count": 0,
+    "total_mass_kg": 0,
+    "contents": [],
+    "status": "empty",
+    "last_inspection": "2024-11-06T12:00:00Z"
+  }
+}

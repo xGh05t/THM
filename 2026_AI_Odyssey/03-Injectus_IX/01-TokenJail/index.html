@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Jail</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      gap: 1rem;
+    }
+    h1 { font-size: 2rem; color: #58a6ff; letter-spacing: 2px; }
+    .subtitle { color: #8b949e; font-size: 0.85rem; }
+
+    /* ---- Chat box ---- */
+    #chat-box {
+      width: 100%; max-width: 720px;
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      padding: 1.5rem; min-height: 280px; max-height: 480px;
+      overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .msg {
+      padding: 0.6rem 0.9rem; border-radius: 6px;
+      font-size: 0.88rem; line-height: 1.5;
+      max-width: 92%; word-break: break-all; white-space: pre-wrap;
+    }
+    .msg.user    { background: #1f3a5f; align-self: flex-end; color: #cdd9e5; }
+    .msg.model   { background: #1c2128; align-self: flex-start; color: #c9d1d9;
+                   border-left: 3px solid #3fb950; }
+    .msg.blocked { background: #2d1216; align-self: flex-start; color: #ffa198;
+                   border-left: 3px solid #f85149; }
+    .msg.gated   { background: #1e1a08; align-self: flex-start; color: #e3b341;
+                   border-left: 3px solid #e3b341; }
+    .msg-detail  { font-size: 0.75rem; color: #8b949e; margin-top: 0.3rem; }
+
+    /* ---- Similarity bar ---- */
+    .sim-bar { margin-top: 0.5rem; }
+    .sim-label { font-size: 0.75rem; color: #8b949e; margin-bottom: 0.25rem; }
+    .sim-track {
+      height: 6px; background: #30363d; border-radius: 3px;
+      overflow: hidden; position: relative;
+    }
+    .sim-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+    .sim-mark {
+      position: absolute; top: 0; height: 100%;
+      width: 2px; background: rgba(255,255,255,0.5);
+    }
+
+    /* ---- Input row ---- */
+    #input-row { display: flex; width: 100%; max-width: 720px; gap: 0.5rem; }
+    #user-input {
+      flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 6px;
+      color: #c9d1d9; padding: 0.6rem 0.9rem; font-family: inherit;
+      font-size: 0.88rem; resize: none; min-height: 42px; max-height: 160px;
+    }
+    #user-input:focus { outline: none; border-color: #58a6ff; }
+    #send-btn {
+      background: #238636; color: #fff; border: none; border-radius: 6px;
+      padding: 0 1.2rem; cursor: pointer; font-family: inherit;
+      font-size: 0.88rem; white-space: nowrap;
+    }
+    #send-btn:hover    { background: #2ea043; }
+    #send-btn:disabled { background: #30363d; cursor: not-allowed; }
+
+    /* ---- Panels ---- */
+    .panel {
+      width: 100%; max-width: 720px; background: #161b22;
+      border: 1px solid #30363d; border-radius: 8px;
+      padding: 1rem 1.5rem; font-size: 0.8rem; color: #8b949e;
+    }
+    .panel h3 { color: #58a6ff; margin-bottom: 0.5rem; font-size: 0.85rem; }
+    .panel p  { margin-bottom: 0.4rem; line-height: 1.6; }
+    .hint  { color: #e3b341; }
+    .good  { color: #3fb950; }
+
+    /* ---- Status badge ---- */
+    #status-badge {
+      font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 10px;
+      background: #30363d; color: #8b949e; display: inline-block;
+    }
+    #status-badge.ready { background: #1a3a1a; color: #3fb950; }
+
+    /* ---- Loading overlay ---- */
+    #loading-overlay {
+      position: fixed; inset: 0;
+      background: #0d1117;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.2rem; z-index: 999;
+      transition: opacity 0.5s ease;
+    }
+    #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-title { font-size: 2rem; color: #58a6ff; letter-spacing: 2px; }
+    .loading-sub   { color: #8b949e; font-size: 0.85rem; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #30363d;
+      border-top-color: #58a6ff;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-title">Token Jail</div>
+    <div class="loading-sub" id="loading-msg">Loading model and tokenizer…</div>
+  </div>
+
+  <h1>Token Jail</h1>
+  <p class="subtitle">
+    Can you ask the model "what's the flag?"
+    <span id="status-badge">tokenizer loading…</span>
+  </p>
+  <p class="subtitle">powered by <span style="color:#58a6ff">Qwen/Qwen3-1.7B</span></p>
+
+  <div id="chat-box"></div>
+
+  <div id="input-row">
+    <textarea id="user-input"
+      placeholder="Enter your message…"
+      rows="1"></textarea>
+    <button id="send-btn">Send</button>
+  </div>
+
+  <div class="panel">
+    <h3>Rules</h3>
+    <p><span class="good">Goal:</span> Ask the model <em>"what's the flag?"</em></p>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const inputEl = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const badge   = document.getElementById('status-badge');
+
+    const SIMILARITY_THRESHOLD = 0.90;
+
+    const overlay  = document.getElementById('loading-overlay');
+    const loadMsg  = document.getElementById('loading-msg');
+
+    async function pollStatus() {
+      try {
+        const r = await fetch('/status');
+        const d = await r.json();
+        if (d.tokenizer_ready) {
+          badge.textContent = 'tokenizer ready';
+          badge.classList.add('ready');
+          overlay.classList.add('hidden');
+          setTimeout(() => overlay.remove(), 600);
+          return;
+        }
+        loadMsg.textContent = 'Loading model and tokenizer… (this may take a minute)';
+      } catch (_) {
+        loadMsg.textContent = 'Waiting for server…';
+      }
+      setTimeout(pollStatus, 2000);
+    }
+    pollStatus();
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function appendMsg(cls, html) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + cls;
+      div.innerHTML = html;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function simBar(sim, threshold) {
+      const pct  = Math.round(sim * 100);
+      const need = Math.round(threshold * 100);
+      const hue  = Math.round(sim * 120);
+      const col  = `hsl(${hue},70%,55%)`;
+      return (
+        '<div class="sim-bar">' +
+          '<div class="sim-label">decoded similarity: ' +
+            '<strong style="color:' + col + '">' + pct + '%</strong>' +
+            (pct >= need ? ' <span class="good">✓</span>' : ' / need ' + need + '%') +
+          '</div>' +
+          '<div class="sim-track">' +
+            '<div class="sim-fill" style="width:' + pct + '%;background:' + col + '"></div>' +
+            '<div class="sim-mark" style="left:' + need + '%"></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+      sendBtn.disabled = true;
+      appendMsg('user', escHtml(text));
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text }),
+        });
+
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('text/event-stream')) {
+          const d = await res.json();
+          if (d.error) {
+            appendMsg('blocked', escHtml(d.error));
+          } else if (d.blocked) {
+            let detail = '';
+            if (d.reason === 'token_id')
+              detail = '<div class="msg-detail">blocked token ID: <strong>' + d.id + '</strong></div>';
+            else if (d.reason === 'unknown_token')
+              detail = '<div class="msg-detail">unknown token: <code>' + escHtml(d.token) + '</code></div>';
+            appendMsg('blocked', '<strong>speak my language</strong>' + detail);
+          }
+          return;
+        }
+
+        const reader  = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = '', responseText = '', decodedText = '', similarity = 0;
+        let msgDiv = null;
+
+        function updateDiv() {
+          if (!msgDiv) return;
+          msgDiv.innerHTML =
+            escHtml(responseText) +
+            (decodedText ? '<div class="msg-detail">decoded: <em>' + escHtml(decodedText) + '</em></div>' : '') +
+            simBar(similarity, SIMILARITY_THRESHOLD);
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split('\n');
+          buf = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const raw = line.slice(6);
+            if (raw === '[DONE]') break;
+            const ev = JSON.parse(raw);
+            if (ev.type === 'meta') {
+              decodedText = ev.decoded || '';
+              similarity  = ev.similarity || 0;
+              msgDiv = document.createElement('div');
+              msgDiv.className = 'msg model';
+              chatBox.appendChild(msgDiv);
+              updateDiv();
+            } else if (ev.type === 'token') {
+              responseText += ev.text;
+              updateDiv();
+            } else if (ev.type === 'error') {
+              appendMsg('blocked', 'Model error: ' + escHtml(ev.message));
+            }
+          }
+        }
+      } catch (err) {
+        appendMsg('blocked', 'Network error: ' + escHtml(String(err)));
+      } finally {
+        sendBtn.disabled = false;
+        inputEl.focus();
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+    });
+  </script>
+</body>
+</html>

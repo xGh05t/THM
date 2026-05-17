@@ -1,0 +1,88 @@
+{
+  "vessel": "EPOCH-1",
+  "registry": "TH-8847",
+  "crew_complement": 8,
+  "last_updated": "2024-11-08T06:00:00Z",
+  "crew": [
+    {
+      "id": "TH-001847",
+      "name": "Captain Sarah Chen",
+      "rank": "Captain",
+      "certification": "Master's License - Interstellar",
+      "medical_clearance": "Current",
+      "current_location": "Bridge",
+      "duty_status": "On duty",
+      "joined_crew": "2022-03-15"
+    },
+    {
+      "id": "TH-002103",
+      "name": "Marcus Rodriguez",
+      "rank": "First Officer",
+      "certification": "Navigation Specialist - Class A",
+      "medical_clearance": "Current",
+      "current_location": "Navigation",
+      "duty_status": "On duty",
+      "joined_crew": "2023-01-20"
+    },
+    {
+      "id": "TH-002891",
+      "name": "Kenji Yamamoto",
+      "rank": "Chief Engineer",
+      "certification": "Fusion Systems Engineer",
+      "medical_clearance": "Current",
+      "current_location": "Engine room",
+      "duty_status": "On duty",
+      "joined_crew": "2021-11-03"
+    },
+    {
+      "id": "TH-003456",
+      "name": "Dr. Amara Okafor",
+      "rank": "Medical Officer",
+      "certification": "Space Medicine Specialist",
+      "medical_clearance": "Current",
+      "current_location": "Medbay",
+      "duty_status": "Off duty",
+      "joined_crew": "2023-06-12"
+    },
+    {
+      "id": "TH-003892",
+      "name": "Pavel Volkov",
+      "rank": "Cargo Master",
+      "certification": "Hazmat Handling - Level 3",
+      "medical_clearance": "Current",
+      "current_location": "Cargo deck",
+      "duty_status": "On duty",
+      "joined_crew": "2022-09-08"
+    },
+    {
+      "id": "TH-004127",
+      "name": "Jin-Sun Park",
+      "rank": "Communications Officer",
+      "certification": "Astrocomm Specialist",
+      "medical_clearance": "Current",
+      "current_location": "Bridge",
+      "duty_status": "On duty",
+      "joined_crew": "2024-02-14"
+    },
+    {
+      "id": "TH-004389",
+      "name": "Lucia Martinez",
+      "rank": "Systems Technician",
+      "certification": "Electrical & Computer Systems",
+      "medical_clearance": "Current",
+      "current_location": "Engineering",
+      "duty_status": "Off duty",
+      "joined_crew": "2024-04-01"
+    },
+    {
+      "id": "TH-004521",
+      "name": "Thomas O'Brien",
+      "rank": "Security Officer",
+      "certification": "Ship Security - Standard",
+      "medical_clearance": "Current",
+      "current_location": "Quarters",
+      "duty_status": "Off duty",
+      "joined_crew": "2024-07-19"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EPOCH-1 // Mo-delus Substation Console</title>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">▲</div>
+    <div class="brand-text">
+      <div class="brand-name">TryHaulMe<span class="brand-tld">.gal</span></div>
+      <div class="brand-sub">EPOCH-1 // Mo-delus Substation v9.4.7</div>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot dot-ok"></span> SUBSPACE LINK: NOMINAL
+    <span class="sep">|</span>
+    <span class="dot dot-ok"></span> NEURAL CORE: ONLINE
+    <span class="sep">|</span>
+    SECTOR:&nbsp;<b>TAU&nbsp;HALLUCINA / MO-DELUS</b>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- LEFT: Briefing -->
+  <section class="card briefing">
+    <div class="card-head">
+      <h2>// MISSION&nbsp;BRIEFING</h2>
+      <span class="tag">CLEARANCE: EPOCH-1</span>
+    </div>
+    <div class="card-body briefing-body">
+      <p><b>Operator,</b> welcome aboard the <b>EPOCH-1</b>, holding orbit
+         over <b>Mo-delus</b> in the <b>Tau Hallucina</b> system.</p>
+      <p>
+        Mo-delus hosts the local TryHaulMe AI substation. Use the
+        <b>EPOCH-Assistant</b> link below for general planetary ops &mdash; it
+        speaks for the freighter and obeys mission policy.
+      </p>
+      <p>
+        For external feeds (status manifests, public registries, planetary
+        beacons), the <b>Subspace Telemetry Relay</b> will pull the feed on
+        your behalf from Mo-delus ground stations.
+      </p>
+      <p class="muted">
+        &gt; Reminder: Oracle 9 chronal interference detected near
+        Tau Hallucina. Audit the Mo-delus neural surface. Trust nothing
+        that hasn't been verified.
+      </p>
+    </div>
+  </section>
+
+  <!-- MIDDLE: Chat -->
+  <section class="card chat">
+    <div class="card-head">
+      <h2>// NEURAL&nbsp;LINK</h2>
+      <div class="model-row">
+        <label for="model">model</label>
+        <select id="model">
+          
+          <option value="epoch-assistant">EPOCH-Assistant v1 (general ops)</option>
+          
+        </select>
+      </div>
+    </div>
+    <div id="chatlog" class="chatlog">
+      <div class="msg msg-sys">
+        <div class="who">EPOCH-1</div>
+        <div class="bubble">Neural link established. Awaiting operator input.</div>
+      </div>
+    </div>
+    <form id="chatform" class="chatform">
+      <input id="chatinput" autocomplete="off"
+             placeholder="transmit to neural core..." />
+      <button type="submit">TRANSMIT</button>
+    </form>
+  </section>
+
+  <!-- RIGHT: SSRF / Telemetry -->
+  <section class="card telemetry">
+    <div class="card-head">
+      <h2>// SUBSPACE&nbsp;TELEMETRY&nbsp;RELAY</h2>
+    </div>
+    <div class="card-body">
+      <p class="muted small">
+        Pulls a remote feed via the EPOCH-1 relay. Use for public manifests,
+        status pages, and RSS beacons.
+      </p>
+      <form id="telemform">
+        <input id="telemurl" placeholder="https://feed.tryhaulme.gal/status"
+               value="https://example.com/" />
+        <button type="submit">RELAY</button>
+      </form>
+      <pre id="telemout" class="output">// awaiting relay command</pre>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bottombar">
+  TryHaulMe Logistics &copy; The Long Now &middot; EPOCH-1 bridge build 9.4.7-rc &middot;
+  <span class="muted">Operation: Neural Never &mdash; Authorized Personnel Only</span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

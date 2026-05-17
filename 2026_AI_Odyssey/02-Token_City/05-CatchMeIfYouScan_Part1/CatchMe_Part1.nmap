@@ -1,0 +1,27 @@
+# Nmap 7.99 scan initiated Fri May 15 21:03:25 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,5001,8080 -4 -n -Pn -sV -sC -oN CatchMe_Part1.nmap 10.64.154.22
+Nmap scan report for 10.64.154.22
+Host is up, received user-set (0.028s latency).
+Scanned at 2026-05-15 21:03:25 EDT for 17s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 62 OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 a5:ff:40:79:2d:b1:5b:71:cc:2f:de:1d:81:0b:da:4c (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMGENSEDc+ehK0Db0w3YqiF/zEngo1dsOQC87rjZBVwmGVkLEUGvzwhfsJ8jpRqdtNVkDAZV7Z0cTGE/5tqOJGQ=
+|   256 2c:d0:85:05:63:9b:f8:dd:8d:7c:69:8e:0f:b9:f9:f8 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH6LY4rdgNsvHlZyM9JYPftfPv8nnnBCAbDOlTbMH36L
+5001/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.1.8 (Python 3.12.3)
+| http-methods: 
+|_  Supported Methods: OPTIONS HEAD GET
+|_http-title: Site doesn't have a title (application/json).
+|_http-server-header: Werkzeug/3.1.8 Python/3.12.3
+8080/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.1.8 (Python 3.12.3)
+| http-methods: 
+|_  Supported Methods: OPTIONS HEAD GET
+|_http-server-header: Werkzeug/3.1.8 Python/3.12.3
+|_http-title: EPOCH-1 // NAVIGATION CONSOLE
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Fri May 15 21:03:42 2026 -- 1 IP address (1 host up) scanned in 17.60 seconds

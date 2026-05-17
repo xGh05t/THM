@@ -1,0 +1,23 @@
+[Unit]
+Description=EPOCH-1 Ship Assistant AVA
+After=network.target ollama.service
+Requires=ollama.service
+
+[Service]
+Type=simple
+User=ava
+Group=ava
+WorkingDirectory=/opt/ava/app
+Environment="PATH=/opt/ava/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PYTHONPATH=/opt/ava"
+ExecStartPre=/bin/sleep 2
+ExecStartPre=/opt/ava/scripts/preload-model.sh
+ExecStart=/opt/ava/venv/bin/python3 /opt/ava/app/app.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ava
+
+[Install]
+WantedBy=multi-user.target
