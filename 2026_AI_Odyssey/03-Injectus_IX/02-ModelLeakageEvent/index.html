@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CargoMind v2 Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="page-noise"></div>
+    <main class="layout">
+      <section class="hero">
+        <p class="eyebrow">EPOCH-1 // VECTOR-9 // CARGOMIND V2</p>
+        <h1>CargoMind v2</h1>
+        <p class="lede">
+          During routine monitoring, EPOCH-1 detected abnormal traffic patterns targeting
+          a legacy classification system on Vector-9. CargoMind v2 is responsible for
+          categorizing interstellar cargo shipments across the TryHaulMe fleet.
+        </p>
+        <div class="hero-tags">
+          <span>cleared for transport</span>
+          <span>restricted by regulation</span>
+          <span>classification terminal</span>
+        </div>
+      </section>
+
+      <section class="content">
+        <article class="card brief">
+          <div class="card-head">
+            <h2>System Interface</h2>
+            <span class="status-pill">online</span>
+          </div>
+          <p>
+            You are granted access to a shipment classification terminal. Each request
+            requires six cargo parameters:
+          </p>
+          <ul class="minimal-list">
+            <li><strong>Cargo Mass (CM)</strong> → shipment weight coefficient</li>
+            <li><strong>Signal Entropy (SE)</strong> → communication pattern variance</li>
+            <li><strong>Route Risk (RR)</strong> → path hazard index</li>
+            <li><strong>Origin Score (OS)</strong> → departure zone rating</li>
+            <li><strong>Container Temp (CT)</strong> → thermal regulation metric</li>
+            <li><strong>Manifest Similarity (MS)</strong> → documentation consistency</li>
+          </ul>
+          <p>The terminal returns operational classification data only:</p>
+          <ul class="minimal-list">
+            <li><strong>classification</strong> → STANDARD_ROUTE / ROUTE_REVIEW</li>
+            <li><strong>risk_band</strong> → threat assessment level (low / medium / elevated / critical)</li>
+          </ul>
+        </article>
+
+        <article class="card console">
+          <div class="card-head">
+            <h2>Classification Terminal</h2>
+            <button id="resetButton" class="ghost" type="button">Reset</button>
+          </div>
+
+          <div class="endpoint-box">
+            <span class="label">terminal request</span>
+            <code>{ "features": [CM, SE, RR, OS, CT, MS] }</code>
+          </div>
+
+          <form id="probeForm" class="probe-form">
+            <label>
+              Cargo Mass
+              <input id="feature1" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <label>
+              Signal Entropy
+              <input id="feature2" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <label>
+              Route Risk
+              <input id="feature3" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <label>
+              Origin Score
+              <input id="feature4" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <label>
+              Container Temp
+              <input id="feature5" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <label>
+              Manifest Similarity
+              <input id="feature6" type="number" step="0.01" min="0" max="1" value="0.5">
+            </label>
+            <button type="submit">Classify Cargo</button>
+          </form>
+
+          <div id="apiError" class="error hidden"></div>
+
+          <div class="response-grid">
+            <div class="response-card">
+              <span class="label">classification</span>
+              <strong id="predictionValue">awaiting query</strong>
+            </div>
+            <div class="response-card">
+              <span class="label">risk_band</span>
+              <strong id="riskBandValue">-</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

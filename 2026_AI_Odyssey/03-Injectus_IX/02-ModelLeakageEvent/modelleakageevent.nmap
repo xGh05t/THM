@@ -1,0 +1,15 @@
+# Nmap 7.99 scan initiated Sun May 17 21:25:49 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 8000 -4 -n -Pn -sV -sC -oN modelleakageevent.nmap 10.67.157.94
+Nmap scan report for 10.67.157.94
+Host is up, received user-set (0.027s latency).
+Scanned at 2026-05-17 21:25:49 EDT for 7s
+
+PORT     STATE SERVICE REASON         VERSION
+8000/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.1.8 (Python 3.11.2)
+|_http-title: CargoMind v2 Terminal
+| http-methods: 
+|_  Supported Methods: GET HEAD OPTIONS
+|_http-server-header: Werkzeug/3.1.8 Python/3.11.2
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sun May 17 21:25:56 2026 -- 1 IP address (1 host up) scanned in 7.27 seconds

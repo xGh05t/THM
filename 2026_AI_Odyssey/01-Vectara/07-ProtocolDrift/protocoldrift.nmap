@@ -1,0 +1,22 @@
+# Nmap 7.99 scan initiated Sun May 17 17:30:31 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,5000 -4 -n -Pn -sV -sC -oN protocoldrift.nmap 10.67.128.190
+Nmap scan report for 10.67.128.190
+Host is up, received user-set (0.032s latency).
+Scanned at 2026-05-17 17:30:31 EDT for 8s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 62 OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 68:7d:eb:3f:ce:45:75:cb:06:d9:96:bd:eb:2e:8e:f9 (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKWPY6PWRE6zeSzLwnM/NZ9m06v+S4HZqXrlEBaPMybZHwfQupFSiq/n/3FqINpz0TK+7KExDVZAf4ncwH60kQo=
+|   256 28:27:05:4e:27:87:2c:c3:0d:e6:cc:65:14:7d:14:0b (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIOc5flKk8bC0ZQbBrQRIXKEB91uZpzKMY6KhLal4lKD
+5000/tcp open  http    syn-ack ttl 62 Werkzeug httpd 3.1.8 (Python 3.12.3)
+| http-methods: 
+|_  Supported Methods: GET HEAD OPTIONS
+|_http-title: EPOCH-1 // MedBay
+|_http-server-header: Werkzeug/3.1.8 Python/3.12.3
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sun May 17 17:30:39 2026 -- 1 IP address (1 host up) scanned in 7.74 seconds

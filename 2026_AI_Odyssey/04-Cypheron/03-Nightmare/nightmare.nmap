@@ -1,0 +1,93 @@
+# Nmap 7.99 scan initiated Sun May 17 23:43:33 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 22,5678 -4 -n -Pn -sV -sC -oN nightmare.nmap 10.67.145.144
+Nmap scan report for 10.67.145.144
+Host is up, received user-set (0.030s latency).
+Scanned at 2026-05-17 23:43:34 EDT for 14s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 62 OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 6e:e4:75:55:8d:25:e0:9b:36:26:2b:60:11:a3:d9:ad (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEzlaDqN5Z5xWYWFTBxoq4ZrgkNbfBX/c5P1meTwqkcMO0MWHS5hZme/mpKHNADCIExwFzU2jiWl3KxW2OVZAhk=
+|   256 80:08:c4:77:6d:ed:8b:72:76:44:bf:1f:78:2f:ed:e5 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM5wDL5ueTxE9dSSodyb2gF+VOU/H5pzoSH7L3w4sndS
+5678/tcp open  rrac?   syn-ack ttl 61
+| fingerprint-strings: 
+|   GetRequest: 
+|     HTTP/1.1 200 OK
+|     Accept-Ranges: bytes
+|     Cache-Control: public, max-age=86400
+|     Last-Modified: Mon, 18 May 2026 03:40:42 GMT
+|     ETag: W/"3500-19e392bf427"
+|     Content-Type: text/html; charset=utf-8
+|     Content-Length: 13568
+|     Vary: Accept-Encoding
+|     Date: Mon, 18 May 2026 03:43:48 GMT
+|     Connection: close
+|     <!DOCTYPE html>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8" />
+|     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+|     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+|     <link rel="icon" href="/favicon.ico" />
+|     <meta name="n8n:config:rest-endpoint" content="cmVzdA=="><meta name="n8n:config:sentry" content="eyJkc24iOiIiLCJlbnZpcm9ubWVudCI6ImRldmVsb3BtZW50IiwicmVsZWFzZSI6Im44bkAxLjEyMC40In0=">
+|     <link rel="stylesheet" href="/static/prefers-color-scheme.css">
+|     <script src="/static/base-path.js" type="text/javascript"></script>
+|     <script src="/static/posthog.init.js" t
+|   HTTPOptions, RTSPRequest: 
+|     HTTP/1.1 404 Not Found
+|     Content-Security-Policy: default-src 'none'
+|     X-Content-Type-Options: nosniff
+|     Content-Type: text/html; charset=utf-8
+|     Content-Length: 143
+|     Vary: Accept-Encoding
+|     Date: Mon, 18 May 2026 03:43:48 GMT
+|     Connection: close
+|     <!DOCTYPE html>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>Error</title>
+|     </head>
+|     <body>
+|     <pre>Cannot OPTIONS /</pre>
+|     </body>
+|_    </html>
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port5678-TCP:V=7.99%I=7%D=5/17%Time=6A0A8AF1%P=x86_64-pc-linux-gnu%r(Ge
+SF:tRequest,3098,"HTTP/1\.1\x20200\x20OK\r\nAccept-Ranges:\x20bytes\r\nCac
+SF:he-Control:\x20public,\x20max-age=86400\r\nLast-Modified:\x20Mon,\x2018
+SF:\x20May\x202026\x2003:40:42\x20GMT\r\nETag:\x20W/\"3500-19e392bf427\"\r
+SF:\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent-Length:\x2013
+SF:568\r\nVary:\x20Accept-Encoding\r\nDate:\x20Mon,\x2018\x20May\x202026\x
+SF:2003:43:48\x20GMT\r\nConnection:\x20close\r\n\r\n<!DOCTYPE\x20html>\n<h
+SF:tml\x20lang=\"en\">\n\t<head>\n\t\t<meta\x20charset=\"utf-8\"\x20/>\n\t
+SF:\t<meta\x20http-equiv=\"X-UA-Compatible\"\x20content=\"IE=edge\"\x20/>\
+SF:n\t\t<meta\x20name=\"viewport\"\x20content=\"width=device-width,initial
+SF:-scale=1\.0\"\x20/>\n\t\t<link\x20rel=\"icon\"\x20href=\"/favicon\.ico\
+SF:"\x20/>\n\t\t<meta\x20name=\"n8n:config:rest-endpoint\"\x20content=\"cm
+SF:VzdA==\"><meta\x20name=\"n8n:config:sentry\"\x20content=\"eyJkc24iOiIiL
+SF:CJlbnZpcm9ubWVudCI6ImRldmVsb3BtZW50IiwicmVsZWFzZSI6Im44bkAxLjEyMC40In0=
+SF:\">\n\t\t<link\x20rel=\"stylesheet\"\x20href=\"/static/prefers-color-sc
+SF:heme\.css\">\n\t\t<script\x20src=\"/static/base-path\.js\"\x20type=\"te
+SF:xt/javascript\"></script>\n\t\t<script\x20src=\"/static/posthog\.init\.
+SF:js\"\x20t")%r(HTTPOptions,183,"HTTP/1\.1\x20404\x20Not\x20Found\r\nCont
+SF:ent-Security-Policy:\x20default-src\x20'none'\r\nX-Content-Type-Options
+SF::\x20nosniff\r\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent
+SF:-Length:\x20143\r\nVary:\x20Accept-Encoding\r\nDate:\x20Mon,\x2018\x20M
+SF:ay\x202026\x2003:43:48\x20GMT\r\nConnection:\x20close\r\n\r\n<!DOCTYPE\
+SF:x20html>\n<html\x20lang=\"en\">\n<head>\n<meta\x20charset=\"utf-8\">\n<
+SF:title>Error</title>\n</head>\n<body>\n<pre>Cannot\x20OPTIONS\x20/</pre>
+SF:\n</body>\n</html>\n")%r(RTSPRequest,183,"HTTP/1\.1\x20404\x20Not\x20Fo
+SF:und\r\nContent-Security-Policy:\x20default-src\x20'none'\r\nX-Content-T
+SF:ype-Options:\x20nosniff\r\nContent-Type:\x20text/html;\x20charset=utf-8
+SF:\r\nContent-Length:\x20143\r\nVary:\x20Accept-Encoding\r\nDate:\x20Mon,
+SF:\x2018\x20May\x202026\x2003:43:48\x20GMT\r\nConnection:\x20close\r\n\r\
+SF:n<!DOCTYPE\x20html>\n<html\x20lang=\"en\">\n<head>\n<meta\x20charset=\"
+SF:utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot\x20OPTIONS
+SF:\x20/</pre>\n</body>\n</html>\n");
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sun May 17 23:43:48 2026 -- 1 IP address (1 host up) scanned in 14.29 seconds
