@@ -1,4 +1,4 @@
-# 2026: An AI Odyssey — TryHackMe CTF Event
+# 2026: An AI Odyssey
 
 ## About the Event
 
