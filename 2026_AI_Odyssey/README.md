@@ -18,10 +18,10 @@ The public CTF is organised across four rooms of increasing difficulty, each the
 
 | # | Room | Difficulty | Description | Link |
 |---|------|------------|-------------|------|
-| 1 | **Vectara** | Beginner / Easy | Entry-level challenges covering foundational AI security concepts including prompt injection, AI supply chain security, data poisoning, and agentic AI. | [Open Room](https://tryhackme.com/room/vectara) |
-| 2 | **Token City** | Medium | Step-up challenges that build on the fundamentals introduced in Vectara, pushing into more involved AI exploitation scenarios. | [Open Room](https://tryhackme.com/room/tokencity) |
-| 3 | **Injectus IX** | Hard | Advanced challenges focused on prompt injection, model manipulation, and exploitation of LLM-based agents and pipelines. | [Open Room](https://tryhackme.com/room/injectusix) |
-| 4 | **Cypheron** | Insane | The most demanding challenges in the event, designed for experienced players looking to push the limits of AI security exploitation. | [Open Room](https://tryhackme.com/room/cypheron) |
+| 1 | **Vectara** | Beginner / Easy | Entry-level challenges covering foundational AI security concepts including prompt injection, AI supply chain security, data poisoning, and agentic AI. | [Room](https://tryhackme.com/room/vectara) |
+| 2 | **Token City** | Medium | Step-up challenges that build on the fundamentals introduced in Vectara, pushing into more involved AI exploitation scenarios. | [Room](https://tryhackme.com/room/tokencity) |
+| 3 | **Injectus IX** | Hard | Advanced challenges focused on prompt injection, model manipulation, and exploitation of LLM-based agents and pipelines. | [Room](https://tryhackme.com/room/injectusix) |
+| 4 | **Cypheron** | Insane | The most demanding challenges in the event, designed for experienced players looking to push the limits of AI security exploitation. | [Room](https://tryhackme.com/room/cypheron) |
 
 Each room is set within the AI Odyssey storyline, with mission briefings delivered as transmissions from EPOCH-1's bridge deck. Challenge categories include **Prompt Injection**, **AI Supply Chain Security**, **Data Poisoning**, and **Agentic AI**.
 
