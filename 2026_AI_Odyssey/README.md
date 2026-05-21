@@ -2,7 +2,7 @@
 
 ## About the Event
 
-**2026: An AI Odyssey** is TryHackMe's first AI Security event and the official launch of its AI Security Learning Path. The public CTF brings the cybersecurity community together to compete, learn, and explore the emerging field of AI security through a series of themed rooms of escalating difficulty.
+**AI Odyssey** is TryHackMe's first AI Security event and the official launch of its AI Security Learning Path. The public CTF brings the cybersecurity community together to compete, learn, and explore the emerging field of AI security through a series of themed rooms of escalating difficulty.
 
 ## Storyline
 
