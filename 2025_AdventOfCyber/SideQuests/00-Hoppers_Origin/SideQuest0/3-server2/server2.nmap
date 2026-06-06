@@ -1,9 +1,10 @@
-# Nmap 7.98 scan initiated Wed Mar 25 21:00:55 2026 as: /usr/lib/nmap/nmap -Pn -sV -sC -p- -oN server2.nmap 10.200.171.102
+# Nmap 7.99 scan initiated Fri May 29 00:05:04 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 3389,5985 -4 -n -Pn -sV -sC -oN server2.nmap 10.200.171.102
 Nmap scan report for 10.200.171.102
-Host is up (0.052s latency).
-Not shown: 65533 filtered tcp ports (no-response)
-PORT     STATE SERVICE       VERSION
-3389/tcp open  ms-wbt-server Microsoft Terminal Services
+Host is up, received user-set (0.038s latency).
+Scanned at 2026-05-29 00:05:04 EDT for 12s
+
+PORT     STATE SERVICE       REASON         VERSION
+3389/tcp open  ms-wbt-server syn-ack ttl 64 Microsoft Terminal Services
 | rdp-ntlm-info: 
 |   Target_Name: AI
 |   NetBIOS_Domain_Name: AI
@@ -12,15 +13,44 @@ PORT     STATE SERVICE       VERSION
 |   DNS_Computer_Name: Server2.ai.vanchat.loc
 |   DNS_Tree_Name: vanchat.loc
 |   Product_Version: 10.0.17763
-|_  System_Time: 2026-03-26T01:06:29+00:00
+|_  System_Time: 2026-05-29T04:05:11+00:00
 | ssl-cert: Subject: commonName=Server2.ai.vanchat.loc
-| Not valid before: 2025-10-28T17:37:39
-|_Not valid after:  2026-04-29T17:37:39
-|_ssl-date: 2026-03-26T01:06:33+00:00; 0s from scanner time.
-5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
+| Issuer: commonName=Server2.ai.vanchat.loc
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-05-22T20:27:50
+| Not valid after:  2026-11-21T20:27:50
+| MD5:     ff82 b877 69bc fa77 8a5b ff8a 3a96 e3a6
+| SHA-1:   a3bc e7ab 4d9f 7882 173a 2f93 9342 4dd3 5106 4a5d
+| SHA-256: fad8 3993 4622 2f8b 45b4 8c49 b6eb c088 54f3 2cd7 ec34 fbf3 60fc b17c 9611 5a92
+| -----BEGIN CERTIFICATE-----
+| MIIC8DCCAdigAwIBAgIQG17k3H4We51DUSTOReVikTANBgkqhkiG9w0BAQsFADAh
+| MR8wHQYDVQQDExZTZXJ2ZXIyLmFpLnZhbmNoYXQubG9jMB4XDTI2MDUyMjIwMjc1
+| MFoXDTI2MTEyMTIwMjc1MFowITEfMB0GA1UEAxMWU2VydmVyMi5haS52YW5jaGF0
+| LmxvYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALwBxmDnlAizx6RV
+| i0Yc4zU/c+9FUasz/j/59kbaHf0a9FWLDEJRRSkBh/QDlaORPzLaWnauUSlgotXM
+| ejQnKY2kxZUO1rPOlSqPNr7egQ3AI3K5+SWlCPPqeeRUHW9FVm6q/FKzy3Iua5qF
+| Z08DJw0mcHbgN0tkhvFFNW1feZrNnsISTYkp8ZoCSlh0Ls44ddosNtshpbBpfyIO
+| +3YoPuS6jJW9yH5Tr5bE7WKfD7E0dxW3EtJQPHF43aBELwBgoQZyp16mDfDz6ouZ
+| 6mCeHuyjRlT3HXkJqg6btb6kajBQKuOjRR1P5B65hZRaqmHHi+3ENKJkpoxuo2Hp
+| HCszQDUCAwEAAaMkMCIwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgQw
+| MA0GCSqGSIb3DQEBCwUAA4IBAQC5Bq7gpoYHN02Xf/hN2b3aCJzf5QpQiF/r5y9k
+| LIAHceMmL8EpB3BnyWJMnXNO8Pnqpfm5UsHiiPRENYXsSPgrdSJViy/twcqK+eOI
+| Ga6QtHzPwog1od51GnV6ObNU2qNt1LLQxEOTrXYqm2vlDSNT9AkMAaBd3WEcMkYL
+| NdOy9DisBiXVKj+yQV9xmRg1spcAnmmY8Pc/MfbLQaUapjdhp3NVqfTajPrbnwId
+| +DbbTMhCE+83fBccN03Fe1fihPwPI2OfZpa0IoeM14HNBRyWmYwMWu7CgOaxvv/s
+| 1Zg0qHgKCGn7hqQZBzKtUNAJlzQcj/7+7B68lQ2B8npqJ3C6
+|_-----END CERTIFICATE-----
+|_ssl-date: 2026-05-29T04:05:16+00:00; 0s from scanner time.
+5985/tcp open  http          syn-ack ttl 64 Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
 |_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
+Host script results:
+|_clock-skew: mean: 0s, deviation: 0s, median: 0s
+
+Read data files from: /usr/share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Wed Mar 25 21:06:34 2026 -- 1 IP address (1 host up) scanned in 338.77 seconds
+# Nmap done at Fri May 29 00:05:16 2026 -- 1 IP address (1 host up) scanned in 11.78 seconds

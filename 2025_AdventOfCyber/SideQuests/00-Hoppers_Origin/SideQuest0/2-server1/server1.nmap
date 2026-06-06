@@ -1,12 +1,43 @@
-# Nmap 7.98 scan initiated Sat Mar 21 15:27:06 2026 as: /usr/lib/nmap/nmap -Pn -sV -sC -p- -oN server1.test 10.200.171.101
+# Nmap 7.99 scan initiated Wed May 27 19:17:08 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 80,3389,5985 -4 -n -Pn -sV -sC -oN server1.nmap 10.200.171.101
 Nmap scan report for 10.200.171.101
-Host is up (0.084s latency).
-Not shown: 65532 filtered tcp ports (no-response)
-PORT     STATE SERVICE       VERSION
-80/tcp   open  http          Microsoft IIS httpd 10.0
-|_http-server-header: Microsoft-IIS/10.0
+Host is up, received user-set (0.038s latency).
+Scanned at 2026-05-27 19:17:08 EDT for 14s
+
+PORT     STATE SERVICE       REASON         VERSION
+80/tcp   open  http          syn-ack ttl 64 Microsoft IIS httpd 10.0
+| http-methods: 
+|_  Supported Methods: GET
 |_http-title: VanChat Printer Hub \xE2\x80\x94 AD Settings Tester
-3389/tcp open  ms-wbt-server Microsoft Terminal Services
+|_http-server-header: Microsoft-IIS/10.0
+3389/tcp open  ms-wbt-server syn-ack ttl 64 Microsoft Terminal Services
+| ssl-cert: Subject: commonName=Server1.ai.vanchat.loc
+| Issuer: commonName=Server1.ai.vanchat.loc
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-05-22T20:27:41
+| Not valid after:  2026-11-21T20:27:41
+| MD5:     bed6 3508 dd87 1747 c08f 20b4 9323 9ce8
+| SHA-1:   df4a b896 457c 8187 d949 6a2d 329c a8d9 6456 f7c7
+| SHA-256: 6393 b84f 132e 1f42 de81 9a38 349d 849a 5c31 8d99 dc3b 848f 0126 bf02 45b3 8924
+| -----BEGIN CERTIFICATE-----
+| MIIC8DCCAdigAwIBAgIQFxkrO5XJVYhGem+h9dMDwzANBgkqhkiG9w0BAQsFADAh
+| MR8wHQYDVQQDExZTZXJ2ZXIxLmFpLnZhbmNoYXQubG9jMB4XDTI2MDUyMjIwMjc0
+| MVoXDTI2MTEyMTIwMjc0MVowITEfMB0GA1UEAxMWU2VydmVyMS5haS52YW5jaGF0
+| LmxvYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALMRjg7zdCTt+KLB
+| AqSG6WBlayHHkQiBvcEXgmeWbhNiBauA++KLl4ZQ+fcscI++N4XF5QsnKeJdcLLs
+| ND/Yv9zHN1Lhw2N1Mp7AKEeL73JArZzh1NR8uwWZVmxFT0EtYPcDKkPmzJQoz3ZE
+| vvaG9KFEaEP++uZVaSpEWeVnX2As7oP0Zy5cLBRq3ixtPJVAyrc0OUUZxAc6wDe3
+| LlyH/bcKLgb5NdJMT2AFyrJ/OlL2SwZGg1CBVpZLrjWTxWvuQCzWkpq+hy0EOqeq
+| K1foLXP1GhTywIjO7NwEMtlf4tyCOOHtduUstqBwW/ENyZDjE9RjCENBrADuM+gs
+| 29ba65UCAwEAAaMkMCIwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgQw
+| MA0GCSqGSIb3DQEBCwUAA4IBAQBjbpXvjV9tMPKs5vLe8gfjCYYnheLJCEvTt0iI
+| zxsRUAP21a/ySW6UEtWqm3EypyokViaohwgdUZXCphDwTMDAZ1jbx8czrHCYdxSf
+| DvQh2AQe38dj8EWNy1pcSb4qD28MYXUE8LClN2diq545zDyR1WGNmaBm3OD4eYfH
+| t5HqbwKNIoWlGnLnih44fnMgjC+WeuDgoPaGpkoks0KhWgIwYfIlSTFTwsczon7B
+| 1wYX+6jVvxog9d2IPINtJ0LoVlxfomcRH9kXoRzt20i67gqBMRl7IkwGoO73YgON
+| 0Sxc6GP0JDjFa6ALEh9+KBzcY0TV4FgmjbcpHS4gdm8sge3M
+|_-----END CERTIFICATE-----
 | rdp-ntlm-info: 
 |   Target_Name: AI
 |   NetBIOS_Domain_Name: AI
@@ -15,15 +46,16 @@ PORT     STATE SERVICE       VERSION
 |   DNS_Computer_Name: Server1.ai.vanchat.loc
 |   DNS_Tree_Name: vanchat.loc
 |   Product_Version: 10.0.17763
-|_  System_Time: 2026-03-21T19:32:42+00:00
-|_ssl-date: 2026-03-21T19:32:46+00:00; 0s from scanner time.
-| ssl-cert: Subject: commonName=Server1.ai.vanchat.loc
-| Not valid before: 2025-10-28T10:32:43
-|_Not valid after:  2026-04-29T10:32:43
-5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
-|_http-title: Not Found
+|_  System_Time: 2026-05-27T23:17:17+00:00
+|_ssl-date: 2026-05-27T23:17:22+00:00; 0s from scanner time.
+5985/tcp open  http          syn-ack ttl 64 Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
 |_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
+Host script results:
+|_clock-skew: mean: 0s, deviation: 0s, median: 0s
+
+Read data files from: /usr/share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Sat Mar 21 15:32:46 2026 -- 1 IP address (1 host up) scanned in 340.08 seconds
+# Nmap done at Wed May 27 19:17:22 2026 -- 1 IP address (1 host up) scanned in 13.82 seconds
